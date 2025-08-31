@@ -1,6 +1,6 @@
 import React, { createContext, useContext, ReactNode, useState, useEffect, useCallback } from 'react';
 import useLocalStorage from '../hooks/useLocalStorage';
-import { Crop, Transaction, Settings, ToDo, View, TransactionType, Equipment, MaintenanceLog } from '../types';
+import { Crop, Transaction, Settings, ToDo, View, TransactionType, Equipment, MaintenanceLog, Notification } from '../types';
 import { DEFAULT_SETTINGS, MOCK_CROPS, MOCK_TRANSACTIONS, MOCK_TODOS, MOCK_EQUIPMENT } from '../constants';
 
 interface ViewState {
@@ -41,6 +41,11 @@ interface FarmContextType {
   isOnline: boolean;
   uiInteractionEvent: string | null;
   triggerUIInteraction: (message: string | null) => void;
+  notifications: Notification[];
+  addNotification: (message: string, link?: string) => void;
+  markNotificationAsRead: (id: string) => void;
+  markAllNotificationsAsSeen: () => void;
+  markAllAsRead: () => void;
 }
 
 const FarmContext = createContext<FarmContextType | undefined>(undefined);
@@ -51,6 +56,7 @@ export const FarmProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [settings, setSettings] = useLocalStorage<Settings>('farm_settings', DEFAULT_SETTINGS);
   const [todos, setTodos] = useLocalStorage<ToDo[]>('farm_todos', MOCK_TODOS);
   const [equipment, setEquipment] = useLocalStorage<Equipment[]>('farm_equipment', MOCK_EQUIPMENT);
+  const [notifications, setNotifications] = useLocalStorage<Notification[]>('farm_notifications', []);
   const [viewState, setViewState] = useState<ViewState>({ view: 'dashboard' });
   const [formInputContext, setFormInputContext] = useState<any>(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -73,6 +79,31 @@ export const FarmProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
+
+  // --- Notification Management ---
+  const addNotification = (message: string, link?: string) => {
+    const newNotification: Notification = {
+      id: crypto.randomUUID(),
+      message,
+      link,
+      read: false,
+      seen: false,
+      timestamp: new Date().toISOString(),
+    };
+    setNotifications(prev => [newNotification, ...prev]);
+  };
+
+  const markNotificationAsRead = (id: string) => {
+    setNotifications(prev => prev.map(n => (n.id === id ? { ...n, read: true } : n)));
+  };
+  
+  const markAllAsRead = () => {
+      setNotifications(prev => prev.map(n => ({...n, read: true})));
+  };
+
+  const markAllNotificationsAsSeen = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, seen: true })));
+  };
 
 
   const addCrop = (crop: Omit<Crop, 'id'>) => {
@@ -128,7 +159,25 @@ export const FarmProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const addMaintenanceLog = (equipmentId: string, log: Omit<MaintenanceLog, 'id'>) => {
     const newLog = { ...log, id: crypto.randomUUID() };
-    setEquipment(prev => prev.map(eq => eq.id === equipmentId ? { ...eq, maintenanceLogs: [...eq.maintenanceLogs, newLog].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) } : eq));
+    let targetEquipment: Equipment | undefined;
+
+    setEquipment(prev => {
+      const newState = prev.map(eq => {
+        if (eq.id === equipmentId) {
+          targetEquipment = eq; // get equipment state before update
+          return { ...eq, maintenanceLogs: [...eq.maintenanceLogs, newLog].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) };
+        }
+        return eq;
+      });
+      
+      // After state update is calculated, check for notification trigger
+      if (targetEquipment && targetEquipment.maintenanceLogs.length === 1) {
+          // It had 1 log, now it will have 2.
+          addNotification(`"${targetEquipment.name}" is now ready for an AI maintenance prediction.`, equipmentId);
+      }
+
+      return newState;
+    });
   };
   
   const deleteMaintenanceLog = (equipmentId: string, logId: string) => {
@@ -152,7 +201,12 @@ export const FarmProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       formInputContext, setFormInputContext,
       isOnline,
       uiInteractionEvent,
-      triggerUIInteraction
+      triggerUIInteraction,
+      notifications,
+      addNotification,
+      markNotificationAsRead,
+      markAllNotificationsAsSeen,
+      markAllAsRead
     }}>
       {children}
     </FarmContext.Provider>

@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { useFarm } from '../context/FarmContext';
-import { Transaction, Crop, TransactionType } from '../types';
+import { Transaction, Crop, TransactionType, Equipment } from '../types';
 import { PrintIcon, DownloadIcon, PDFIcon } from '../components/icons';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 
 
 const Summary: React.FC = () => {
-  const { settings, transactions, crops } = useFarm();
+  const { settings, transactions, crops, equipment, triggerUIInteraction } = useFarm();
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
@@ -38,6 +38,8 @@ const Summary: React.FC = () => {
       expenseTransactions: expenseTxns.sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
     };
   }, [filteredTransactions]);
+  
+  const clearHint = () => triggerUIInteraction(null);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: settings.currency }).format(amount);
@@ -115,6 +117,23 @@ const Summary: React.FC = () => {
         ];
         csvContent += toCsvRow(row) + '\n';
     });
+    csvContent += '\n';
+
+    csvContent += "Hydroponic Machinery Summary\n";
+    const equipmentHeaders = ['Name', 'Model', 'Purchase Date', 'Maintenance Logs', 'Total Maintenance Cost'];
+    csvContent += toCsvRow(equipmentHeaders) + '\n';
+    equipment.forEach(item => {
+        const totalCost = item.maintenanceLogs.reduce((sum, log) => sum + log.cost, 0);
+        const row = [
+            item.name,
+            item.model,
+            formatDate(item.purchaseDate),
+            item.maintenanceLogs.length,
+            totalCost
+        ];
+        csvContent += toCsvRow(row) + '\n';
+    });
+
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
@@ -134,22 +153,40 @@ const Summary: React.FC = () => {
         <div className="flex flex-wrap items-center gap-4">
           <div>
             <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Start Date</label>
-            <input type="date" id="startDate" value={startDate} onChange={e => setStartDate(e.target.value)} className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm" />
+            <input type="date" id="startDate" value={startDate} onChange={e => setStartDate(e.target.value)} className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm" onFocus={() => triggerUIInteraction("Select the start date for the report.")} onBlur={clearHint} />
           </div>
           <div>
             <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">End Date</label>
-            <input type="date" id="endDate" value={endDate} onChange={e => setEndDate(e.target.value)} className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm" />
+            <input type="date" id="endDate" value={endDate} onChange={e => setEndDate(e.target.value)} className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm" onFocus={() => triggerUIInteraction("Select the end date for the report.")} onBlur={clearHint} />
           </div>
           <div className="flex flex-wrap items-end gap-2 self-end">
-            <button onClick={handlePrint} disabled={!startDate || !endDate} className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark disabled:bg-gray-400 flex items-center gap-2">
+            <button 
+              onClick={handlePrint} 
+              disabled={!startDate || !endDate} 
+              className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark disabled:bg-gray-400 flex items-center gap-2"
+              onMouseEnter={() => triggerUIInteraction("Open the print dialog for this report.")}
+              onMouseLeave={clearHint}
+            >
               <PrintIcon className="w-5 h-5" />
               <span>Print</span>
             </button>
-            <button onClick={handleSaveAsCSV} disabled={!startDate || !endDate} className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 flex items-center gap-2">
+            <button 
+              onClick={handleSaveAsCSV} 
+              disabled={!startDate || !endDate} 
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 flex items-center gap-2"
+              onMouseEnter={() => triggerUIInteraction("Download the report data as a CSV file.")}
+              onMouseLeave={clearHint}
+            >
                 <DownloadIcon className="w-5 h-5" />
                 <span>CSV</span>
             </button>
-            <button onClick={handleSaveAsPDF} disabled={!startDate || !endDate} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:bg-gray-400 flex items-center gap-2">
+            <button 
+              onClick={handleSaveAsPDF} 
+              disabled={!startDate || !endDate} 
+              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:bg-gray-400 flex items-center gap-2"
+              onMouseEnter={() => triggerUIInteraction("Download the report as a PDF file.")}
+              onMouseLeave={clearHint}
+            >
                 <PDFIcon className="w-5 h-5" />
                 <span>PDF</span>
             </button>
@@ -270,6 +307,36 @@ const Summary: React.FC = () => {
                     </tbody>
                 </table>
             </section>
+
+            <section>
+                <h3 className="text-xl font-semibold border-b pb-2 mb-4">Hydroponic Machinery Summary</h3>
+                <table className="w-full text-left text-sm printable-table">
+                    <thead>
+                        <tr>
+                            <th className="p-2">Name</th>
+                            <th className="p-2">Model</th>
+                            <th className="p-2">Purchase Date</th>
+                            <th className="p-2"># Logs</th>
+                            <th className="p-2 text-right">Total Maint. Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {equipment.length > 0 ? equipment.map(item => {
+                            const totalCost = item.maintenanceLogs.reduce((sum, log) => sum + log.cost, 0);
+                            return (
+                                <tr key={item.id}>
+                                    <td className="p-2">{item.name}</td>
+                                    <td className="p-2">{item.model || 'N/A'}</td>
+                                    <td className="p-2">{formatDate(item.purchaseDate)}</td>
+                                    <td className="p-2">{item.maintenanceLogs.length}</td>
+                                    <td className="p-2 text-right">{formatCurrency(totalCost)}</td>
+                                </tr>
+                            );
+                        }) : <tr><td colSpan={5} className="p-4 text-center text-text-secondary">No machinery has been added.</td></tr>}
+                    </tbody>
+                </table>
+            </section>
+
           </div>
         )}
       </div>

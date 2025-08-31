@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import SideNav from './components/SideNav';
 import Dashboard from './views/Dashboard';
 import Crops from './views/Crops';
@@ -14,8 +14,28 @@ import { View, TransactionType } from './types';
 import { useFarm } from './context/FarmContext';
 import FloatingAIChat from './components/FloatingAIChat';
 
+const viewTitles: Record<View, string> = {
+    'dashboard': 'Dashboard',
+    'crops': 'Crops Management',
+    'transactions': 'Transactions',
+    'reports': 'Reports & Analytics',
+    'settings': 'Settings',
+    'summary': 'Summary & Export',
+    'farm-ai': 'Farm AI Tools',
+    'equipment': 'Hydroponic Machineries'
+};
+
 const App: React.FC = () => {
   const { viewState } = useFarm();
+  const [isSideNavExpanded, setIsSideNavExpanded] = useState(false);
+  
+  const getTitle = () => {
+    const { view, type } = viewState;
+    if (view === 'transactions') {
+        return type === TransactionType.INCOME ? 'Income' : 'Expenses';
+    }
+    return viewTitles[view] || 'Dashboard';
+  }
 
   const renderView = () => {
     const { view, payload, type } = viewState;
@@ -43,24 +63,12 @@ const App: React.FC = () => {
         return <Dashboard />;
     }
   };
-  
-  const viewTitles: { [key in View]: string } = {
-    dashboard: 'Dashboard',
-    crops: 'Crops & Fields',
-    equipment: 'Equipment',
-    transactions: viewState.type === TransactionType.INCOME ? 'Income' : 'Expenses',
-    reports: 'Reports',
-    settings: 'Settings',
-    summary: 'Printable Summary',
-    'farm-ai': 'Farm AI Assistant',
-  };
-
 
   return (
-    <div className="flex h-screen bg-background">
-      <SideNav />
-      <main className="flex-1 flex flex-col overflow-hidden">
-        <Header title={viewTitles[viewState.view]} />
+    <div className="bg-background">
+      <SideNav setIsExpanded={setIsSideNavExpanded} />
+      <main className={`h-screen flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${isSideNavExpanded ? 'ml-64' : 'ml-20'}`}>
+        <Header title={getTitle()} />
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           {renderView()}
         </div>

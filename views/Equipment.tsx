@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useFarm } from '../context/FarmContext';
 import { Equipment, MaintenanceLog } from '../types';
@@ -43,11 +44,11 @@ const EquipmentForm: React.FC<{ equipment?: Equipment; onSave: (data: Equipment 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-card p-8 rounded-xl shadow-2xl w-full max-w-lg">
-        <h2 className="text-2xl font-bold mb-6">{equipment ? 'Edit Equipment' : 'Add New Equipment'}</h2>
+        <h2 className="text-2xl font-bold mb-6">{equipment ? 'Edit Machinery' : 'Add New Machinery'}</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-            <FormInput name="name" value={formData.name} onChange={e => setFormData(p => ({...p, name: e.target.value}))} placeholder="e.g., John Deere Tractor" required onFocus={() => triggerUIInteraction("Enter the name of the equipment.")} onBlur={clearHint} />
-            <FormInput name="model" value={formData.model} onChange={e => setFormData(p => ({...p, model: e.target.value}))} placeholder="Model (e.g., 8R 370)" onFocus={() => triggerUIInteraction("Enter the model name or number.")} onBlur={clearHint} />
-            <FormInput type="date" name="purchaseDate" value={formData.purchaseDate} onChange={e => setFormData(p => ({...p, purchaseDate: e.target.value}))} required onFocus={() => triggerUIInteraction("When was this equipment purchased?")} onBlur={clearHint} />
+            <FormInput name="name" value={formData.name} onChange={e => setFormData(p => ({...p, name: e.target.value}))} placeholder="e.g., Nutrient Dosing System" required onFocus={() => triggerUIInteraction("Enter the name of the machinery.")} onBlur={clearHint} />
+            <FormInput name="model" value={formData.model} onChange={e => setFormData(p => ({...p, model: e.target.value}))} placeholder="Model (e.g., pH Pro Controller)" onFocus={() => triggerUIInteraction("Enter the model name or number.")} onBlur={clearHint} />
+            <FormInput type="date" name="purchaseDate" value={formData.purchaseDate} onChange={e => setFormData(p => ({...p, purchaseDate: e.target.value}))} required onFocus={() => triggerUIInteraction("When was this machinery purchased?")} onBlur={clearHint} />
             <FormTextArea name="notes" value={formData.notes} onChange={e => setFormData(p => ({...p, notes: e.target.value}))} placeholder="Notes..." onFocus={() => triggerUIInteraction("Add any relevant notes.")} onBlur={clearHint} />
             <div className="flex justify-end space-x-4 pt-4">
                 <button type="button" onClick={onCancel} className="px-6 py-2 rounded-lg text-text-secondary bg-gray-200 hover:bg-gray-300">Cancel</button>
@@ -62,7 +63,9 @@ const EquipmentForm: React.FC<{ equipment?: Equipment; onSave: (data: Equipment 
 // --- Maintenance Log Form ---
 
 const MaintenanceLogForm: React.FC<{ onSave: (log: Omit<MaintenanceLog, 'id'>) => void; onCancel: () => void; }> = ({ onSave, onCancel }) => {
+    const { triggerUIInteraction } = useFarm();
     const [logData, setLogData] = useState({ date: new Date().toISOString().split('T')[0], description: '', cost: '' });
+    const clearHint = () => triggerUIInteraction(null);
     
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -74,9 +77,9 @@ const MaintenanceLogForm: React.FC<{ onSave: (log: Omit<MaintenanceLog, 'id'>) =
             <div className="bg-card p-8 rounded-xl shadow-2xl w-full max-w-lg">
                 <h2 className="text-2xl font-bold mb-6">Add Maintenance Log</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <FormInput type="date" value={logData.date} onChange={e => setLogData(p => ({...p, date: e.target.value}))} required />
-                    <FormInput value={logData.description} onChange={e => setLogData(p => ({...p, description: e.target.value}))} placeholder="Description (e.g., Oil change)" required />
-                    <FormInput type="number" step="any" value={logData.cost} onChange={e => setLogData(p => ({...p, cost: e.target.value}))} placeholder="Cost" />
+                    <FormInput type="date" value={logData.date} onChange={e => setLogData(p => ({...p, date: e.target.value}))} required onFocus={() => triggerUIInteraction("When was the maintenance performed?")} onBlur={clearHint} />
+                    <FormInput value={logData.description} onChange={e => setLogData(p => ({...p, description: e.target.value}))} placeholder="Description (e.g., Calibrate pH sensor)" required onFocus={() => triggerUIInteraction("Describe the service performed.")} onBlur={clearHint} />
+                    <FormInput type="number" step="any" value={logData.cost} onChange={e => setLogData(p => ({...p, cost: e.target.value}))} placeholder="Cost" onFocus={() => triggerUIInteraction("Enter the total cost of the service.")} onBlur={clearHint} />
                     <div className="flex justify-end space-x-4 pt-4">
                         <button type="button" onClick={onCancel} className="px-6 py-2 rounded-lg text-text-secondary bg-gray-200 hover:bg-gray-300">Cancel</button>
                         <button type="submit" className="px-6 py-2 rounded-lg text-white bg-primary hover:bg-primary-dark">Save Log</button>
@@ -130,13 +133,13 @@ const EquipmentView: React.FC<{ payload?: any }> = ({ payload }) => {
             .join('\n');
             
         const prompt = `
-            Based on the following maintenance history for a piece of farm equipment (${detailedEquipment.name} - ${detailedEquipment.model}), predict the next likely maintenance needs.
-            Consider common service intervals for this type of machinery.
+            Based on the following maintenance history for a piece of hydroponic machinery (${detailedEquipment.name} - ${detailedEquipment.model}), predict the next likely maintenance needs.
+            Consider common service intervals for things like pumps, sensors, and lighting systems.
             
             Maintenance History:
             ${logHistory || "No maintenance logged yet."}
 
-            Provide a short, actionable prediction. For example: "Next oil change and filter replacement is likely due in 3-4 months."
+            Provide a short, actionable prediction. For example: "The pH and EC sensors are likely due for recalibration within the next 30 days." or "Consider checking the water pump impeller for wear in the next 2-3 months."
         `;
         executePrediction(generateText, prompt);
     };
@@ -147,7 +150,7 @@ const EquipmentView: React.FC<{ payload?: any }> = ({ payload }) => {
     if (detailedEquipment) {
         return (
             <div className="space-y-6">
-                <div><button onClick={() => setDetailedEquipment(null)} className="mb-4 px-4 py-2 text-text-secondary bg-gray-200 rounded-lg hover:bg-gray-300">&larr; Back to Equipment List</button></div>
+                <div><button onClick={() => setDetailedEquipment(null)} className="mb-4 px-4 py-2 text-text-secondary bg-gray-200 rounded-lg hover:bg-gray-300">&larr; Back to Machinery List</button></div>
                 <Card title={detailedEquipment.name} actions={
                     <div>
                         <button onClick={() => { setSelectedEquipment(detailedEquipment); setIsFormOpen(true); }} className="text-blue-500 p-2"><PencilIcon className="w-5 h-5" /></button>
@@ -179,7 +182,13 @@ const EquipmentView: React.FC<{ payload?: any }> = ({ payload }) => {
                 
                 <Card title="AI Maintenance Advisor">
                     <div className="text-center">
-                        <button onClick={handlePredictMaintenance} disabled={aiLoading || detailedEquipment.maintenanceLogs.length < 2} className="flex items-center mx-auto text-lg px-6 py-3 rounded-lg text-white bg-primary hover:bg-primary-dark shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed">
+                        <button 
+                            onClick={handlePredictMaintenance} 
+                            disabled={aiLoading || detailedEquipment.maintenanceLogs.length < 2} 
+                            className="flex items-center mx-auto text-lg px-6 py-3 rounded-lg text-white bg-primary hover:bg-primary-dark shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
+                            onMouseEnter={() => triggerUIInteraction("Use AI to analyze the maintenance history and predict future needs.")}
+                            onMouseLeave={clearHint}
+                        >
                             <FarmAIIcon className="w-6 h-6 mr-2" />
                             {aiLoading ? 'Analyzing...' : 'Predict Next Maintenance'}
                         </button>
@@ -199,8 +208,8 @@ const EquipmentView: React.FC<{ payload?: any }> = ({ payload }) => {
     return (
         <div>
             <div className="flex justify-end mb-6">
-                <button onClick={() => { setSelectedEquipment(undefined); setIsFormOpen(true); }} className="flex items-center text-lg px-6 py-3 rounded-lg text-white bg-primary hover:bg-primary-dark shadow-md" onMouseEnter={() => triggerUIInteraction("Add a new piece of equipment.")} onMouseLeave={clearHint}>
-                    <PlusCircleIcon className="w-6 h-6 mr-2" /> Add Equipment
+                <button onClick={() => { setSelectedEquipment(undefined); setIsFormOpen(true); }} className="flex items-center text-lg px-6 py-3 rounded-lg text-white bg-primary hover:bg-primary-dark shadow-md" onMouseEnter={() => triggerUIInteraction("Add a new piece of machinery.")} onMouseLeave={clearHint}>
+                    <PlusCircleIcon className="w-6 h-6 mr-2" /> Add Machinery
                 </button>
             </div>
 
@@ -208,7 +217,13 @@ const EquipmentView: React.FC<{ payload?: any }> = ({ payload }) => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {equipment.map(item => (
-                    <div key={item.id} onClick={() => setDetailedEquipment(item)} className="bg-card rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all">
+                    <div 
+                        key={item.id} 
+                        onClick={() => setDetailedEquipment(item)} 
+                        className="bg-card rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all"
+                        onMouseEnter={() => triggerUIInteraction(`View details for ${item.name}.`)}
+                        onMouseLeave={clearHint}
+                    >
                         <h3 className="text-xl font-bold text-text-primary mb-2">{item.name}</h3>
                         <p className="text-text-secondary">{item.model}</p>
                         <div className="mt-4 pt-4 border-t border-gray-200 flex items-center text-sm text-text-secondary">

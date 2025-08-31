@@ -94,20 +94,20 @@ export const MOCK_TODOS: ToDo[] = [
 export const MOCK_EQUIPMENT: Equipment[] = [
     {
         id: 'equip-1',
-        name: 'John Deere 8R 370 Tractor',
-        purchaseDate: new Date(new Date().setFullYear(new Date().getFullYear() - 2)).toISOString(),
-        model: '8R 370',
+        name: 'Nutrient Dosing System',
+        purchaseDate: new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString(),
+        model: 'AutoGrow IntelliDose',
         maintenanceLogs: [
-            { id: 'log-1', date: new Date(new Date().setMonth(new Date().getMonth() - 12)).toISOString(), description: '500-hour service (oil & filters)', cost: 450 },
-            { id: 'log-2', date: new Date(new Date().setMonth(new Date().getMonth() - 6)).toISOString(), description: '1000-hour service (full fluid check, filters)', cost: 800 },
-            { id: 'log-3', date: new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString(), description: 'Tire rotation and pressure check', cost: 150 },
+            { id: 'log-1', date: new Date(new Date().setMonth(new Date().getMonth() - 6)).toISOString(), description: 'Calibrated pH and EC sensors', cost: 75 },
+            { id: 'log-2', date: new Date(new Date().setMonth(new Date().getMonth() - 3)).toISOString(), description: 'Replaced peristaltic pump tubing', cost: 120 },
         ]
     },
     {
         id: 'equip-2',
-        name: 'Case IH 8250 Combine',
-        purchaseDate: new Date(new Date().setFullYear(new Date().getFullYear() - 3)).toISOString(),
-        model: 'Axial-Flow 8250',
+        name: 'LED Grow Light Array',
+        purchaseDate: new Date(new Date().setFullYear(new Date().getFullYear() - 2)).toISOString(),
+        model: 'PhotonPro Series X',
+        notes: 'Main array for the leafy greens section.',
         maintenanceLogs: []
     }
 ];

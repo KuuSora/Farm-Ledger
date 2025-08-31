@@ -205,27 +205,34 @@ const Transactions: React.FC<{ defaultTransactionType: TransactionType, payload?
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
             <div>
                 <label htmlFor="startDate" className="block text-sm font-medium text-text-secondary">Start Date</label>
-                <FormInput type="date" name="startDate" id="startDate" value={filters.startDate} onChange={handleFilterChange} />
+                <FormInput type="date" name="startDate" id="startDate" value={filters.startDate} onChange={handleFilterChange} onFocus={() => triggerUIInteraction("Filter transactions from this date.")} onBlur={clearHint} />
             </div>
             <div>
                 <label htmlFor="endDate" className="block text-sm font-medium text-text-secondary">End Date</label>
-                <FormInput type="date" name="endDate" id="endDate" value={filters.endDate} onChange={handleFilterChange} />
+                <FormInput type="date" name="endDate" id="endDate" value={filters.endDate} onChange={handleFilterChange} onFocus={() => triggerUIInteraction("Filter transactions up to this date.")} onBlur={clearHint} />
             </div>
             <div>
                 <label htmlFor="category" className="block text-sm font-medium text-text-secondary">{viewType === TransactionType.INCOME ? 'Source' : 'Category'}</label>
-                <FormSelect name="category" id="category" value={filters.category} onChange={handleFilterChange}>
+                <FormSelect name="category" id="category" value={filters.category} onChange={handleFilterChange} onFocus={() => triggerUIInteraction("Filter by a specific category.")} onBlur={clearHint}>
                     <option value="">All</option>
                     {categoriesForFilter.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                 </FormSelect>
             </div>
             <div>
                 <label htmlFor="cropId" className="block text-sm font-medium text-text-secondary">Crop</label>
-                <FormSelect name="cropId" id="cropId" value={filters.cropId} onChange={handleFilterChange}>
+                <FormSelect name="cropId" id="cropId" value={filters.cropId} onChange={handleFilterChange} onFocus={() => triggerUIInteraction("Filter by a specific linked crop.")} onBlur={clearHint}>
                     <option value="">All</option>
                     {crops.map(crop => <option key={crop.id} value={crop.id}>{crop.name}</option>)}
                 </FormSelect>
             </div>
-            <button onClick={clearFilters} className="px-4 py-3 bg-text-secondary text-white rounded-md hover:bg-text-primary transition-colors w-full lg:w-auto">Clear Filters</button>
+            <button 
+              onClick={clearFilters} 
+              className="px-4 py-3 bg-text-secondary text-white rounded-md hover:bg-text-primary transition-colors w-full lg:w-auto"
+              onMouseEnter={() => triggerUIInteraction("Reset all filters to their defaults.")}
+              onMouseLeave={clearHint}
+            >
+              Clear Filters
+            </button>
         </div>
       </Card>
       

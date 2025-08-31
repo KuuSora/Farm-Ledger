@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useGemini } from '../hooks/useGemini';
 import { generateText, analyzeImage } from '../utils/gemini';
 import Card from '../components/Card';
+import { useFarm } from '../context/FarmContext';
 
 type AITool = 'pest-id' | 'market-trends' | 'yield-optimization' | 'crop-forecasting';
 
@@ -107,6 +108,7 @@ const ResultDisplay: React.FC<{ data: string | null; error: Error | null; loadin
 };
 
 const FarmAI: React.FC = () => {
+  const { triggerUIInteraction } = useFarm();
   const [activeTool, setActiveTool] = useState<AITool>('pest-id');
   
   // State for Pest ID
@@ -125,6 +127,8 @@ const FarmAI: React.FC = () => {
     areaUnit: 'acres',
     historicalData: ''
   });
+  
+  const clearHint = () => triggerUIInteraction(null);
 
   const imagePreview = useMemo(() => {
     if (!imageFile) return null;
@@ -192,10 +196,10 @@ Crop Details:
   }
   
   const toolConfig = {
-    'pest-id': { icon: PestIdIcon, label: 'Pest & Disease ID' },
-    'market-trends': { icon: MarketTrendsIcon, label: 'Market Trends' },
-    'yield-optimization': { icon: YieldOptimizationIcon, label: 'Yield Optimization' },
-    'crop-forecasting': { icon: YieldForecastingIcon, label: 'Yield Forecasting' },
+    'pest-id': { icon: PestIdIcon, label: 'Pest & Disease ID', hint: "Identify plant issues from a photo." },
+    'market-trends': { icon: MarketTrendsIcon, label: 'Market Trends', hint: "Get AI analysis of crop market trends." },
+    'yield-optimization': { icon: YieldOptimizationIcon, label: 'Yield Optimization', hint: "Get tips to improve crop yield." },
+    'crop-forecasting': { icon: YieldForecastingIcon, label: 'Yield Forecasting', hint: "Predict crop yield with AI." },
   }
 
   const renderTool = () => {
@@ -205,7 +209,7 @@ Crop Details:
           <>
             <p className="text-text-secondary mb-6">Upload a plant photo to identify potential issues with AI vision.</p>
             <div className="flex flex-col items-center">
-              <label htmlFor="image-upload" className="w-full max-w-md h-64 border-2 border-dashed border-gray-300 rounded-lg flex flex-col justify-center items-center cursor-pointer hover:bg-gray-100 hover:border-primary transition-colors group">
+              <label htmlFor="image-upload" className="w-full max-w-md h-64 border-2 border-dashed border-gray-300 rounded-lg flex flex-col justify-center items-center cursor-pointer hover:bg-gray-100 hover:border-primary transition-colors group" onMouseEnter={() => triggerUIInteraction("Click here to upload an image of a plant.")} onMouseLeave={clearHint}>
                 {imagePreview ? (
                   <img src={imagePreview} alt="Crop preview" className="max-h-full max-w-full object-contain rounded-lg" />
                 ) : (
@@ -217,7 +221,7 @@ Crop Details:
                 )}
               </label>
               <input id="image-upload" type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
-              <button onClick={handleAnalyzeImage} disabled={!imageFile || imageLoading} className="mt-6 px-8 py-3 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-primary-dark transition-all transform hover:scale-105 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:scale-100 disabled:shadow-none">
+              <button onClick={handleAnalyzeImage} disabled={!imageFile || imageLoading} className="mt-6 px-8 py-3 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-primary-dark transition-all transform hover:scale-105 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:scale-100 disabled:shadow-none" onMouseEnter={() => triggerUIInteraction("Send the image for AI analysis.")} onMouseLeave={clearHint}>
                 {imageLoading ? 'Analyzing...' : 'Analyze Image'}
               </button>
             </div>
@@ -248,8 +252,10 @@ Crop Details:
                         value={cropName}
                         onChange={(e) => setCropName(e.target.value)}
                         placeholder="e.g., Wheat, Corn, Soybeans"
+                        onFocus={() => triggerUIInteraction("Enter the name of the crop you're interested in.")}
+                        onBlur={clearHint}
                     />
-                    <button onClick={handleTextQuery} disabled={!cropName.trim() || textLoading} className="w-full sm:w-auto px-8 py-3 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-primary-dark transition-all transform hover:scale-105 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:scale-100 disabled:shadow-none">
+                    <button onClick={handleTextQuery} disabled={!cropName.trim() || textLoading} className="w-full sm:w-auto px-8 py-3 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-primary-dark transition-all transform hover:scale-105 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:scale-100 disabled:shadow-none" onMouseEnter={() => triggerUIInteraction("Submit your query to the AI.")} onMouseLeave={clearHint}>
                         {textLoading ? 'Thinking...' : 'Get Insights'}
                     </button>
                 </div>
@@ -274,21 +280,21 @@ Crop Details:
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                           <label htmlFor="cropType" className="block text-sm font-medium text-text-secondary mb-1">Crop Type</label>
-                          <FormInput id="cropType" name="cropType" type="text" value={forecastInputs.cropType} onChange={handleForecastInputChange} placeholder="e.g., Corn" required />
+                          <FormInput id="cropType" name="cropType" type="text" value={forecastInputs.cropType} onChange={handleForecastInputChange} placeholder="e.g., Corn" required onFocus={() => triggerUIInteraction("Enter the type of crop.")} onBlur={clearHint} />
                       </div>
                       <div>
                           <label htmlFor="plantingDate" className="block text-sm font-medium text-text-secondary mb-1">Planting Date</label>
-                          <FormInput id="plantingDate" name="plantingDate" type="date" value={forecastInputs.plantingDate} onChange={handleForecastInputChange} required />
+                          <FormInput id="plantingDate" name="plantingDate" type="date" value={forecastInputs.plantingDate} onChange={handleForecastInputChange} required onFocus={() => triggerUIInteraction("When was the crop planted?")} onBlur={clearHint} />
                       </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label htmlFor="area" className="block text-sm font-medium text-text-secondary mb-1">Area</label>
-                        <FormInput id="area" name="area" type="number" value={forecastInputs.area} onChange={handleForecastInputChange} placeholder="e.g., 100" required />
+                        <FormInput id="area" name="area" type="number" value={forecastInputs.area} onChange={handleForecastInputChange} placeholder="e.g., 100" required onFocus={() => triggerUIInteraction("Enter the total planted area.")} onBlur={clearHint} />
                     </div>
                     <div>
                         <label htmlFor="areaUnit" className="block text-sm font-medium text-text-secondary mb-1">Area Unit</label>
-                        <FormSelect id="areaUnit" name="areaUnit" value={forecastInputs.areaUnit} onChange={handleForecastInputChange}>
+                        <FormSelect id="areaUnit" name="areaUnit" value={forecastInputs.areaUnit} onChange={handleForecastInputChange} onFocus={() => triggerUIInteraction("Select the unit for the area.")} onBlur={clearHint}>
                             <option value="acres">Acres</option>
                             <option value="hectares">Hectares</option>
                         </FormSelect>
@@ -296,10 +302,10 @@ Crop Details:
                   </div>
                   <div>
                     <label htmlFor="historicalData" className="block text-sm font-medium text-text-secondary mb-1">Historical Yield / Notes (Optional)</label>
-                    <FormTextArea id="historicalData" name="historicalData" value={forecastInputs.historicalData} onChange={handleForecastInputChange} placeholder="e.g., Last year's yield was 180 bu/acre. Soil is clay loam." />
+                    <FormTextArea id="historicalData" name="historicalData" value={forecastInputs.historicalData} onChange={handleForecastInputChange} placeholder="e.g., Last year's yield was 180 bu/acre. Soil is clay loam." onFocus={() => triggerUIInteraction("Provide any past data or notes for a more accurate forecast.")} onBlur={clearHint} />
                   </div>
                   <div className="flex justify-center pt-2">
-                    <button onClick={handleYieldForecast} disabled={isFormIncomplete || textLoading} className="px-8 py-3 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-primary-dark transition-all transform hover:scale-105 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:scale-100 disabled:shadow-none">
+                    <button onClick={handleYieldForecast} disabled={isFormIncomplete || textLoading} className="px-8 py-3 bg-primary text-white font-semibold rounded-lg shadow-md hover:bg-primary-dark transition-all transform hover:scale-105 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:scale-100 disabled:shadow-none" onMouseEnter={() => triggerUIInteraction("Submit the details to get an AI yield forecast.")} onMouseLeave={clearHint}>
                         {textLoading ? 'Forecasting...' : 'Get Forecast'}
                     </button>
                   </div>
@@ -321,10 +327,12 @@ Crop Details:
     <div className="space-y-6">
       <div className="flex justify-center">
         <div className="flex flex-wrap justify-center gap-1 p-1 bg-gray-200/80 rounded-xl shadow-inner">
-            {Object.entries(toolConfig).map(([toolKey, { icon: Icon, label }]) => (
+            {Object.entries(toolConfig).map(([toolKey, { icon: Icon, label, hint }]) => (
                 <button 
                     key={toolKey}
                     onClick={() => handleToolChange(toolKey as AITool)} 
+                    onMouseEnter={() => triggerUIInteraction(hint)}
+                    onMouseLeave={clearHint}
                     className={`flex items-center gap-2 px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base font-semibold rounded-lg transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:ring-primary ${
                         activeTool === toolKey 
                         ? 'bg-white text-primary shadow' 

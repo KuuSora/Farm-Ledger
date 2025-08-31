@@ -4,6 +4,7 @@ import ExpenseBreakdownChart from '../components/charts/ExpenseBreakdownChart';
 import CropPerformanceChart from '../components/charts/CropPerformanceChart';
 import MonthlyFinancialFlowChart from '../components/charts/MonthlyFinancialFlowChart';
 import IncomeSourceBreakdownChart from '../components/charts/IncomeSourceBreakdownChart';
+import MaintenanceCostChart from '../components/charts/MaintenanceCostChart';
 import { useFarm } from '../context/FarmContext';
 
 const Reports: React.FC = () => {
@@ -42,6 +43,14 @@ const Reports: React.FC = () => {
           <div className="h-96">
               <ExpenseBreakdownChart />
           </div>
+        </Card>
+      </div>
+      <div onMouseEnter={() => triggerUIInteraction("This chart visualizes the total maintenance cost for each piece of machinery.")} onMouseLeave={clearHint} className="lg:col-span-2">
+        <Card title="Hydroponics Maintenance Costs">
+            <p className="text-text-secondary mb-4">Compare the total maintenance costs for each piece of your hydroponic machinery to identify high-cost equipment.</p>
+            <div className="h-96">
+                <MaintenanceCostChart />
+            </div>
         </Card>
       </div>
     </div>

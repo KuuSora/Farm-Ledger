@@ -1,9 +1,12 @@
-import React, { useState, useMemo } from 'react';
+
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Card from '../components/Card';
 import { useFarm } from '../context/FarmContext';
-import { Transaction, TransactionType, ToDo, Crop } from '../types';
+import { Transaction, TransactionType, ToDo, Crop, Equipment } from '../types';
 import ProfitLossSnapshotChart from '../components/charts/ProfitLossSnapshotChart';
-import { PlusCircleIcon, TrashIcon, IncomeIcon, ExpensesIcon, ReportsIcon, CropsIcon, CalendarIcon, WrenchIcon } from '../components/icons';
+import { PlusCircleIcon, TrashIcon, IncomeIcon, ExpensesIcon, ReportsIcon, CropsIcon, CalendarIcon, WrenchIcon, HydroponicsIcon, MarketTrendsIcon } from '../components/icons';
+import { useGemini } from '../hooks/useGemini';
+import { generateText } from '../utils/gemini';
 
 // --- Reusable Sub-components ---
 
@@ -64,9 +67,40 @@ const QuickActionButton: React.FC<{
     </button>
 );
 
+const MarketSnapshot: React.FC = () => {
+    const { loading, error, data, execute } = useGemini<[string], string>();
+
+    const fetchTrends = useCallback(() => {
+        const prompt = "Provide a very brief (2-3 sentences) market snapshot for a major agricultural commodity like corn, wheat, or soybeans. Focus on a recent price movement or key influencing factor.";
+        execute(generateText, prompt);
+    }, [execute]);
+
+    useEffect(() => {
+        fetchTrends();
+        const intervalId = setInterval(fetchTrends, 300000); // Refresh every 5 minutes
+        return () => clearInterval(intervalId);
+    }, [fetchTrends]);
+
+    return (
+        <Card title="Market Snapshot" className="border-2 border-secondary/50">
+            <div className="flex flex-col h-full min-h-[100px]">
+                <div className="flex-grow">
+                    {loading && !data && <p className="text-text-secondary animate-pulse">Fetching latest market trends...</p>}
+                    {error && <p className="text-red-500">Could not load market data.</p>}
+                    {data && <p className="text-text-primary">{data}</p>}
+                </div>
+                <div className="text-xs text-text-secondary mt-4 flex items-center">
+                    <MarketTrendsIcon className="w-4 h-4 mr-2 text-secondary" />
+                    <span>AI-powered insight, updated every 5 mins.</span>
+                </div>
+            </div>
+        </Card>
+    );
+};
+
 
 const Dashboard: React.FC = () => {
-  const { crops, transactions, todos, settings, toggleTodo, addTodo, deleteTodo, setViewState, triggerUIInteraction } = useFarm();
+  const { crops, transactions, todos, settings, equipment, toggleTodo, addTodo, deleteTodo, setViewState, triggerUIInteraction } = useFarm();
   const [newTodo, setNewTodo] = useState('');
 
   // --- Data Processing & Memoization ---
@@ -147,6 +181,10 @@ const Dashboard: React.FC = () => {
   
   const recentTransactions = transactions.slice(0, 5);
   
+  const maintenanceCandidates = useMemo(() => {
+      return equipment.filter(e => e.maintenanceLogs.length >= 2);
+  }, [equipment]);
+
   // --- Handlers ---
   
   const handleAddTodo = (e: React.FormEvent) => {
@@ -167,6 +205,7 @@ const Dashboard: React.FC = () => {
   const handleAddTransactionClick = (type: TransactionType) => setViewState({ view: 'transactions', type, payload: { openForm: true } });
   const handleCropClick = (crop: Crop) => setViewState({ view: 'crops', payload: { detailedCropId: crop.id } });
   const handleTransactionClick = (tx: Transaction) => setViewState({ view: 'transactions', type: tx.type, payload: { selectedTransactionId: tx.id } });
+  const handleEquipmentClick = (item: Equipment) => setViewState({ view: 'equipment', payload: { detailedEquipmentId: item.id } });
   const clearHint = () => triggerUIInteraction(null);
 
   return (
@@ -258,6 +297,7 @@ const Dashboard: React.FC = () => {
 
         {/* Right Column */}
         <div className="xl:col-span-2 space-y-6">
+          <MarketSnapshot />
           <Card title="Upcoming Events & Tasks">
               <div className="space-y-3 max-h-96 overflow-y-auto" onMouseEnter={() => triggerUIInteraction("A combined list of your upcoming harvests and to-do items.")} onMouseLeave={clearHint}>
                 {upcomingEvents.length > 0 ? (
@@ -317,12 +357,25 @@ const Dashboard: React.FC = () => {
           </Card>
           <Card title="Maintenance Alerts">
                 <div className="space-y-3 max-h-48 overflow-y-auto" onMouseEnter={() => triggerUIInteraction("AI-powered alerts for upcoming equipment maintenance.")} onMouseLeave={clearHint}>
-                    <div className="text-center text-text-secondary py-8">
-                        <WrenchIcon className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-                        <p>No maintenance predictions yet.</p>
-                        <p className="text-xs">Log maintenance to enable AI analysis.</p>
-                    </div>
-                    {/* Maintenance alerts will be populated here by the AI */}
+                   {maintenanceCandidates.length > 0 ? (
+                        maintenanceCandidates.map(item => (
+                            <div key={item.id} onClick={() => handleEquipmentClick(item)} className="flex items-start p-3 bg-blue-50 rounded-lg group cursor-pointer hover:bg-blue-100">
+                                <div className="p-2 bg-blue-500/10 rounded-full mr-3">
+                                    <HydroponicsIcon className="w-5 h-5 text-blue-600"/>
+                                </div>
+                                <div className="flex-grow">
+                                    <p className="font-semibold text-text-primary group-hover:text-blue-700">{item.name}</p>
+                                    <p className="text-sm text-text-secondary">{item.maintenanceLogs.length} logs recorded. Ready for AI analysis.</p>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="text-center text-text-secondary py-8">
+                            <WrenchIcon className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                            <p>No maintenance predictions yet.</p>
+                            <p className="text-xs">Log 2+ maintenance events on a machine to enable AI analysis.</p>
+                        </div>
+                    )}
                 </div>
           </Card>
         </div>

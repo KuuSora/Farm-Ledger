@@ -55,4 +55,13 @@ export interface ToDo {
   completed: boolean;
 }
 
+export interface Notification {
+  id: string;
+  message: string;
+  link?: string; // Can be used to navigate to a specific item, e.g., an equipment ID
+  read: boolean;
+  seen: boolean;
+  timestamp: string; // ISO string
+}
+
 export type View = 'dashboard' | 'crops' | 'transactions' | 'reports' | 'settings' | 'summary' | 'farm-ai' | 'equipment';
