@@ -1,0 +1,7 @@
+{
+  "name": "Farm Ledger",
+  "description": "A simple and intuitive application to help farmers track their harvest, income, and expenses, providing a clear overview of their farm's financial health.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

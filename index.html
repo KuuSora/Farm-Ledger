@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Farm Ledger</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'primary': '#558B2F', // A deep, earthy green
+              'primary-dark': '#33691E',
+              'secondary': '#F59E0B', // Amber 500
+              'background': '#F9FAF5', // A very light, warm off-white
+              'card': '#FFFFFF',
+              'text-primary': '#374151', // Gray 700
+              'text-secondary': '#6B7280', // Gray 500
+            },
+          },
+        },
+      }
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "recharts": "https://aistudiocdn.com/recharts@^3.1.2",
+    "jspdf": "https://esm.sh/jspdf@2.5.1",
+    "html2canvas": "https://esm.sh/html2canvas@1.4.1",
+    "@google/genai": "https://esm.sh/@google/genai"
+  }
+}
+</script>
+<style>
+      @media print {
+        @page {
+            size: A4;
+            margin: 0.75in;
+        }
+
+        body {
+          background-color: #ffffff !important;
+          font-family: 'Times New Roman', Times, serif;
+          color: #000;
+          font-size: 11pt;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
+        nav, header, .no-print {
+          display: none !important;
+        }
+
+        main, main > div, .printable-content, .printable-content * {
+            padding: 0 !important;
+            margin: 0 !important;
+            overflow: visible !important;
+            height: auto !important;
+            box-shadow: none !important;
+            border: none !important;
+            background: transparent !important;
+            color: #000 !important;
+        }
+        
+        section {
+            page-break-inside: avoid;
+            margin-top: 1.5rem;
+        }
+        
+        section h3 {
+            font-size: 14pt;
+            font-weight: bold;
+            border-bottom: 2px solid #333;
+            padding-bottom: 0.25rem;
+            margin-bottom: 1rem;
+        }
+
+        table {
+            page-break-inside: auto;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+
+        thead {
+            display: table-header-group;
+        }
+        
+        .financial-summary-table td {
+            padding: 0.5rem 0.25rem;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .financial-summary-table tr:last-child td {
+            border-bottom: none;
+            border-top: 2px solid #000;
+            font-weight: bold;
+            padding-top: 0.5rem;
+        }
+        
+        .printable-table {
+            font-size: 11pt;
+        }
+
+        .printable-table th,
+        .printable-table td {
+            padding: 8px 4px;
+            text-align: left;
+            vertical-align: top;
+            border: none;
+        }
+
+        .printable-table thead th {
+            font-weight: bold;
+            border-bottom: 2px solid #000;
+        }
+
+        .printable-table tbody tr {
+            border-bottom: 1px solid #ccc;
+        }
+        
+        .printable-table tbody tr:last-child {
+            border-bottom: none;
+        }
+      }
+    </style>
+</head>
+  <body class="bg-background text-text-primary">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
