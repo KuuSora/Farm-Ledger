@@ -1,3 +1,4 @@
+
 import React from 'react';
 import SideNav from './components/SideNav';
 import Dashboard from './views/Dashboard';
@@ -7,9 +8,11 @@ import Reports from './views/Reports';
 import Settings from './views/Settings';
 import Summary from './views/Summary';
 import FarmAI from './views/FarmAI';
+import Equipment from './views/Equipment';
 import Header from './components/Header';
 import { View, TransactionType } from './types';
 import { useFarm } from './context/FarmContext';
+import FloatingAIChat from './components/FloatingAIChat';
 
 const App: React.FC = () => {
   const { viewState } = useFarm();
@@ -34,6 +37,8 @@ const App: React.FC = () => {
         return <Summary />;
       case 'farm-ai':
         return <FarmAI />;
+      case 'equipment':
+        return <Equipment key={key} payload={payload} />;
       default:
         return <Dashboard />;
     }
@@ -42,6 +47,7 @@ const App: React.FC = () => {
   const viewTitles: { [key in View]: string } = {
     dashboard: 'Dashboard',
     crops: 'Crops & Fields',
+    equipment: 'Equipment',
     transactions: viewState.type === TransactionType.INCOME ? 'Income' : 'Expenses',
     reports: 'Reports',
     settings: 'Settings',
@@ -59,6 +65,7 @@ const App: React.FC = () => {
           {renderView()}
         </div>
       </main>
+      <FloatingAIChat />
     </div>
   );
 };

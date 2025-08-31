@@ -18,6 +18,7 @@ const FormTextArea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement>> 
 
 
 const CropForm: React.FC<{ crop?: Crop; onSave: (crop: Crop | Omit<Crop, 'id'>) => void; onCancel: () => void; }> = ({ crop, onSave, onCancel }) => {
+  const { setFormInputContext, triggerUIInteraction } = useFarm();
   const [formData, setFormData] = useState<Omit<Crop, 'id'>>({
     name: crop?.name ?? '',
     plantingDate: crop?.plantingDate ? crop.plantingDate.split('T')[0] : '',
@@ -29,6 +30,19 @@ const CropForm: React.FC<{ crop?: Crop; onSave: (crop: Crop | Omit<Crop, 'id'>) 
     yieldUnit: crop?.yieldUnit ?? undefined,
     notes: crop?.notes ?? ''
   });
+  
+  useEffect(() => {
+    setFormInputContext({ type: 'CropForm', data: formData });
+    // Cleanup on unmount
+    return () => {
+      setFormInputContext(null);
+    };
+  }, []);
+  
+  useEffect(() => {
+    setFormInputContext({ type: 'CropForm', data: formData });
+  }, [formData, setFormInputContext]);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -66,6 +80,8 @@ const CropForm: React.FC<{ crop?: Crop; onSave: (crop: Crop | Omit<Crop, 'id'>) 
     }
   };
 
+  const clearHint = () => triggerUIInteraction(null);
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-card p-8 rounded-xl shadow-2xl w-full max-w-lg max-h-screen overflow-y-auto">
@@ -73,30 +89,36 @@ const CropForm: React.FC<{ crop?: Crop; onSave: (crop: Crop | Omit<Crop, 'id'>) 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="crop-name" className="block text-sm font-medium text-text-secondary mb-1">Crop Name</label>
-            <FormInput id="crop-name" type="text" name="name" value={formData.name} onChange={handleChange} placeholder="e.g., Wheat - Field 1" required />
+            <FormInput id="crop-name" type="text" name="name" value={formData.name} onChange={handleChange} placeholder="e.g., Wheat - Field 1" required 
+              onFocus={() => triggerUIInteraction('Give your crop a descriptive name.')} onBlur={clearHint} />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label htmlFor="planting-date" className="block text-sm font-medium text-text-secondary mb-1">Planting Date</label>
-              <FormInput id="planting-date" type="date" name="plantingDate" value={formData.plantingDate} onChange={handleChange} required />
+              <FormInput id="planting-date" type="date" name="plantingDate" value={formData.plantingDate} onChange={handleChange} required 
+                onFocus={() => triggerUIInteraction('When was this crop planted?')} onBlur={clearHint} />
             </div>
             <div>
               <label htmlFor="estimated-harvest-date" className="block text-sm font-medium text-text-secondary mb-1">Estimated Harvest Date</label>
-              <FormInput id="estimated-harvest-date" type="date" name="estimatedHarvestDate" value={formData.estimatedHarvestDate} onChange={handleChange} required />
+              <FormInput id="estimated-harvest-date" type="date" name="estimatedHarvestDate" value={formData.estimatedHarvestDate} onChange={handleChange} required 
+                onFocus={() => triggerUIInteraction('When do you expect to harvest?')} onBlur={clearHint} />
             </div>
           </div>
            <div>
               <label htmlFor="actual-harvest-date" className="block text-sm font-medium text-text-secondary mb-1">Actual Harvest Date (Optional)</label>
-              <FormInput id="actual-harvest-date" type="date" name="actualHarvestDate" value={formData.actualHarvestDate ?? ''} onChange={handleChange} />
+              <FormInput id="actual-harvest-date" type="date" name="actualHarvestDate" value={formData.actualHarvestDate ?? ''} onChange={handleChange} 
+                onFocus={() => triggerUIInteraction('You can fill this in after the harvest.')} onBlur={clearHint} />
             </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label htmlFor="area" className="block text-sm font-medium text-text-secondary mb-1">Area</label>
-              <FormInput id="area" type="number" step="any" name="area" value={formData.area} onChange={handleChange} placeholder="e.g., 50" required />
+              <FormInput id="area" type="number" step="any" name="area" value={formData.area} onChange={handleChange} placeholder="e.g., 50" required 
+                onFocus={() => triggerUIInteraction('How large is the planted area?')} onBlur={clearHint} />
             </div>
             <div>
               <label htmlFor="area-unit" className="block text-sm font-medium text-text-secondary mb-1">Area Unit</label>
-              <FormSelect id="area-unit" name="areaUnit" value={formData.areaUnit} onChange={handleChange}>
+              <FormSelect id="area-unit" name="areaUnit" value={formData.areaUnit} onChange={handleChange}
+                onFocus={() => triggerUIInteraction('Choose the unit of measurement for the area.')} onBlur={clearHint}>
                 <option value="acres">Acres</option>
                 <option value="hectares">Hectares</option>
               </FormSelect>
@@ -105,16 +127,19 @@ const CropForm: React.FC<{ crop?: Crop; onSave: (crop: Crop | Omit<Crop, 'id'>) 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label htmlFor="yield-amount" className="block text-sm font-medium text-text-secondary mb-1">Yield Amount (Optional)</label>
-              <FormInput id="yield-amount" type="number" step="any" name="yieldAmount" value={formData.yieldAmount ?? ''} onChange={handleChange} placeholder="e.g., 500" />
+              <FormInput id="yield-amount" type="number" step="any" name="yieldAmount" value={formData.yieldAmount ?? ''} onChange={handleChange} placeholder="e.g., 500" 
+                onFocus={() => triggerUIInteraction('How much did you harvest?')} onBlur={clearHint} />
             </div>
             <div>
                <label htmlFor="yield-unit" className="block text-sm font-medium text-text-secondary mb-1">Yield Unit (Optional)</label>
-              <FormInput id="yield-unit" type="text" name="yieldUnit" value={formData.yieldUnit ?? ''} onChange={handleChange} placeholder="e.g., bushels" />
+              <FormInput id="yield-unit" type="text" name="yieldUnit" value={formData.yieldUnit ?? ''} onChange={handleChange} placeholder="e.g., bushels" 
+                onFocus={() => triggerUIInteraction('What is the unit of yield? (e.g., bushels, tonnes)')} onBlur={clearHint} />
             </div>
           </div>
           <div>
             <label htmlFor="notes" className="block text-sm font-medium text-text-secondary mb-1">Notes (Optional)</label>
-           <FormTextArea id="notes" name="notes" value={formData.notes ?? ''} onChange={handleChange} placeholder="e.g., weather conditions, pest issues" />
+           <FormTextArea id="notes" name="notes" value={formData.notes ?? ''} onChange={handleChange} placeholder="e.g., weather conditions, pest issues" 
+            onFocus={() => triggerUIInteraction('Add any relevant notes about this crop.')} onBlur={clearHint} />
           </div>
           <div className="flex justify-end space-x-4 pt-4">
             <button type="button" onClick={onCancel} className="px-6 py-2 rounded-lg text-text-secondary bg-gray-200 hover:bg-gray-300 transition-colors">Cancel</button>
@@ -128,7 +153,7 @@ const CropForm: React.FC<{ crop?: Crop; onSave: (crop: Crop | Omit<Crop, 'id'>) 
 
 
 const Crops: React.FC<{ payload?: any }> = ({ payload }) => {
-  const { crops, addCrop, updateCrop, deleteCrop, transactions, settings } = useFarm();
+  const { crops, addCrop, updateCrop, deleteCrop, transactions, settings, triggerUIInteraction } = useFarm();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedCrop, setSelectedCrop] = useState<Crop | undefined>(undefined);
   const [detailedCrop, setDetailedCrop] = useState<Crop | null>(null);
@@ -160,6 +185,8 @@ const Crops: React.FC<{ payload?: any }> = ({ payload }) => {
     setSelectedCrop(undefined);
   };
   
+  const clearHint = () => triggerUIInteraction(null);
+
   if (detailedCrop) {
       const relatedTransactions = transactions.filter(t => t.cropId === detailedCrop.id);
       const formatCurrency = (amount: number) => {
@@ -212,7 +239,12 @@ const Crops: React.FC<{ payload?: any }> = ({ payload }) => {
   return (
     <div>
       <div className="flex justify-end mb-6">
-        <button onClick={() => { setSelectedCrop(undefined); setIsFormOpen(true); }} className="flex items-center text-lg px-6 py-3 rounded-lg text-white bg-primary hover:bg-primary-dark shadow-md transition-transform transform hover:scale-105">
+        <button 
+          onClick={() => { setSelectedCrop(undefined); setIsFormOpen(true); }} 
+          className="flex items-center text-lg px-6 py-3 rounded-lg text-white bg-primary hover:bg-primary-dark shadow-md transition-transform transform hover:scale-105"
+          onMouseEnter={() => triggerUIInteraction("Click to open the form for a new crop.")}
+          onMouseLeave={clearHint}
+        >
           <PlusCircleIcon className="w-6 h-6 mr-2" />
           Add New Crop
         </button>
@@ -233,7 +265,13 @@ const Crops: React.FC<{ payload?: any }> = ({ payload }) => {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {crops.map(crop => (
-              <tr key={crop.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => setDetailedCrop(crop)}>
+              <tr 
+                key={crop.id} 
+                className="hover:bg-gray-50 cursor-pointer" 
+                onClick={() => setDetailedCrop(crop)}
+                onMouseEnter={() => triggerUIInteraction(`View details for ${crop.name}.`)}
+                onMouseLeave={clearHint}
+              >
                 <td className="p-4 text-text-primary font-medium">{crop.name}</td>
                 <td className="p-4 text-text-secondary">{new Date(crop.plantingDate).toLocaleDateString()}</td>
                 <td className="p-4 text-text-secondary">{new Date(crop.estimatedHarvestDate).toLocaleDateString()}</td>

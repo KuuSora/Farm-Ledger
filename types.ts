@@ -26,6 +26,22 @@ export interface Crop {
   notes?: string;
 }
 
+export interface MaintenanceLog {
+  id: string;
+  date: string; // ISO string
+  description: string;
+  cost: number;
+}
+
+export interface Equipment {
+  id: string;
+  name: string;
+  purchaseDate: string; // ISO string
+  model?: string;
+  notes?: string;
+  maintenanceLogs: MaintenanceLog[];
+}
+
 export interface Settings {
   farmName: string;
   currency: string;
@@ -39,4 +55,4 @@ export interface ToDo {
   completed: boolean;
 }
 
-export type View = 'dashboard' | 'crops' | 'transactions' | 'reports' | 'settings' | 'summary' | 'farm-ai';
+export type View = 'dashboard' | 'crops' | 'transactions' | 'reports' | 'settings' | 'summary' | 'farm-ai' | 'equipment';

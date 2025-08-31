@@ -19,7 +19,7 @@ const TransactionForm: React.FC<{
   onSave: (transaction: Transaction | Omit<Transaction, 'id'>) => void;
   onCancel: () => void;
 }> = ({ transaction, type, onSave, onCancel }) => {
-  const { settings, crops } = useFarm();
+  const { settings, crops, setFormInputContext, triggerUIInteraction } = useFarm();
   const [formData, setFormData] = useState({
     amount: transaction?.amount ?? '',
     date: transaction?.date ? transaction.date.split('T')[0] : new Date().toISOString().split('T')[0],
@@ -30,6 +30,18 @@ const TransactionForm: React.FC<{
   const [error, setError] = useState('');
 
   const categories = type === TransactionType.INCOME ? settings.incomeCategories : settings.expenseCategories;
+
+  useEffect(() => {
+    setFormInputContext({ type: 'TransactionForm', transactionType: type, data: formData });
+    // Cleanup on unmount
+    return () => {
+      setFormInputContext(null);
+    };
+  }, []);
+
+  useEffect(() => {
+    setFormInputContext({ type: 'TransactionForm', transactionType: type, data: formData });
+  }, [formData, type, setFormInputContext]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -59,22 +71,29 @@ const TransactionForm: React.FC<{
     }
   };
 
+  const clearHint = () => triggerUIInteraction(null);
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-card p-8 rounded-xl shadow-2xl w-full max-w-lg">
         <h2 className="text-2xl font-bold mb-6 text-text-primary">{transaction ? 'Edit' : 'Add'} {type === TransactionType.INCOME ? 'Income' : 'Expense'}</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <FormInput type="number" step="any" name="amount" value={formData.amount} onChange={handleChange} placeholder="Amount" required />
-          <FormInput type="date" name="date" value={formData.date} onChange={handleChange} required />
-          <FormInput type="text" name="description" value={formData.description} onChange={handleChange} placeholder="Description" required />
+          <FormInput type="number" step="any" name="amount" value={formData.amount} onChange={handleChange} placeholder="Amount" required 
+            onFocus={() => triggerUIInteraction(`Enter the total ${type.toLowerCase()} amount.`)} onBlur={clearHint} />
+          <FormInput type="date" name="date" value={formData.date} onChange={handleChange} required 
+            onFocus={() => triggerUIInteraction('When did this transaction occur?')} onBlur={clearHint} />
+          <FormInput type="text" name="description" value={formData.description} onChange={handleChange} placeholder="Description" required 
+            onFocus={() => triggerUIInteraction('Provide a brief description of the transaction.')} onBlur={clearHint} />
           <div>
-            <FormSelect name="category" value={formData.category} onChange={handleChange} required className={`${error ? 'border-red-500' : ''}`}>
+            <FormSelect name="category" value={formData.category} onChange={handleChange} required className={`${error ? 'border-red-500' : ''}`}
+              onFocus={() => triggerUIInteraction('Select the most appropriate category.')} onBlur={clearHint}>
               <option value="" disabled>{type === TransactionType.INCOME ? 'Select Source' : 'Select Category'}</option>
               {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
             </FormSelect>
             {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
           </div>
-          <FormSelect name="cropId" value={formData.cropId} onChange={handleChange}>
+          <FormSelect name="cropId" value={formData.cropId} onChange={handleChange}
+            onFocus={() => triggerUIInteraction('You can link this transaction to a specific crop.')} onBlur={clearHint}>
             <option value="">Link to Crop (Optional)</option>
             {crops.map(crop => <option key={crop.id} value={crop.id}>{crop.name}</option>)}
           </FormSelect>
@@ -89,7 +108,7 @@ const TransactionForm: React.FC<{
 };
 
 const Transactions: React.FC<{ defaultTransactionType: TransactionType, payload?: any }> = ({ defaultTransactionType, payload }) => {
-  const { transactions, addTransaction, updateTransaction, deleteTransaction, settings, crops } = useFarm();
+  const { transactions, addTransaction, updateTransaction, deleteTransaction, settings, crops, triggerUIInteraction } = useFarm();
   const [viewType, setViewType] = useState<TransactionType>(defaultTransactionType);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | undefined>(undefined);
@@ -160,6 +179,7 @@ const Transactions: React.FC<{ defaultTransactionType: TransactionType, payload?
   };
   
   const categoriesForFilter = viewType === TransactionType.INCOME ? settings.incomeCategories : settings.expenseCategories;
+  const clearHint = () => triggerUIInteraction(null);
 
   return (
     <div className="space-y-6">
@@ -168,7 +188,12 @@ const Transactions: React.FC<{ defaultTransactionType: TransactionType, payload?
           <button onClick={() => handleViewTypeChange(TransactionType.INCOME)} className={`px-4 py-2 text-lg rounded-md transition-colors ${viewType === TransactionType.INCOME ? 'bg-white shadow text-primary' : 'text-text-secondary hover:bg-white/50'}`}>Income</button>
           <button onClick={() => handleViewTypeChange(TransactionType.EXPENSE)} className={`px-4 py-2 text-lg rounded-md transition-colors ${viewType === TransactionType.EXPENSE ? 'bg-white shadow text-primary' : 'text-text-secondary hover:bg-white/50'}`}>Expenses</button>
         </div>
-        <button onClick={() => { setSelectedTransaction(undefined); setIsFormOpen(true); }} className="flex items-center text-lg px-6 py-3 rounded-lg text-white bg-primary hover:bg-primary-dark shadow-md transition-transform transform hover:scale-105 w-full sm:w-auto">
+        <button 
+          onClick={() => { setSelectedTransaction(undefined); setIsFormOpen(true); }} 
+          className="flex items-center text-lg px-6 py-3 rounded-lg text-white bg-primary hover:bg-primary-dark shadow-md transition-transform transform hover:scale-105 w-full sm:w-auto"
+          onMouseEnter={() => triggerUIInteraction("Click to open the form for a new transaction.")}
+          onMouseLeave={clearHint}
+        >
           <PlusCircleIcon className="w-6 h-6 mr-2" />
           Add New {viewType === TransactionType.INCOME ? 'Income' : 'Expense'}
         </button>

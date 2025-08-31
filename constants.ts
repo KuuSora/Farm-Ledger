@@ -1,5 +1,5 @@
 
-import { Settings, Crop, Transaction, ToDo, TransactionType } from './types';
+import { Settings, Crop, Transaction, ToDo, TransactionType, Equipment } from './types';
 
 export const DEFAULT_INCOME_CATEGORIES = [
   "Crop Sale",
@@ -89,4 +89,25 @@ export const MOCK_TODOS: ToDo[] = [
     { id: 'todo-1', task: 'Fertilize Field 3', completed: false },
     { id: 'todo-2', task: 'Order new seeds for next season', completed: false },
     { id: 'todo-3', task: 'Service the harvester', completed: true },
+];
+
+export const MOCK_EQUIPMENT: Equipment[] = [
+    {
+        id: 'equip-1',
+        name: 'John Deere 8R 370 Tractor',
+        purchaseDate: new Date(new Date().setFullYear(new Date().getFullYear() - 2)).toISOString(),
+        model: '8R 370',
+        maintenanceLogs: [
+            { id: 'log-1', date: new Date(new Date().setMonth(new Date().getMonth() - 12)).toISOString(), description: '500-hour service (oil & filters)', cost: 450 },
+            { id: 'log-2', date: new Date(new Date().setMonth(new Date().getMonth() - 6)).toISOString(), description: '1000-hour service (full fluid check, filters)', cost: 800 },
+            { id: 'log-3', date: new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString(), description: 'Tire rotation and pressure check', cost: 150 },
+        ]
+    },
+    {
+        id: 'equip-2',
+        name: 'Case IH 8250 Combine',
+        purchaseDate: new Date(new Date().setFullYear(new Date().getFullYear() - 3)).toISOString(),
+        model: 'Axial-Flow 8250',
+        maintenanceLogs: []
+    }
 ];

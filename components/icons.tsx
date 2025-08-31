@@ -84,7 +84,60 @@ export const PDFIcon: React.FC<IconProps> = ({ className }) => (
 );
 
 export const FarmAIIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="currentColor">
+        <defs>
+            <radialGradient id="dandelionGradient" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0%" stopColor="#FFFFFF" stopOpacity="1" />
+                <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.8" />
+            </radialGradient>
+        </defs>
+        <path d="M15.5 8.5 A1 1 0 0 1 14.5 9.5 A1 1 0 0 1 13.5 8.5 A1 1 0 0 1 15.5 8.5 Z" fill="url(#dandelionGradient)" />
+        <path d="M17.2 9.8 A1 1 0 0 1 16.2 10.8 A1 1 0 0 1 15.2 9.8 A1 1 0 0 1 17.2 9.8 Z" fill="url(#dandelionGradient)" />
+        <path d="M16.5 12 A1 1 0 0 1 15.5 13 A1 1 0 0 1 14.5 12 A1 1 0 0 1 16.5 12 Z" fill="url(#dandelionGradient)" />
+        <path d="M14 11 A1 1 0 0 1 13 12 A1 1 0 0 1 12 11 A1 1 0 0 1 14 11 Z" fill="url(#dandelionGradient)" />
+        <path d="M18 11.5 A1 1 0 0 1 17 12.5 A1 1 0 0 1 16 11.5 A1 1 0 0 1 18 11.5 Z" fill="url(#dandelionGradient)" />
+        <path d="M13.5,22 C13.5,22 15,18 12,16 C9,14 11,10 11,10 C11,10 10.5,8.5 9,8 C7.5,7.5 6,9 6,9 C6,9 5,10.5 4,11 C3,11.5 2,11 2,11 C2,11 3.5,15 6.5,17 C9.5,19 13.5,22 13.5,22 Z" fill="#558B2F" opacity="0.8" />
+        <path d="M13.5,12 C13.5,12 14,13.5 15,14 C16,14.5 16,13 16,13 L15,11 L13.5,12 Z" fill="#33691E" />
+        <path d="M10,13 C10,13 10,15 11.5,15.5 C13,16 13,14 13,14 L11.5,13 L10,13 Z" fill="#33691E" />
+        <circle cx="9.5" cy="7" r="1.5" fill="#F9FAF5" />
+        <circle cx="9.5" cy="7" r="0.5" fill="#374151" />
+        <path d="M13.5 14 L13 19" stroke="#33691E" strokeWidth="0.5" strokeLinecap="round" />
+        <path d="M12 11.5 a0.5 0.5 0 1 0 1 0 a0.5 0.5 0 1 0 -1 0" fill="#F59E0B" />
+        <path d="M16 10.5 a0.5 0.5 0 1 0 1 0 a0.5 0.5 0 1 0 -1 0" fill="#F59E0B" />
+        <path d="M15 12.5 a0.5 0.5 0 1 0 1 0 a0.5 0.5 0 1 0 -1 0" fill="#F59E0B" />
+        <path d="M14.5 9 a0.5 0.5 0 1 0 1 0 a0.5 0.5 0 1 0 -1 0" fill="#F59E0B" />
+    </svg>
+);
+
+
+export const CalendarIcon: React.FC<IconProps> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L10 17l-4 4 1.5-7.5L15 3z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    </svg>
+);
+
+export const CloseIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+);
+
+export const SendIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+    </svg>
+);
+
+export const EquipmentIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7.014A8.003 8.003 0 0117.657 18.657z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 11.879A3 3 0 1014.12 7.636L12 10" />
+    </svg>
+);
+
+export const WrenchIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35A1.724 1.724 0 005.69 6.707c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
     </svg>
 );
