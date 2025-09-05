@@ -27,16 +27,16 @@ const NavItem: React.FC<NavItemProps> = ({
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      className={`flex items-center h-12 rounded-lg cursor-pointer px-2 transition-all duration-200 group ${
+      className={`flex items-center h-12 rounded-lg cursor-pointer px-3 transition-all duration-200 group ${
         isActive
-          ? 'bg-primary text-white shadow-md'
-          : 'text-text-secondary hover:bg-gray-100 hover:text-primary'
+          ? "bg-primary text-white shadow-md"
+          : "text-text-secondary hover:bg-gray-100 hover:text-primary"
       }`}
     >
       <div className="w-6 h-6 mr-2 flex-shrink-0">{icon}</div>
       <span
         className={`whitespace-nowrap font-medium transition-all duration-200 ${
-          isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'
+          isExpanded ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2"
         }`}
       >
         {label}
@@ -70,57 +70,59 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
 
   const handleNav = (view: View, type?: TransactionType) => {
     setViewState({ view, type });
-    setIsMobileOpen(false);
+    setIsMobileOpen(false); // close on mobile after click
   };
 
   const clearHint = () => triggerUIInteraction(null);
 
   const navItems = [
-    { view: 'dashboard', label: 'Dashboard', icon: <DashboardIcon />, hint: 'Get a quick overview of your farm.' },
-    { view: 'crops', label: 'Crops', icon: <CropsIcon />, hint: 'Manage your crops and fields.' },
-    { view: 'equipment', label: 'Hydroponics', icon: <HydroponicsIcon />, hint: 'Track your hydroponic machinery.' },
-    { view: 'transactions', type: TransactionType.INCOME, label: 'Income', icon: <IncomeIcon />, hint: 'Log and view all income.' },
-    { view: 'transactions', type: TransactionType.EXPENSE, label: 'Expenses', icon: <ExpensesIcon />, hint: 'Log and view all expenses.' },
-    { view: 'reports', label: 'Reports', icon: <ReportsIcon />, hint: 'Analyze your farm\'s performance.' },
-    { view: 'summary', label: 'Summary', icon: <DocumentIcon />, hint: 'Generate printable summaries.' },
-    { view: 'farm-ai', label: 'Farm AI', icon: <FarmAIIcon />, hint: 'Use AI-powered tools for your farm.' },
+    { view: "dashboard", label: "Dashboard", icon: <DashboardIcon />, hint: "Get a quick overview of your farm." },
+    { view: "crops", label: "Crops", icon: <CropsIcon />, hint: "Manage your crops and fields." },
+    { view: "equipment", label: "Hydroponics", icon: <HydroponicsIcon />, hint: "Track your hydroponic machinery." },
+    { view: "transactions", type: TransactionType.INCOME, label: "Income", icon: <IncomeIcon />, hint: "Log and view all income." },
+    { view: "transactions", type: TransactionType.EXPENSE, label: "Expenses", icon: <ExpensesIcon />, hint: "Log and view all expenses." },
+    { view: "reports", label: "Reports", icon: <ReportsIcon />, hint: "Analyze your farm's performance." },
+    { view: "summary", label: "Summary", icon: <DocumentIcon />, hint: "Generate printable summaries." },
+    { view: "farm-ai", label: "Farm AI", icon: <FarmAIIcon />, hint: "Use AI-powered tools for your farm." },
   ];
 
   const settingsItem = {
-    view: 'settings',
-    label: 'Settings',
+    view: "settings",
+    label: "Settings",
     icon: <SettingsIcon />,
-    hint: 'Configure your app settings.',
+    hint: "Configure your app settings.",
   };
 
   return (
     <>
-      {/* ✅ Mobile Toggle */}
-      <button
-        className="md:hidden fixed top-4 left-4 z-50 bg-primary text-white p-3 rounded-lg shadow-md focus:outline-none"
-        onClick={() => setIsMobileOpen(!isMobileOpen)}
-      >
-        {isMobileOpen ? '✖' : '☰'}
-      </button>
-
       {/* ✅ Sidebar */}
       <nav
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         className={`fixed top-0 left-0 h-screen flex flex-col bg-card border-r border-gray-200/80 shadow-md transition-all duration-300 ease-in-out z-40
-          ${isHovered ? 'w-56' : 'w-16'}
-          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
+          ${isHovered ? "w-56" : "w-16"}
+          ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
       >
-        {/* Logo / Title */}
-        <div className="flex items-center h-16 border-b border-gray-200/80 px-3">
-          <CropsIcon className="w-8 h-8 text-primary flex-shrink-0" />
-          <span
-            className={`ml-2 text-lg font-bold text-primary whitespace-nowrap transition-all duration-300 ${
-              isHovered ? 'opacity-100' : 'opacity-0'
-            }`}
+        {/* Logo / Title with Menu Button */}
+        <div className="flex items-center justify-between h-16 border-b border-gray-200/80 px-3">
+          <div className="flex items-center">
+            <CropsIcon className="w-8 h-8 text-primary flex-shrink-0" />
+            <span
+              className={`ml-2 text-lg font-bold text-primary whitespace-nowrap transition-all duration-300 ${
+                isHovered || isMobileOpen ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              FARMY's LEDGER
+            </span>
+          </div>
+
+          {/* ✅ Mobile Toggle beside title */}
+          <button
+            className="md:hidden text-primary text-2xl focus:outline-none"
+            onClick={() => setIsMobileOpen(!isMobileOpen)}
           >
-            FARMY's LEDGER
-          </span>
+            {isMobileOpen ? "✖" : "☰"}
+          </button>
         </div>
 
         {/* Menu */}
