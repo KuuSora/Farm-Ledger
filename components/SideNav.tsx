@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { View, TransactionType } from '../types';
-import {DashboardIcon, CropsIcon, IncomeIcon, ExpensesIcon, ReportsIcon, SettingsIcon, DocumentIcon, FarmAIIcon, HydroponicsIcon,} from './icons';
-import { useFarm } from '../context/FarmContext';
+import React, { useState } from "react";
+import { View, TransactionType } from "../types";
+import { DashboardIcon, CropsIcon, IncomeIcon, ExpensesIcon, ReportsIcon, SettingsIcon, DocumentIcon, FarmAIIcon, HydroponicsIcon,} from "./icons";
+import { useFarm } from "../context/FarmContext";
 
 interface NavItemProps {
   icon: React.ReactNode;
@@ -70,7 +70,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
 
   const handleNav = (view: View, type?: TransactionType) => {
     setViewState({ view, type });
-    setIsMobileOpen(false); // close on mobile after click
+    setIsMobileOpen(false); // close sidebar after click on mobile
   };
 
   const clearHint = () => triggerUIInteraction(null);
@@ -103,7 +103,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           ${isHovered ? "w-56" : "w-16"}
           ${isMobileOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
       >
-        {/* Logo / Title with Menu Button */}
+        {/* ✅ Logo + Mobile Toggle inside header */}
         <div className="flex items-center justify-between h-16 border-b border-gray-200/80 px-3">
           <div className="flex items-center">
             <CropsIcon className="w-8 h-8 text-primary flex-shrink-0" />
@@ -116,7 +116,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
             </span>
           </div>
 
-          {/* ✅ Mobile Toggle beside title */}
+          {/* Mobile Toggle */}
           <button
             className="md:hidden text-primary text-2xl focus:outline-none"
             onClick={() => setIsMobileOpen(!isMobileOpen)}
@@ -125,7 +125,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           </button>
         </div>
 
-        {/* Menu */}
+        {/* ✅ Menu */}
         <ul className="flex-1 px-2 py-3 space-y-1 overflow-y-auto">
           {navItems.map((item) => (
             <NavItem
@@ -144,7 +144,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           ))}
         </ul>
 
-        {/* Footer / Settings */}
+        {/* ✅ Footer / Settings */}
         <div className="px-2 py-3 border-t border-gray-200/80">
           <NavItem
             label={settingsItem.label}
@@ -158,7 +158,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
         </div>
       </nav>
 
-      {/* ✅ Overlay for mobile */}
+      {/* ✅ Dark overlay when sidebar open on mobile */}
       {isMobileOpen && (
         <div
           className="fixed inset-0 bg-black/40 z-30 md:hidden"
@@ -170,3 +170,4 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
 };
 
 export default SideNav;
+                                       
