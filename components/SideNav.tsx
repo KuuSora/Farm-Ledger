@@ -44,6 +44,7 @@ interface SideNavProps {
 
 const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false); // ✅ new state for mobile
   const { viewState, setViewState, triggerUIInteraction } = useFarm();
 
   const handleMouseEnter = () => {
@@ -58,6 +59,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
 
   const handleNav = (view: View, type?: TransactionType) => {
     setViewState({ view, type });
+    setIsMobileOpen(false); // ✅ close menu on mobile when item clicked
   };
 
   const clearHint = () => triggerUIInteraction(null);
@@ -76,37 +78,49 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
   const settingsItem = { view: 'settings', label: 'Settings', icon: <SettingsIcon />, hint: 'Configure your app settings.' };
 
   return (
-    <nav
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      className={`fixed top-0 left-0 h-screen flex flex-col no-print z-40 bg-card border-r border-gray-200/80 shadow-sm transition-all duration-300 ease-in-out ${isHovered ? 'w-64' : 'w-20'}`}
-    >
-      <div className="flex items-center h-20 flex-shrink-0 border-b border-gray-200/80 px-4 overflow-hidden">
-        <CropsIcon className="w-9 h-9 text-primary flex-shrink-0" />
-         <span
+    <>
+      {/* ✅ Mobile Toggle Button */}
+      <button
+        className="md:hidden fixed top-4 left-4 z-50 bg-primary text-white p-2 rounded-lg"
+        onClick={() => setIsMobileOpen(!isMobileOpen)}
+      >
+        {isMobileOpen ? '✖' : '☰'}
+      </button>
+
+      <nav
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        className={`fixed top-0 left-0 h-screen flex flex-col no-print z-40 bg-card border-r border-gray-200/80 shadow-sm transition-all duration-300 ease-in-out 
+        ${isHovered ? 'w-64' : 'w-20'} 
+        ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`} 
+        // ✅ responsive: mobile slides in/out
+      >
+        <div className="flex items-center h-20 flex-shrink-0 border-b border-gray-200/80 px-4 overflow-hidden">
+          <CropsIcon className="w-9 h-9 text-primary flex-shrink-0" />
+          <span
             className={`ml-2 text-xl font-bold text-primary whitespace-nowrap transition-opacity duration-200 ${
-            isHovered ? 'opacity-100' : 'opacity-0'
+              isHovered ? 'opacity-100' : 'opacity-0'
             }`}
-        >
+          >
             FARMY's LEDGER
-        </span>
-      </div>
-      <ul className="flex-1 px-3 py-4 space-y-2">
-        {navItems.map((item) => (
+          </span>
+        </div>
+        <ul className="flex-1 px-3 py-4 space-y-2">
+          {navItems.map((item) => (
+            <NavItem
+              key={item.label}
+              label={item.label}
+              icon={item.icon}
+              isExpanded={isHovered}
+              isActive={viewState.view === item.view && (item.type ? viewState.type === item.type : true)}
+              onClick={() => handleNav(item.view as View, item.type as TransactionType)}
+              onMouseEnter={() => triggerUIInteraction(item.hint)}
+              onMouseLeave={clearHint}
+            />
+          ))}
+        </ul>
+        <div className="px-3 py-4 border-t border-gray-200/80">
           <NavItem
-            key={item.label}
-            label={item.label}
-            icon={item.icon}
-            isExpanded={isHovered}
-            isActive={viewState.view === item.view && (item.type ? viewState.type === item.type : true)}
-            onClick={() => handleNav(item.view as View, item.type as TransactionType)}
-            onMouseEnter={() => triggerUIInteraction(item.hint)}
-            onMouseLeave={clearHint}
-          />
-        ))}
-      </ul>
-      <div className="px-3 py-4 border-t border-gray-200/80">
-        <NavItem
             label={settingsItem.label}
             icon={settingsItem.icon}
             isExpanded={isHovered}
@@ -114,9 +128,10 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
             onClick={() => handleNav(settingsItem.view as View)}
             onMouseEnter={() => triggerUIInteraction(settingsItem.hint)}
             onMouseLeave={clearHint}
-        />
-      </div>
-    </nav>
+          />
+        </div>
+      </nav>
+    </>
   );
 };
 
