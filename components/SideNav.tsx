@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
 import { View, TransactionType } from '../types';
-import {
-  DashboardIcon, CropsIcon, IncomeIcon, ExpensesIcon,
-  ReportsIcon, SettingsIcon, DocumentIcon,
-  FarmAIIcon, HydroponicsIcon, MenuIcon, XIcon
-} from './icons';
+import {DashboardIcon,CropsIcon,IncomeIcon,ExpensesIcon,ReportsIcon,SettingsIcon,DocumentIcon,FarmAIIcon,HydroponicsIcon,MenuIcon,XIcon} from './icons';
 import { useFarm } from '../context/FarmContext';
 
 interface NavItemProps {
