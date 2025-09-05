@@ -7,46 +7,48 @@ import {
 } from './icons';
 import { useFarm } from '../context/FarmContext';
 
-// add your own icons for Menu and Close
-import { Menu as MenuIcon, X as XIcon } from 'lucide-react';
+// Import icons from lucide-react
+import { Menu, X } from 'lucide-react';
 
 interface NavItemProps {
   icon: React.ReactNode;
   label: string;
+  onClick: () => void;
   isActive: boolean;
   isExpanded: boolean;
-  onClick: () => void;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
 }
 
-const NavItem: React.FC<NavItemProps> = ({
-  icon, label, isActive, isExpanded,
-  onClick, onMouseEnter, onMouseLeave
-}) => (
-  <li
-    onClick={onClick}
-    onMouseEnter={onMouseEnter}
-    onMouseLeave={onMouseLeave}
-    className={`flex items-center h-12 rounded-lg cursor-pointer transition-colors duration-200 group overflow-hidden ${
-      isActive
-        ? 'bg-primary text-white shadow-md'
-        : 'text-text-secondary hover:bg-gray-100 hover:text-primary'
-    }`}
-  >
-    <div className="w-6 h-6 mx-4 flex-shrink-0">{icon}</div>
-    <span
-      className={`whitespace-nowrap font-medium transition-opacity duration-200 ${
-        isExpanded ? 'opacity-100' : 'opacity-0'
-      }`}
+const NavItem: React.FC<NavItemProps> = ({ icon, label, onClick, isActive, isExpanded }) => (
+  <li>
+    <button
+      onClick={onClick}
+      className={`
+        w-full flex items-center px-3 py-3 rounded-lg text-left transition-all duration-200
+        hover:bg-primary/10 hover:text-primary group relative
+        ${isActive ? 'bg-primary/10 text-primary' : 'text-gray-600 hover:text-primary'}
+      `}
     >
-      {label}
-    </span>
+      <span className="w-6 h-6 flex-shrink-0 flex items-center justify-center">
+        {icon}
+      </span>
+      <span
+        className={`ml-3 whitespace-nowrap transition-opacity duration-200 ${
+          isExpanded ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
+        {label}
+      </span>
+      {!isExpanded && (
+        <div className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 whitespace-nowrap">
+          {label}
+        </div>
+      )}
+    </button>
   </li>
 );
 
 interface SideNavProps {
-  setIsExpanded: (isExpanded: boolean) => void;
+  setIsExpanded: (expanded: boolean) => void;
 }
 
 const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
@@ -76,33 +78,42 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
   const clearHint = () => triggerUIInteraction(null);
 
   const navItems = [
-    { view: 'dashboard', label: 'Dashboard', icon: <DashboardIcon />, hint: 'Get a quick overview of your farm.' },
-    { view: 'crops', label: 'Crops', icon: <CropsIcon />, hint: 'Manage your crops and fields.' },
-    { view: 'equipment', label: 'Hydroponics', icon: <HydroponicsIcon />, hint: 'Track your hydroponic machinery.' },
-    { view: 'transactions', type: TransactionType.INCOME, label: 'Income', icon: <IncomeIcon />, hint: 'Log and view all income.' },
-    { view: 'transactions', type: TransactionType.EXPENSE, label: 'Expenses', icon: <ExpensesIcon />, hint: 'Log and view all expenses.' },
-    { view: 'reports', label: 'Reports', icon: <ReportsIcon />, hint: 'Analyze your farm\'s performance.' },
-    { view: 'summary', label: 'Summary', icon: <DocumentIcon />, hint: 'Generate printable summaries.' },
-    { view: 'farm-ai', label: 'Farm AI', icon: <FarmAIIcon />, hint: 'Use AI-powered tools for your farm.' },
+    { icon: <DashboardIcon />, label: 'Dashboard', view: 'dashboard' as View },
+    { icon: <CropsIcon />, label: 'Crops', view: 'crops' as View },
+    { icon: <IncomeIcon />, label: 'Income', view: 'transactions' as View, type: 'income' as TransactionType },
+    { icon: <ExpensesIcon />, label: 'Expenses', view: 'transactions' as View, type: 'expense' as TransactionType },
+    { icon: <ReportsIcon />, label: 'Reports', view: 'reports' as View },
+    { icon: <DocumentIcon />, label: 'Documents', view: 'documents' as View },
+    { icon: <FarmAIIcon />, label: 'Farm AI', view: 'farm-ai' as View },
+    { icon: <HydroponicsIcon />, label: 'Hydroponics', view: 'hydroponics' as View },
   ];
-  
-  const settingsItem = { view: 'settings', label: 'Settings', icon: <SettingsIcon />, hint: 'Configure your app settings.' };
+
+  const settingsItem = { icon: <SettingsIcon />, label: 'Settings', view: 'settings' as View };
 
   return (
-    <>
-      {/* Mobile Toggle Button */}
+    <div className="relative">
+      {/* Mobile overlay */}
+      {isMobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
+      {/* Mobile toggle button */}
       <button
         className="md:hidden fixed top-4 left-4 z-50 bg-primary text-white p-2 rounded-lg"
         onClick={() => setIsMobileOpen(!isMobileOpen)}
       >
-        {isMobileOpen ? <XIcon size={20} /> : <MenuIcon size={20} />}
+        {isMobileOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
       {/* Sidebar */}
       <nav
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className={`fixed top-0 left-0 h-screen flex flex-col no-print z-40 bg-card border-r border-gray-200/80 shadow-sm transition-all duration-300 ease-in-out
+        className={`
+          fixed top-0 left-0 h-full bg-white border-r border-gray-200 z-40 transition-all duration-300 ease-in-out
           ${isMobileOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64'}
           md:translate-x-0 ${isHovered ? 'md:w-64' : 'md:w-20'}
         `}
@@ -124,13 +135,14 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           {navItems.map((item) => (
             <NavItem
               key={item.label}
-              label={item.label}
               icon={item.icon}
+              label={item.label}
+              onClick={() => {
+                handleNav(item.view, item.type);
+                clearHint();
+              }}
+              isActive={viewState.view === item.view && (!item.type || viewState.type === item.type)}
               isExpanded={isHovered || isMobileOpen}
-              isActive={viewState.view === item.view && (item.type ? viewState.type === item.type : true)}
-              onClick={() => handleNav(item.view as View, item.type as TransactionType)}
-              onMouseEnter={() => triggerUIInteraction(item.hint)}
-              onMouseLeave={clearHint}
             />
           ))}
         </ul>
@@ -140,17 +152,17 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           <NavItem
             label={settingsItem.label}
             icon={settingsItem.icon}
-            isExpanded={isHovered || isMobileOpen}
+            onClick={() => {
+              handleNav(settingsItem.view);
+              clearHint();
+            }}
             isActive={viewState.view === settingsItem.view}
-            onClick={() => handleNav(settingsItem.view as View)}
-            onMouseEnter={() => triggerUIInteraction(settingsItem.hint)}
-            onMouseLeave={clearHint}
+            isExpanded={isHovered || isMobileOpen}
           />
         </div>
       </nav>
-    </>
+    </div>
   );
 };
 
 export default SideNav;
-              
