@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import { View, TransactionType } from '../types';
-import {DashboardIcon,CropsIcon,IncomeIcon,ExpensesIcon,ReportsIcon,SettingsIcon,DocumentIcon,FarmAIIcon,HydroponicsIcon,MenuIcon,XIcon} from './icons';
+import {
+  DashboardIcon, CropsIcon, IncomeIcon, ExpensesIcon,
+  ReportsIcon, SettingsIcon, DocumentIcon,
+  FarmAIIcon, HydroponicsIcon
+} from './icons';
 import { useFarm } from '../context/FarmContext';
+
+// add your own icons for Menu and Close
+import { Menu as MenuIcon, X as XIcon } from 'lucide-react';
 
 interface NavItemProps {
   icon: React.ReactNode;
@@ -48,14 +55,14 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
   const { viewState, setViewState, triggerUIInteraction } = useFarm();
 
   const handleMouseEnter = () => {
-    if (window.innerWidth >= 768) { // only desktop
+    if (window.innerWidth >= 768) {
       setIsHovered(true);
       setIsExpanded(true);
     }
   };
 
   const handleMouseLeave = () => {
-    if (window.innerWidth >= 768) { // only desktop
+    if (window.innerWidth >= 768) {
       setIsHovered(false);
       setIsExpanded(false);
     }
@@ -63,7 +70,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
 
   const handleNav = (view: View, type?: TransactionType) => {
     setViewState({ view, type });
-    setIsMobileOpen(false); // auto close drawer on mobile
+    setIsMobileOpen(false); // auto-close on mobile
   };
 
   const clearHint = () => triggerUIInteraction(null);
@@ -88,7 +95,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
         className="md:hidden fixed top-4 left-4 z-50 bg-primary text-white p-2 rounded-lg"
         onClick={() => setIsMobileOpen(!isMobileOpen)}
       >
-        {isMobileOpen ? <XIcon /> : <MenuIcon />}
+        {isMobileOpen ? <XIcon size={20} /> : <MenuIcon size={20} />}
       </button>
 
       {/* Sidebar */}
@@ -100,17 +107,19 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           md:translate-x-0 ${isHovered ? 'md:w-64' : 'md:w-20'}
         `}
       >
+        {/* Logo */}
         <div className="flex items-center h-20 flex-shrink-0 border-b border-gray-200/80 px-4 overflow-hidden">
           <CropsIcon className="w-9 h-9 text-primary flex-shrink-0" />
           <span
             className={`ml-2 text-xl font-bold text-primary whitespace-nowrap transition-opacity duration-200 ${
-              isHovered ? 'opacity-100' : 'opacity-0'
+              isHovered || isMobileOpen ? 'opacity-100' : 'opacity-0'
             }`}
           >
             FARMY's LEDGER
           </span>
         </div>
 
+        {/* Nav Items */}
         <ul className="flex-1 px-3 py-4 space-y-2">
           {navItems.map((item) => (
             <NavItem
@@ -126,6 +135,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           ))}
         </ul>
 
+        {/* Settings */}
         <div className="px-3 py-4 border-t border-gray-200/80">
           <NavItem
             label={settingsItem.label}
@@ -143,4 +153,4 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
 };
 
 export default SideNav;
-    
+              
