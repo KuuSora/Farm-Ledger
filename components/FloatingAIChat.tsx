@@ -16,7 +16,7 @@ const FloatingAIChat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { crops, transactions, settings, todos, formInputContext, isOnline, uiInteractionEvent } = useFarm();
+  const { crops, transactions, settings, todos, equipment, formInputContext, isOnline, uiInteractionEvent } = useFarm();
   const chatBodyRef = useRef<HTMLDivElement>(null);
   const prevIsOnline = useRef(isOnline);
   
@@ -123,21 +123,82 @@ const FloatingAIChat: React.FC = () => {
   }, [isOnline]);
   
   const createFarmDataContext = (): string => {
+    // Calculate financial summaries for different periods
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.setDate(now.getDate() - 30));
+    const sevenDaysAgo = new Date(now.setDate(now.getDate() - 7));
+    
+    const recentTransactions = transactions.slice(0, 10);
+    
+    // Financial summary for last 30 days
+    const financialSummary30Days = transactions
+      .filter(t => new Date(t.date) > thirtyDaysAgo)
+      .reduce((acc, t) => {
+        if (t.type === TransactionType.INCOME) acc.income += t.amount;
+        else acc.expenses += t.amount;
+        return acc;
+      }, { income: 0, expenses: 0 });
+    
+    // Financial summary for last 7 days
+    const financialSummary7Days = transactions
+      .filter(t => new Date(t.date) > sevenDaysAgo)
+      .reduce((acc, t) => {
+        if (t.type === TransactionType.INCOME) acc.income += t.amount;
+        else acc.expenses += t.amount;
+        return acc;
+      }, { income: 0, expenses: 0 });
+
+    // Crop status analysis
+    const cropAnalysis = crops.map(crop => ({
+      id: crop.id,
+      name: crop.name,
+      area: crop.area,
+      areaUnit: crop.areaUnit,
+      plantingDate: crop.plantingDate,
+      estimatedHarvestDate: crop.estimatedHarvestDate,
+      actualHarvestDate: crop.actualHarvestDate,
+      yieldAmount: crop.yieldAmount,
+      yieldUnit: crop.yieldUnit,
+      status: crop.actualHarvestDate ? 'harvested' : 
+              new Date(crop.estimatedHarvestDate) < new Date() ? 'overdue' : 'growing',
+      daysToHarvest: crop.actualHarvestDate ? null : 
+                    Math.ceil((new Date(crop.estimatedHarvestDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+    }));
+
+    // Equipment with maintenance analysis
+    const equipmentAnalysis = equipment.map(item => ({
+      id: item.id,
+      name: item.name,
+      model: item.model,
+      purchaseDate: item.purchaseDate,
+      maintenanceLogsCount: item.maintenanceLogs.length,
+      totalMaintenanceCost: item.maintenanceLogs.reduce((sum, log) => sum + log.cost, 0),
+      lastMaintenanceDate: item.maintenanceLogs.length > 0 ? 
+        item.maintenanceLogs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0].date : null
+    }));
+
     const summary = {
       settings: {
         farmName: settings.farmName,
         currency: settings.currency,
       },
-      crops: crops.map(({ id, notes, ...rest }) => rest), // Exclude long notes field for brevity
+      crops: cropAnalysis,
+      equipment: equipmentAnalysis,
       uncompletedTodos: todos.filter(t => !t.completed),
-      recentTransactions: transactions.slice(0, 10), // Send the 10 most recent transactions
-      financialSummary30Days: transactions
-        .filter(t => new Date(t.date) > new Date(new Date().setDate(new Date().getDate() - 30)))
-        .reduce((acc, t) => {
-          if (t.type === TransactionType.INCOME) acc.income += t.amount;
-          else acc.expenses += t.amount;
-          return acc;
-        }, { income: 0, expenses: 0 }),
+      completedTodos: todos.filter(t => t.completed),
+      recentTransactions: recentTransactions,
+      financialSummary30Days,
+      financialSummary7Days,
+      farmStats: {
+        totalCrops: crops.length,
+        activeCrops: crops.filter(c => !c.actualHarvestDate).length,
+        harvestedCrops: crops.filter(c => c.actualHarvestDate).length,
+        cropsReadyToHarvest: crops.filter(c => !c.actualHarvestDate && new Date(c.estimatedHarvestDate) <= new Date()).length,
+        totalEquipment: equipment.length,
+        totalTasks: todos.length,
+        pendingTasks: todos.filter(t => !t.completed).length,
+        totalTransactions: transactions.length
+      }
     };
     return JSON.stringify(summary, null, 2);
   };
