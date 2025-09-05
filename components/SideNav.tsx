@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TransactionType } from '../types';
-import { DashboardIcon, CropsIcon, IncomeIcon, ExpensesIcon, ReportsIcon, SettingsIcon, DocumentIcon, FarmAIIcon, HydroponicsIcon } from './icons';
+import {DashboardIcon, CropsIcon, IncomeIcon, ExpensesIcon, ReportsIcon, SettingsIcon, DocumentIcon, FarmAIIcon, HydroponicsIcon,} from './icons';
 import { useFarm } from '../context/FarmContext';
 
 interface NavItemProps {
@@ -27,15 +27,15 @@ const NavItem: React.FC<NavItemProps> = ({
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      className={`flex items-center h-12 rounded-lg cursor-pointer transition-colors duration-200 group overflow-hidden ${
+      className={`flex items-center h-12 rounded-lg cursor-pointer px-2 transition-all duration-200 group ${
         isActive
           ? 'bg-primary text-white shadow-md'
           : 'text-text-secondary hover:bg-gray-100 hover:text-primary'
       }`}
     >
-      <div className="w-6 h-6 mx-4 flex-shrink-0">{icon}</div>
+      <div className="w-6 h-6 mr-2 flex-shrink-0">{icon}</div>
       <span
-        className={`whitespace-nowrap font-medium transition-all duration-300 ${
+        className={`whitespace-nowrap font-medium transition-all duration-200 ${
           isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'
         }`}
       >
@@ -51,7 +51,7 @@ interface SideNavProps {
 
 const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false); // ✅ drawer for mobile
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const { viewState, setViewState, triggerUIInteraction } = useFarm();
 
   const handleMouseEnter = () => {
@@ -70,7 +70,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
 
   const handleNav = (view: View, type?: TransactionType) => {
     setViewState({ view, type });
-    setIsMobileOpen(false); // ✅ close on mobile
+    setIsMobileOpen(false);
   };
 
   const clearHint = () => triggerUIInteraction(null);
@@ -95,9 +95,9 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
 
   return (
     <>
-      {/* ✅ Mobile Toggle Button */}
+      {/* ✅ Mobile Toggle */}
       <button
-        className="md:hidden fixed top-4 left-4 z-50 bg-primary text-white p-2 rounded-lg shadow-lg focus:outline-none"
+        className="md:hidden fixed top-4 left-4 z-50 bg-primary text-white p-3 rounded-lg shadow-md focus:outline-none"
         onClick={() => setIsMobileOpen(!isMobileOpen)}
       >
         {isMobileOpen ? '✖' : '☰'}
@@ -107,24 +107,24 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
       <nav
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className={`fixed top-0 left-0 h-screen flex flex-col no-print z-40 bg-card/95 backdrop-blur-md border-r border-gray-200/80 shadow-lg transition-all duration-300 ease-in-out
-        ${isHovered ? 'w-64' : 'w-20'}
-        ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
+        className={`fixed top-0 left-0 h-screen flex flex-col bg-card border-r border-gray-200/80 shadow-md transition-all duration-300 ease-in-out z-40
+          ${isHovered ? 'w-56' : 'w-16'}
+          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
       >
-        {/* Logo / Header */}
-        <div className="flex items-center h-20 flex-shrink-0 border-b border-gray-200/80 px-4 overflow-hidden">
-          <CropsIcon className="w-9 h-9 text-primary flex-shrink-0" />
+        {/* Logo / Title */}
+        <div className="flex items-center h-16 border-b border-gray-200/80 px-3">
+          <CropsIcon className="w-8 h-8 text-primary flex-shrink-0" />
           <span
-            className={`ml-2 text-xl font-bold text-primary whitespace-nowrap transition-all duration-300 ${
-              isHovered || isMobileOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'
+            className={`ml-2 text-lg font-bold text-primary whitespace-nowrap transition-all duration-300 ${
+              isHovered ? 'opacity-100' : 'opacity-0'
             }`}
           >
             FARMY's LEDGER
           </span>
         </div>
 
-        {/* Navigation Items */}
-        <ul className="flex-1 px-3 py-4 space-y-2 overflow-y-auto">
+        {/* Menu */}
+        <ul className="flex-1 px-2 py-3 space-y-1 overflow-y-auto">
           {navItems.map((item) => (
             <NavItem
               key={item.label}
@@ -142,8 +142,8 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           ))}
         </ul>
 
-        {/* Settings (bottom) */}
-        <div className="px-3 py-4 border-t border-gray-200/80">
+        {/* Footer / Settings */}
+        <div className="px-2 py-3 border-t border-gray-200/80">
           <NavItem
             label={settingsItem.label}
             icon={settingsItem.icon}
@@ -159,7 +159,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
       {/* ✅ Overlay for mobile */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 md:hidden"
+          className="fixed inset-0 bg-black/40 z-30 md:hidden"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
