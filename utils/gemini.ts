@@ -1,8 +1,16 @@
 import { GoogleGenAI, Chat } from "@google/genai";
 
-// The API key is injected from the environment.
-const API_KEY = process.env.API_KEY as string;
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+// The API key - for browser use, you can set this directly or use environment variables
+// For development, you can temporarily set your API key here:
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || 
+                 (typeof window !== 'undefined' ? (window as any).GEMINI_API_KEY : '') || 
+                 'your-api-key-here'; // Replace with your actual API key for testing
+
+if (!API_KEY || API_KEY === 'your-api-key-here') {
+  console.warn('Gemini API key not found. AI features will not work. Please set VITE_GEMINI_API_KEY in your environment or update the API_KEY variable in utils/gemini.ts');
+}
+
+const ai = API_KEY && API_KEY !== 'your-api-key-here' ? new GoogleGenAI({ apiKey: API_KEY }) : null;
 
 async function fileToGenerativePart(file: File) {
     const base64EncodedDataPromise = new Promise<string>((resolve, reject) => {
@@ -24,6 +32,10 @@ async function fileToGenerativePart(file: File) {
 }
 
 export const analyzeImage = async (prompt: string, image: File) => {
+  if (!ai) {
+    throw new Error("Gemini API key not configured. Please set your API key to use AI features.");
+  }
+  
   try {
     const imagePart = await fileToGenerativePart(image);
     const response = await ai.models.generateContent({
@@ -39,6 +51,10 @@ export const analyzeImage = async (prompt: string, image: File) => {
 
 
 export const generateText = async (prompt: string) => {
+  if (!ai) {
+    throw new Error("Gemini API key not configured. Please set your API key to use AI features.");
+  }
+  
   try {
     const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',
@@ -56,6 +72,9 @@ export const generateText = async (prompt: string) => {
 let chat: Chat | null = null;
 
 const getChatSession = () => {
+    if (!ai) {
+        return null;
+    }
     if (!chat) {
         chat = ai.chats.create({
             model: 'gemini-2.5-flash',
@@ -107,12 +126,15 @@ const generateOfflineResponse = (message: string, farmDataContext: string): stri
 
 
 export const generateChatResponse = async (message: string, farmDataContext: string = '', formInputContext: string = '', isOnline: boolean) => {
-    if (!isOnline) {
+    if (!isOnline || !ai) {
         return generateOfflineResponse(message, farmDataContext);
     }
     
     try {
         const chatSession = getChatSession();
+        if (!chatSession) {
+            return generateOfflineResponse(message, farmDataContext);
+        }
         
         let contextBlock = '';
         if (farmDataContext) {
