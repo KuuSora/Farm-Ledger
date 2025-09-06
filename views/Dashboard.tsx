@@ -73,17 +73,6 @@ const QuickActionButton: React.FC<{ icon: React.ReactNode; label: string; onClic
   </button>
 );
 
-const SectionHeader: React.FC<{ title: string; subtitle?: string; right?: React.ReactNode; icon?: React.ReactNode; }> = ({ title, subtitle, right, icon }) => (
-  <div className="mb-2 flex items-end justify-between">
-    <div className="flex items-center gap-2">
-      {icon && <div className="text-secondary">{icon}</div>}
-      <h3 className="text-lg font-semibold text-text-primary">{title}</h3>
-    </div>
-    <div className="text-sm text-text-secondary">{right}</div>
-    {subtitle && <p className="col-span-full text-sm text-text-secondary">{subtitle}</p>}
-  </div>
-);
-
 /* ------------------------------- Market AI ------------------------------- */
 
 const MarketSnapshot: React.FC = () => {
@@ -194,6 +183,7 @@ const Dashboard: React.FC = () => {
 
   const handleAddCropClick = () => setViewState({ view: 'crops', payload: { openForm: true } });
   const handleAddTransactionClick = (type: TransactionType) => setViewState({ view: 'transactions', type, payload: { openForm: true } });
+  const handleAddHydroponicsClick = () => setViewState({ view: 'hydroponics', payload: { openForm: true } });
   const handleCropClick = (crop: Crop) => setViewState({ view: 'crops', payload: { detailedCropId: crop.id } });
   const handleTransactionClick = (tx: Transaction) => setViewState({ view: 'transactions', type: tx.type, payload: { selectedTransactionId: tx.id } });
   const handleEquipmentClick = (item: Equipment) => setViewState({ view: 'equipment', payload: { detailedEquipmentId: item.id } });
@@ -204,7 +194,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Quick Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
         <QuickActionButton
           icon={<IncomeIcon className="w-6 h-6 text-primary" />}
           label="Add Income"
@@ -227,6 +217,14 @@ const Dashboard: React.FC = () => {
           onClick={handleAddCropClick}
           className="bg-gradient-to-tr from-secondary to-amber-500"
           onMouseEnter={() => triggerUIInteraction('Add a new crop or field to track.')}
+          onMouseLeave={clearHint}
+        />
+        <QuickActionButton
+          icon={<HydroponicsIcon className="w-6 h-6 text-emerald-300" />}
+          label="Add Hydroponics"
+          onClick={handleAddHydroponicsClick}
+          className="bg-gradient-to-tr from-emerald-600 to-emerald-500"
+          onMouseEnter={() => triggerUIInteraction('Add a new hydroponics bed/tower to track.')}
           onMouseLeave={clearHint}
         />
       </div>
@@ -323,7 +321,7 @@ const Dashboard: React.FC = () => {
                         <button onClick={() => deleteTodo(event.id)} aria-label={`Delete todo: ${event.title}`} className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
                           <TrashIcon className="w-5 h-5" />
                         </button>
-                        <Badge tone="warning">To‑Do</Badge>
+                        <Badge tone="warning">To-Do</Badge>
                       </>
                     )}
                   </div>
@@ -334,7 +332,8 @@ const Dashboard: React.FC = () => {
                   <p>No upcoming harvests or tasks.</p>
                 </div>
               )}
-              {/* To‑do input */}
+
+              {/* To-do input */}
               <form onSubmit={handleAddTodo} className="flex items-center gap-2 rounded-xl border border-border/60 bg-white/70 p-2">
                 <input
                   type="text"
