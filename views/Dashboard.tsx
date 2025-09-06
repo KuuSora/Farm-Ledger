@@ -180,10 +180,9 @@ const Dashboard: React.FC = () => {
   const handleAddTodo = (e: React.FormEvent) => { e.preventDefault(); if (!newTodo.trim()) return; addTodo(newTodo.trim()); setNewTodo(''); };
   const formatCurrency = (amount: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: settings.currency, minimumFractionDigits: 2 }).format(amount);
   const formatDate = (date: Date) => date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-
   const handleAddCropClick = () => setViewState({ view: 'crops', payload: { openForm: true } });
   const handleAddTransactionClick = (type: TransactionType) => setViewState({ view: 'transactions', type, payload: { openForm: true } });
-  const handleHydroponicsClick = () => setViewState({ view: 'hydroponics', payload: {} });
+  const handleAddHydroponicsClick = () => setViewState({ view: 'hydroponics', payload: { openForm: true } });
   const handleCropClick = (crop: Crop) => setViewState({ view: 'crops', payload: { detailedCropId: crop.id } });
   const handleTransactionClick = (tx: Transaction) => setViewState({ view: 'transactions', type: tx.type, payload: { selectedTransactionId: tx.id } });
   const handleEquipmentClick = (item: Equipment) => setViewState({ view: 'equipment', payload: { detailedEquipmentId: item.id } });
@@ -219,12 +218,12 @@ const Dashboard: React.FC = () => {
           onMouseEnter={() => triggerUIInteraction('Add a new crop or field to track.')}
           onMouseLeave={clearHint}
         />
-        <QuickActionButton 
-          icon={<HydroponicsIcon className="w-8 h-8 text-green-500" />}
+        <QuickActionButton
+          icon={<HydroponicsIcon className="w-6 h-6 text-emerald-300" />}
           label="Hydroponics"
           onClick={handleHydroponicsClick}
-          className="bg-green-500 hover:bg-green-600"
-          onMouseEnter={() => triggerUIInteraction('Manage your hydroponic machineries and systems.')}
+          className="bg-gradient-to-tr from-emerald-600 to-emerald-500"
+          onMouseEnter={() => triggerUIInteraction('Go to Hydroponic Machineries')}
           onMouseLeave={clearHint}
         />
      </div>
