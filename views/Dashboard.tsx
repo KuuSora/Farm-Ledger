@@ -223,7 +223,7 @@ const Dashboard: React.FC = () => {
         <QuickActionButton
           icon={<HydroponicsIcon className="w-6 h-6 text-emerald-300" />}
           label="Hydroponics"
-          onClick={handleHydroponicsClick}
+          onClick={handleAddHydroponicsClick}
           className="bg-gradient-to-tr from-emerald-600 to-emerald-500"
           onMouseEnter={() => triggerUIInteraction('Go to Hydroponic Machineries')}
           onMouseLeave={clearHint}
