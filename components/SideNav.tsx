@@ -7,189 +7,115 @@ interface NavItemProps {
   icon: React.ReactNode;
   label: string;
   isActive: boolean;
-  isExpanded: boolean;
   onClick: () => void;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
   hasNotification?: boolean;
   badge?: string | number;
+  isMobile?: boolean;
 }
 
 const NavItem: React.FC<NavItemProps> = ({
   icon,
   label,
   isActive,
-  isExpanded,
   onClick,
-  onMouseEnter,
-  onMouseLeave,
   hasNotification = false,
-  badge
+  badge,
+  isMobile = false
 }) => {
-  const [showTooltip, setShowTooltip] = useState(false);
-
   return (
-    <li className="relative group">
-      <div
-        onClick={onClick}
-        onMouseEnter={() => {
-          onMouseEnter();
-          if (!isExpanded) setShowTooltip(true);
-        }}
-        onMouseLeave={() => {
-          onMouseLeave();
-          setShowTooltip(false);
-        }}
-        className={`
-          flex items-center h-12 px-4 mx-3 rounded-2xl cursor-pointer
-          transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] relative overflow-hidden
-          backdrop-blur-sm border will-change-transform
+    <button
+      onClick={onClick}
+      className={`
+        flex items-center justify-center h-12 px-4 rounded-2xl cursor-pointer
+        transition-all duration-300 ease-out relative overflow-hidden
+        backdrop-blur-sm border will-change-transform group
+        ${isMobile ? 'w-full' : 'min-w-12'}
+        ${isActive 
+          ? "bg-gradient-to-r from-green-600 via-green-700 to-emerald-700 text-white shadow-xl shadow-green-500/30 border-green-400/50 transform scale-[1.02]" 
+          : "text-green-700 hover:bg-green-50/80 hover:text-green-800 hover:shadow-lg hover:border-green-200/60 border-transparent hover:scale-[1.01]"
+        }
+        active:scale-[0.98] select-none
+      `}
+    >
+      {/* Glowing effect for active item */}
+      {isActive && (
+        <>
+          <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 via-green-500/20 to-emerald-500/20 rounded-2xl blur-sm" />
+          <div className="absolute left-1 top-2 bottom-2 w-1 bg-white/90 rounded-full" />
+        </>
+      )}
+      
+      {/* Icon container */}
+      <div className="relative flex items-center justify-center w-8 h-8 flex-shrink-0">
+        <div className={`
+          transition-all duration-300 ease-out relative will-change-transform
           ${isActive 
-            ? "bg-gradient-to-r from-green-600 via-green-700 to-emerald-700 text-white shadow-xl shadow-green-500/30 border-green-400/50 transform scale-[1.02]" 
-            : "text-green-700 hover:bg-green-50/80 hover:text-green-800 hover:shadow-lg hover:border-green-200/60 border-transparent hover:scale-[1.01]"
+            ? 'scale-110 drop-shadow-sm' 
+            : 'group-hover:scale-110 group-hover:drop-shadow-sm'
           }
-          active:scale-[0.98] select-none group
-        `}
-      >
-        {/* Glowing effect for active item */}
-        {isActive && (
-          <>
-            <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 via-green-500/20 to-emerald-500/20 rounded-2xl blur-sm" />
-            <div className="absolute left-1 top-2 bottom-2 w-1 bg-white/90 rounded-full" />
-          </>
+        `}>
+          {icon}
+        </div>
+        
+        {/* Notification dot */}
+        {hasNotification && (
+          <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-full border-2 border-white shadow-lg animate-pulse">
+            <div className="absolute inset-0 bg-orange-400 rounded-full animate-ping opacity-75" />
+          </div>
         )}
         
-        {/* Icon container with enhanced styling */}
-        <div className="relative flex items-center justify-center w-8 h-8 mr-3 flex-shrink-0">
-          <div className={`
-            transition-all duration-300 ease-out relative will-change-transform
-            ${isActive 
-              ? 'scale-110 drop-shadow-sm' 
-              : 'group-hover:scale-110 group-hover:drop-shadow-sm'
-            }
-          `}>
-            {icon}
-            {/* Subtle glow effect */}
-            {(isActive || false) && (
-              <div className="absolute inset-0 bg-white/30 rounded-lg blur-md -z-10" />
-            )}
+        {/* Badge */}
+        {badge && (
+          <div className="absolute -top-1 -right-1 min-w-5 h-5 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs rounded-full flex items-center justify-center border-2 border-white font-semibold shadow-lg">
+            {badge}
           </div>
-          
-          {/* Enhanced notification dot */}
-          {hasNotification && (
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-full border-2 border-white shadow-lg animate-pulse">
-              <div className="absolute inset-0 bg-orange-400 rounded-full animate-ping opacity-75" />
-            </div>
-          )}
-          
-          {/* Enhanced badge */}
-          {badge && (
-            <div className="absolute -top-1 -right-1 min-w-5 h-5 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs rounded-full flex items-center justify-center border-2 border-white font-semibold shadow-lg">
-              {badge}
-            </div>
-          )}
-        </div>
-
-        {/* Label with smooth animation */}
-        <span 
-          className={`
-            font-semibold text-sm tracking-wide truncate transition-all duration-300 ease-out will-change-transform
-            ${isExpanded 
-              ? "opacity-100 translate-x-0 max-w-none" 
-              : "opacity-0 translate-x-4 max-w-0 overflow-hidden"
-            }
-          `}
-        >
-          {label}
-        </span>
-
-        {/* Ripple effect on hover */}
-        <div className={`
-          absolute inset-0 bg-gradient-to-r from-green-500/10 via-green-400/10 to-emerald-500/10 rounded-2xl
-          transition-all duration-500 pointer-events-none
-          ${!isActive ? 'opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100' : 'opacity-0'}
-        `} />
+        )}
       </div>
 
-      {/* Tooltip */}
-      {showTooltip && !isExpanded && (
-        <div className="absolute left-16 top-1/2 -translate-y-1/2 z-50 animate-in slide-in-from-left-2 duration-200">
+      {/* Label for mobile */}
+      {isMobile && (
+        <span className="ml-3 font-semibold text-sm tracking-wide truncate">
+          {label}
+        </span>
+      )}
+
+      {/* Tooltip for desktop */}
+      {!isMobile && (
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
           <div className="bg-slate-900 text-white px-3 py-2 rounded-lg text-sm font-medium shadow-xl whitespace-nowrap">
             {label}
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-slate-900 rotate-45" />
+            <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-900 rotate-45 -mt-1" />
           </div>
         </div>
       )}
-    </li>
+    </button>
   );
 };
 
-interface SideNavProps {
-  setIsExpanded: (isExpanded: boolean) => void;
+interface TopNavProps {
+  // No need for setIsExpanded since we're not expanding
 }
 
-const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const sidebarRef = useRef<HTMLDivElement>(null);
+const TopNav: React.FC<TopNavProps> = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const { viewState, setViewState, triggerUIInteraction } = useFarm();
 
-  // Handle outside click for mobile
+  // Handle outside click for mobile menu
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
-        if (isMobileOpen && window.innerWidth < 768) {
-          setIsMobileOpen(false);
-        }
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMobileMenuOpen(false);
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isMobileOpen]);
-
-  // Handle window resize
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setIsMobileOpen(false);
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  const handleMouseEnter = () => {
-    if (window.innerWidth >= 768 && !isCollapsed) {
-      setIsHovered(true);
-      setIsExpanded(true);
-    }
-  };
-
-  const handleMouseLeave = () => {
-    if (window.innerWidth >= 768 && !isCollapsed) {
-      setIsHovered(false);
-      setIsExpanded(false);
-    }
-  };
 
   const handleNav = (view: View, type?: TransactionType) => {
     setViewState({ view, type });
-    setIsMobileOpen(false);
-  };
-
-  const clearHint = () => triggerUIInteraction(null);
-
-  const toggleCollapse = () => {
-    setIsCollapsed(!isCollapsed);
-    setIsExpanded(!isCollapsed);
-    setIsHovered(false);
-  };
-
-  const toggleMobile = () => {
-    setIsMobileOpen(!isMobileOpen);
+    setIsMobileMenuOpen(false);
   };
 
   const navItems = [
@@ -197,53 +123,45 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
       view: "dashboard", 
       label: "Dashboard", 
       icon: <DashboardIcon />, 
-      hint: "Get a quick overview of your farm.",
       hasNotification: true
     },
     { 
       view: "crops", 
       label: "Crops", 
-      icon: <CropsIcon />, 
-      hint: "Manage your crops and fields." 
+      icon: <CropsIcon />
     },
     { 
       view: "equipment", 
       label: "Hydroponics", 
-      icon: <HydroponicsIcon />, 
-      hint: "Track your hydroponic machinery." 
+      icon: <HydroponicsIcon />
     },
     { 
       view: "transactions", 
       type: TransactionType.INCOME, 
       label: "Income", 
       icon: <IncomeIcon />, 
-      hint: "Log and view all income.",
       badge: "12"
     },
     { 
       view: "transactions", 
       type: TransactionType.EXPENSE, 
       label: "Expenses", 
-      icon: <ExpensesIcon />, 
-      hint: "Log and view all expenses." 
+      icon: <ExpensesIcon />
     },
     { 
       view: "reports", 
       label: "Reports", 
-      icon: <ReportsIcon />, 
-      hint: "Analyze your farm's performance." 
+      icon: <ReportsIcon />
     },
     { 
       view: "summary", 
       label: "Summary", 
-      icon: <DocumentIcon />, 
-      hint: "Generate printable summaries." 
+      icon: <DocumentIcon />
     },
     { 
       view: "farm-ai", 
       label: "Farm AI", 
       icon: <FarmAIIcon />, 
-      hint: "Use AI-powered tools for your farm.",
       hasNotification: true
     },
   ];
@@ -251,305 +169,176 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
   const settingsItem = {
     view: "settings",
     label: "Settings",
-    icon: <SettingsIcon />,
-    hint: "Configure your app settings.",
+    icon: <SettingsIcon />
   };
 
-  const isExpanded = isMobileOpen || (isHovered && !isCollapsed) || isCollapsed;
-
   return (
-    <>
-      {/* Enhanced mobile menu button */}
-      <button
-        onClick={toggleMobile}
-        className={`
-          fixed top-5 left-5 z-50 md:hidden
-          w-14 h-14 backdrop-blur-xl border shadow-2xl
-          flex items-center justify-center transition-all duration-500 ease-out will-change-transform
-          active:scale-90 hover:scale-105
-          ${isMobileOpen 
-            ? 'bg-gradient-to-br from-green-600 to-emerald-700 border-green-400/50 text-white shadow-green-500/25 rotate-90' 
-            : 'bg-green-50/90 border-green-200/50 text-green-700 hover:text-green-800 hover:bg-green-50 hover:border-green-300/50'
-          }
-          rounded-2xl
-        `}
-      >
-        <div className="relative w-6 h-6">
-          {/* Animated hamburger/close icon */}
-          <span className={`
-            absolute top-1.5 left-0 w-6 h-0.5 bg-current rounded-full
-            transition-all duration-300 origin-center will-change-transform
-            ${isMobileOpen ? 'rotate-45 top-3' : ''}
-          `} />
-          <span className={`
-            absolute top-3 left-0 w-6 h-0.5 bg-current rounded-full
-            transition-all duration-300 will-change-transform
-            ${isMobileOpen ? 'opacity-0 scale-0' : 'opacity-100 scale-100'}
-          `} />
-          <span className={`
-            absolute top-4.5 left-0 w-6 h-0.5 bg-current rounded-full
-            transition-all duration-300 origin-center will-change-transform
-            ${isMobileOpen ? '-rotate-45 top-3' : ''}
-          `} />
-        </div>
-        
-        {/* Glow effect when active */}
-        {isMobileOpen && (
-          <div className="absolute inset-0 bg-gradient-to-br from-green-400/30 to-emerald-500/30 rounded-2xl blur-xl -z-10 animate-pulse" />
-        )}
-      </button>
-
-      {/* Enhanced sidebar with farm-themed design */}
-      <nav
-        ref={sidebarRef}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        className={`
-          fixed top-0 left-0 h-full flex flex-col z-40
-          backdrop-blur-2xl bg-gradient-to-b from-green-50/95 via-emerald-50/90 to-green-100/95
-          border-r border-green-200/60 shadow-2xl shadow-green-900/10
-          transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] will-change-transform
-          ${isExpanded ? 'w-72' : 'w-20'}
-          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-        `}
-        style={{
-          background: `linear-gradient(180deg, 
-            rgba(240, 253, 244, 0.95) 0%, 
-            rgba(236, 253, 245, 0.90) 50%, 
-            rgba(220, 252, 231, 0.95) 100%)`,
-          WebkitBackdropFilter: 'blur(20px)',
-          backdropFilter: 'blur(20px)'
-        }}
-      >
-        {/* Enhanced farm-themed header */}
-        <div className="flex items-center justify-between h-20 px-5 border-b border-green-200/60 bg-gradient-to-r from-green-100/60 to-emerald-100/60">
-          <div className="flex items-center gap-4">
-            <div className="relative group">
-              {/* Farm logo container with enhanced styling */}
-              <div className="absolute inset-0 bg-gradient-to-br from-green-400/30 to-emerald-500/30 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-300" />
-              <div className="relative w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/25 group-hover:scale-105 transition-transform duration-300 border border-green-400/20 will-change-transform">
-                {/* Farm-themed logo - visible when collapsed */}
-                <div className={`transition-all duration-300 will-change-transform ${isExpanded ? 'opacity-0 scale-0' : 'opacity-100 scale-100'}`}>
-                  <svg className="w-7 h-7 text-white drop-shadow-sm" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" />
-                    <path d="M12 16C12 16 8 18 8 22H16C16 18 12 16 12 16Z" />
-                    <circle cx="12" cy="19" r="1" />
-                  </svg>
-                </div>
-                {/* Crops icon when expanded */}
-                <div className={`absolute transition-all duration-300 will-change-transform ${isExpanded ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}>
+    <header className="relative">
+      {/* Top Navigation Bar */}
+      <div className="bg-gradient-to-r from-green-50/95 via-emerald-50/90 to-green-100/95 backdrop-blur-xl border-b border-green-200/60 shadow-lg">
+        <div className="px-4 sm:px-6">
+          <div className="flex items-center justify-between h-20">
+            {/* Logo Section */}
+            <div className="flex items-center gap-4">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-br from-green-400/30 to-emerald-500/30 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-300" />
+                <div className="relative w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/25 group-hover:scale-105 transition-transform duration-300 border border-green-400/20">
                   <CropsIcon className="w-7 h-7 text-white drop-shadow-sm" />
                 </div>
               </div>
+              <div>
+                <h1 className="text-xl font-black bg-gradient-to-r from-green-800 via-green-700 to-emerald-800 bg-clip-text text-transparent leading-tight">
+                  FARMY'S
+                </h1>
+                <p className="text-sm font-semibold text-green-600 -mt-1">LEDGER</p>
+              </div>
             </div>
-            <div className={`
-              transition-all duration-500 ease-out will-change-transform
-              ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}
-            `}>
-              <h1 className="text-xl font-black bg-gradient-to-r from-green-800 via-green-700 to-emerald-800 bg-clip-text text-transparent leading-tight">
-                FARMY'S
-              </h1>
-              <p className="text-sm font-semibold text-green-600 -mt-1">LEDGER</p>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-2">
+              {navItems.map((item) => (
+                <NavItem
+                  key={`${item.view}-${item.type || ''}`}
+                  label={item.label}
+                  icon={item.icon}
+                  isActive={
+                    viewState.view === item.view &&
+                    (item.type ? viewState.type === item.type : true)
+                  }
+                  onClick={() => handleNav(item.view as View, item.type as TransactionType)}
+                  hasNotification={item.hasNotification}
+                  badge={item.badge}
+                />
+              ))}
+              
+              {/* Separator */}
+              <div className="w-px h-8 bg-green-200/60 mx-2" />
+              
+              {/* Settings */}
+              <NavItem
+                label={settingsItem.label}
+                icon={settingsItem.icon}
+                isActive={viewState.view === settingsItem.view}
+                onClick={() => handleNav(settingsItem.view as View)}
+              />
+            </div>
+
+            {/* User Profile & Mobile Menu Button */}
+            <div className="flex items-center gap-4">
+              {/* User Profile (Desktop) */}
+              <div className="hidden md:flex items-center gap-3">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-400/30 to-emerald-500/30 rounded-2xl blur-md" />
+                  <div className="relative w-10 h-10 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-lg shadow-green-500/25 border border-green-400/20">
+                    🚜
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full shadow-sm" />
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-bold text-green-800">Farmer John</p>
+                  <p className="text-xs text-green-600">Online</p>
+                </div>
+              </div>
+
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden w-12 h-12 bg-green-50 hover:bg-green-100 border border-green-200/50 hover:border-green-300/50 text-green-700 rounded-2xl flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95"
+              >
+                <div className="relative w-6 h-6">
+                  <span className={`
+                    absolute top-1.5 left-0 w-6 h-0.5 bg-current rounded-full
+                    transition-all duration-300 origin-center
+                    ${isMobileMenuOpen ? 'rotate-45 top-3' : ''}
+                  `} />
+                  <span className={`
+                    absolute top-3 left-0 w-6 h-0.5 bg-current rounded-full
+                    transition-all duration-300
+                    ${isMobileMenuOpen ? 'opacity-0 scale-0' : 'opacity-100 scale-100'}
+                  `} />
+                  <span className={`
+                    absolute top-4.5 left-0 w-6 h-0.5 bg-current rounded-full
+                    transition-all duration-300 origin-center
+                    ${isMobileMenuOpen ? '-rotate-45 top-3' : ''}
+                  `} />
+                </div>
+              </button>
             </div>
           </div>
-          
-          {/* Enhanced desktop collapse button */}
-          <button
-            onClick={toggleCollapse}
-            className={`
-              hidden md:flex items-center justify-center w-10 h-10
-              text-green-500 hover:text-green-700 rounded-xl
-              hover:bg-green-100/60 backdrop-blur-sm border border-transparent hover:border-green-200/50
-              transition-all duration-300 hover:scale-105 active:scale-95 will-change-transform
-              ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}
-            `}
-          >
-            <svg className={`w-5 h-5 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
         </div>
+      </div>
 
-        {/* Enhanced navigation items */}
-        <div className="flex-1 flex flex-col py-6 overflow-hidden">
-          <ul className="flex-1 space-y-2 overflow-y-auto px-1" style={{ WebkitOverflowScrolling: 'touch' }}>
+      {/* Mobile Menu Dropdown */}
+      <div
+        ref={menuRef}
+        className={`
+          absolute top-full left-0 right-0 z-50 md:hidden
+          bg-gradient-to-b from-green-50/98 to-emerald-50/95 backdrop-blur-xl
+          border-b border-green-200/60 shadow-2xl
+          transition-all duration-300 ease-out
+          ${isMobileMenuOpen 
+            ? 'opacity-100 translate-y-0 visible' 
+            : 'opacity-0 -translate-y-4 invisible'
+          }
+        `}
+      >
+        <div className="p-4">
+          {/* User Profile (Mobile) */}
+          <div className="flex items-center gap-4 p-4 bg-green-100/60 rounded-2xl mb-4">
+            <div className="relative">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-lg">
+                🚜
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-green-800">Farmer John</p>
+              <p className="text-xs text-green-600">farmer@farmyledger.com</p>
+            </div>
+          </div>
+
+          {/* Mobile Navigation Items */}
+          <div className="space-y-2">
             {navItems.map((item) => (
               <NavItem
-                key={`${item.view}-${item.type || ''}`}
+                key={`${item.view}-${item.type || ''}-mobile`}
                 label={item.label}
                 icon={item.icon}
-                isExpanded={isExpanded}
                 isActive={
                   viewState.view === item.view &&
                   (item.type ? viewState.type === item.type : true)
                 }
                 onClick={() => handleNav(item.view as View, item.type as TransactionType)}
-                onMouseEnter={() => triggerUIInteraction(item.hint)}
-                onMouseLeave={clearHint}
                 hasNotification={item.hasNotification}
                 badge={item.badge}
+                isMobile={true}
               />
             ))}
-          </ul>
-
-          {/* Enhanced settings section */}
-          <div className="border-t border-green-200/60 pt-4 mt-4">
+            
+            {/* Separator */}
+            <div className="h-px bg-green-200/60 my-4" />
+            
+            {/* Settings (Mobile) */}
             <NavItem
               label={settingsItem.label}
               icon={settingsItem.icon}
-              isExpanded={isExpanded}
               isActive={viewState.view === settingsItem.view}
               onClick={() => handleNav(settingsItem.view as View)}
-              onMouseEnter={() => triggerUIInteraction(settingsItem.hint)}
-              onMouseLeave={clearHint}
+              isMobile={true}
             />
           </div>
         </div>
+      </div>
 
-        {/* Enhanced farm-themed user profile section */}
-        <div className={`
-          border-t border-green-200/60 p-5 bg-gradient-to-r from-green-100/60 to-emerald-100/60
-          ${isExpanded ? 'opacity-100' : 'opacity-0'}
-          transition-opacity duration-500
-        `}>
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-400/30 to-emerald-500/30 rounded-2xl blur-md" />
-              <div className="relative w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-lg shadow-green-500/25 border border-green-400/20">
-                🚜
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full shadow-sm" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-green-800 truncate">Farmer John</p>
-              <p className="text-xs text-green-600 truncate">farmer@farmyledger.com</p>
-            </div>
-            <button className="w-8 h-8 text-green-500 hover:text-green-700 rounded-lg hover:bg-green-100/60 backdrop-blur-sm transition-all duration-300 flex items-center justify-center group">
-              <svg className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </nav>
-
-          {/* Enhanced mobile overlay */}
-      {isMobileOpen && (
+      {/* Mobile Backdrop */}
+      {isMobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-gradient-to-br from-green-900/60 via-emerald-800/40 to-green-900/60 backdrop-blur-lg z-30 md:hidden"
-          style={{ 
-            animation: 'fadeIn 0.5s ease-out',
-            WebkitBackdropFilter: 'blur(8px)',
-            backdropFilter: 'blur(8px)'
-          }}
-          onClick={() => setIsMobileOpen(false)}
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        
-        .animate-in {
-          animation: slideIn 0.2s ease-out;
-        }
-        
-        .slide-in-from-left-2 {
-          animation: slideInFromLeft 0.2s ease-out;
-        }
-        
-        @keyframes slideIn {
-          from { 
-            opacity: 0;
-            transform: scale(0.95);
-          }
-          to { 
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        
-        @keyframes slideInFromLeft {
-          from { 
-            opacity: 0;
-            transform: translateX(-8px);
-          }
-          to { 
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-
-        /* Mobile viewport optimization - Enhanced responsiveness */
-        @media (max-width: 767px) {
-          .transition-all {
-            transition-duration: 0.25s;
-          }
-          
-          /* Ensure full height on mobile */
-          nav {
-            height: 100vh;
-            height: 100dvh; /* Dynamic viewport height for mobile */
-          }
-        }
-
-        /* Tablet optimization */
-        @media (min-width: 768px) and (max-width: 1024px) {
-          nav {
-            ${isExpanded ? 'w-64' : 'w-20'};
-          }
-        }
-
-        /* Custom scrollbar - Enhanced */
-        .scrollbar-thin::-webkit-scrollbar {
-          width: 4px;
-        }
-        
-        .scrollbar-thumb-green-300\\/60::-webkit-scrollbar-thumb {
-          background-color: rgba(134, 239, 172, 0.6);
-          border-radius: 2px;
-        }
-        
-        .scrollbar-track-transparent::-webkit-scrollbar-track {
-          background: transparent;
-        }
-
-        /* Firefox scrollbar */
-        .overflow-y-auto {
-          scrollbar-width: thin;
-          scrollbar-color: rgba(134, 239, 172, 0.6) transparent;
-        }
-
-        /* Hardware acceleration for smooth scrolling */
-        .overflow-y-auto {
-          overflow-scrolling: touch;
-          -webkit-overflow-scrolling: touch;
-          transform: translateZ(0); /* Force hardware acceleration */
-        }
-
-        /* Performance optimizations */
-        .will-change-transform {
-          will-change: transform;
-        }
-
-        /* Touch optimization */
-        .touch-manipulation {
-          touch-action: manipulation;
-        }
-
-        /* Reduce motion for accessibility */
-        @media (prefers-reduced-motion: reduce) {
-          * {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
-          }
-        }
-      `}</style>
-    </>
+    </header>
   );
 };
 
-export default SideNav;
+export default TopNav;
