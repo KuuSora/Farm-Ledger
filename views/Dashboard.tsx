@@ -23,14 +23,14 @@ const Badge = ({ tone = 'info', className = '', children }) => {
 
 const ChangeIndicator = ({ current, previous, isIncome = false }) => {
   if (previous === 0) {
-    if (current > 0) return <span className="text-xs font-medium text-green-600 flex items-center mt-1">â†‘ New Activity</span>;
+    if (current > 0) return <span className="text-xs font-medium text-green-600 flex items-center mt-1">↑ New Activity</span>;
     return null;
   }
   const change = ((current - previous) / previous) * 100;
   if (Math.abs(change) < 0.1) return null;
   const isGoodChange = isIncome ? change >= 0 : change <= 0;
   const color = isGoodChange ? 'text-green-600' : 'text-red-600';
-  const arrow = change >= 0 ? 'â†‘' : 'â†“';
+  const arrow = change >= 0 ? '↑' : '↓';
   return (
     <span className={`text-xs font-medium ${color} flex items-center mt-1`}>
       {arrow} {Math.abs(change).toFixed(1)}% vs last month
