@@ -416,7 +416,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-br from-green-400/30 to-emerald-500/30 rounded-2xl blur-md" />
               <div className="relative w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-lg shadow-green-500/25 border border-green-400/20">
-                ðŸšœ
+                🚜
               </div>
               <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full shadow-sm" />
             </div>
@@ -433,7 +433,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
         </div>
       </nav>
 
-      {/* Enhanced mobile overlay */}
+          {/* Enhanced mobile overlay */}
       {isMobileOpen && (
         <div 
           className="fixed inset-0 bg-gradient-to-br from-green-900/60 via-emerald-800/40 to-green-900/60 backdrop-blur-lg z-30 md:hidden"
@@ -482,36 +482,61 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           }
         }
 
-        /* Mobile viewport optimization */
+        /* Mobile viewport optimization - Enhanced responsiveness */
         @media (max-width: 767px) {
           .transition-all {
             transition-duration: 0.25s;
           }
+          
+          /* Ensure full height on mobile */
+          nav {
+            height: 100vh;
+            height: 100dvh; /* Dynamic viewport height for mobile */
+          }
+        }
+
+        /* Tablet optimization */
+        @media (min-width: 768px) and (max-width: 1024px) {
+          nav {
+            ${isExpanded ? 'w-64' : 'w-20'};
+          }
+        }
+
+        /* Custom scrollbar - Enhanced */
+        .scrollbar-thin::-webkit-scrollbar {
+          width: 4px;
+        }
+        
+        .scrollbar-thumb-green-300\\/60::-webkit-scrollbar-thumb {
+          background-color: rgba(134, 239, 172, 0.6);
+          border-radius: 2px;
+        }
+        
+        .scrollbar-track-transparent::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        /* Firefox scrollbar */
+        .overflow-y-auto {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(134, 239, 172, 0.6) transparent;
         }
 
         /* Hardware acceleration for smooth scrolling */
         .overflow-y-auto {
           overflow-scrolling: touch;
           -webkit-overflow-scrolling: touch;
-        }
-
-        /* Custom scrollbar */
-        .overflow-y-auto::-webkit-scrollbar {
-          width: 6px;
-        }
-        
-        .overflow-y-auto::-webkit-scrollbar-thumb {
-          background-color: rgba(134, 239, 172, 0.8);
-          border-radius: 3px;
-        }
-        
-        .overflow-y-auto::-webkit-scrollbar-track {
-          background: transparent;
+          transform: translateZ(0); /* Force hardware acceleration */
         }
 
         /* Performance optimizations */
         .will-change-transform {
           will-change: transform;
+        }
+
+        /* Touch optimization */
+        .touch-manipulation {
+          touch-action: manipulation;
         }
 
         /* Reduce motion for accessibility */
