@@ -43,7 +43,7 @@ const NavItem: React.FC<NavItemProps> = ({
         className={`
           flex items-center h-12 px-4 mx-3 rounded-2xl cursor-pointer
           transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] relative overflow-hidden
-          backdrop-blur-sm border
+          backdrop-blur-sm border will-change-transform
           ${isActive 
             ? "bg-gradient-to-r from-green-600 via-green-700 to-emerald-700 text-white shadow-xl shadow-green-500/30 border-green-400/50 transform scale-[1.02]" 
             : "text-green-700 hover:bg-green-50/80 hover:text-green-800 hover:shadow-lg hover:border-green-200/60 border-transparent hover:scale-[1.01]"
@@ -62,7 +62,7 @@ const NavItem: React.FC<NavItemProps> = ({
         {/* Icon container with enhanced styling */}
         <div className="relative flex items-center justify-center w-8 h-8 mr-3 flex-shrink-0">
           <div className={`
-            transition-all duration-300 ease-out relative
+            transition-all duration-300 ease-out relative will-change-transform
             ${isActive 
               ? 'scale-110 drop-shadow-sm' 
               : 'group-hover:scale-110 group-hover:drop-shadow-sm'
@@ -93,7 +93,7 @@ const NavItem: React.FC<NavItemProps> = ({
         {/* Label with smooth animation */}
         <span 
           className={`
-            font-semibold text-sm tracking-wide truncate transition-all duration-300 ease-out
+            font-semibold text-sm tracking-wide truncate transition-all duration-300 ease-out will-change-transform
             ${isExpanded 
               ? "opacity-100 translate-x-0 max-w-none" 
               : "opacity-0 translate-x-4 max-w-0 overflow-hidden"
@@ -265,7 +265,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
         className={`
           fixed top-5 left-5 z-50 md:hidden
           w-14 h-14 backdrop-blur-xl border shadow-2xl
-          flex items-center justify-center transition-all duration-500 ease-out
+          flex items-center justify-center transition-all duration-500 ease-out will-change-transform
           active:scale-90 hover:scale-105
           ${isMobileOpen 
             ? 'bg-gradient-to-br from-green-600 to-emerald-700 border-green-400/50 text-white shadow-green-500/25 rotate-90' 
@@ -278,17 +278,17 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           {/* Animated hamburger/close icon */}
           <span className={`
             absolute top-1.5 left-0 w-6 h-0.5 bg-current rounded-full
-            transition-all duration-300 origin-center
+            transition-all duration-300 origin-center will-change-transform
             ${isMobileOpen ? 'rotate-45 top-3' : ''}
           `} />
           <span className={`
             absolute top-3 left-0 w-6 h-0.5 bg-current rounded-full
-            transition-all duration-300
+            transition-all duration-300 will-change-transform
             ${isMobileOpen ? 'opacity-0 scale-0' : 'opacity-100 scale-100'}
           `} />
           <span className={`
             absolute top-4.5 left-0 w-6 h-0.5 bg-current rounded-full
-            transition-all duration-300 origin-center
+            transition-all duration-300 origin-center will-change-transform
             ${isMobileOpen ? '-rotate-45 top-3' : ''}
           `} />
         </div>
@@ -308,7 +308,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           fixed top-0 left-0 h-full flex flex-col z-40
           backdrop-blur-2xl bg-gradient-to-b from-green-50/95 via-emerald-50/90 to-green-100/95
           border-r border-green-200/60 shadow-2xl shadow-green-900/10
-          transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]
+          transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] will-change-transform
           ${isExpanded ? 'w-72' : 'w-20'}
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
@@ -316,7 +316,9 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           background: `linear-gradient(180deg, 
             rgba(240, 253, 244, 0.95) 0%, 
             rgba(236, 253, 245, 0.90) 50%, 
-            rgba(220, 252, 231, 0.95) 100%)`
+            rgba(220, 252, 231, 0.95) 100%)`,
+          WebkitBackdropFilter: 'blur(20px)',
+          backdropFilter: 'blur(20px)'
         }}
       >
         {/* Enhanced farm-themed header */}
@@ -325,9 +327,9 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
             <div className="relative group">
               {/* Farm logo container with enhanced styling */}
               <div className="absolute inset-0 bg-gradient-to-br from-green-400/30 to-emerald-500/30 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-300" />
-              <div className="relative w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/25 group-hover:scale-105 transition-transform duration-300 border border-green-400/20">
+              <div className="relative w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/25 group-hover:scale-105 transition-transform duration-300 border border-green-400/20 will-change-transform">
                 {/* Farm-themed logo - visible when collapsed */}
-                <div className={`transition-all duration-300 ${isExpanded ? 'opacity-0 scale-0' : 'opacity-100 scale-100'}`}>
+                <div className={`transition-all duration-300 will-change-transform ${isExpanded ? 'opacity-0 scale-0' : 'opacity-100 scale-100'}`}>
                   <svg className="w-7 h-7 text-white drop-shadow-sm" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" />
                     <path d="M12 16C12 16 8 18 8 22H16C16 18 12 16 12 16Z" />
@@ -335,13 +337,13 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
                   </svg>
                 </div>
                 {/* Crops icon when expanded */}
-                <div className={`absolute transition-all duration-300 ${isExpanded ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}>
+                <div className={`absolute transition-all duration-300 will-change-transform ${isExpanded ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}>
                   <CropsIcon className="w-7 h-7 text-white drop-shadow-sm" />
                 </div>
               </div>
             </div>
             <div className={`
-              transition-all duration-500 ease-out
+              transition-all duration-500 ease-out will-change-transform
               ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}
             `}>
               <h1 className="text-xl font-black bg-gradient-to-r from-green-800 via-green-700 to-emerald-800 bg-clip-text text-transparent leading-tight">
@@ -358,7 +360,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
               hidden md:flex items-center justify-center w-10 h-10
               text-green-500 hover:text-green-700 rounded-xl
               hover:bg-green-100/60 backdrop-blur-sm border border-transparent hover:border-green-200/50
-              transition-all duration-300 hover:scale-105 active:scale-95
+              transition-all duration-300 hover:scale-105 active:scale-95 will-change-transform
               ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}
             `}
           >
@@ -370,7 +372,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
 
         {/* Enhanced navigation items */}
         <div className="flex-1 flex flex-col py-6 overflow-hidden">
-          <ul className="flex-1 space-y-2 overflow-y-auto scrollbar-thin scrollbar-thumb-green-300 scrollbar-track-transparent px-1">
+          <ul className="flex-1 space-y-2 overflow-y-auto px-1" style={{ WebkitOverflowScrolling: 'touch' }}>
             {navItems.map((item) => (
               <NavItem
                 key={`${item.view}-${item.type || ''}`}
@@ -434,10 +436,93 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
       {/* Enhanced mobile overlay */}
       {isMobileOpen && (
         <div 
-          className="fixed inset-0 bg-gradient-to-br from-green-900/60 via-emerald-800/40 to-green-900/60 backdrop-blur-lg z-30 md:hidden animate-in fade-in duration-500"
+          className="fixed inset-0 bg-gradient-to-br from-green-900/60 via-emerald-800/40 to-green-900/60 backdrop-blur-lg z-30 md:hidden"
+          style={{ 
+            animation: 'fadeIn 0.5s ease-out',
+            WebkitBackdropFilter: 'blur(8px)',
+            backdropFilter: 'blur(8px)'
+          }}
           onClick={() => setIsMobileOpen(false)}
         />
       )}
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        
+        .animate-in {
+          animation: slideIn 0.2s ease-out;
+        }
+        
+        .slide-in-from-left-2 {
+          animation: slideInFromLeft 0.2s ease-out;
+        }
+        
+        @keyframes slideIn {
+          from { 
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to { 
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        
+        @keyframes slideInFromLeft {
+          from { 
+            opacity: 0;
+            transform: translateX(-8px);
+          }
+          to { 
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        /* Mobile viewport optimization */
+        @media (max-width: 767px) {
+          .transition-all {
+            transition-duration: 0.25s;
+          }
+        }
+
+        /* Hardware acceleration for smooth scrolling */
+        .overflow-y-auto {
+          overflow-scrolling: touch;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        /* Custom scrollbar */
+        .overflow-y-auto::-webkit-scrollbar {
+          width: 6px;
+        }
+        
+        .overflow-y-auto::-webkit-scrollbar-thumb {
+          background-color: rgba(134, 239, 172, 0.8);
+          border-radius: 3px;
+        }
+        
+        .overflow-y-auto::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        /* Performance optimizations */
+        .will-change-transform {
+          will-change: transform;
+        }
+
+        /* Reduce motion for accessibility */
+        @media (prefers-reduced-motion: reduce) {
+          * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
+        }
+      `}</style>
     </>
   );
 };
