@@ -414,12 +414,12 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-br from-green-400/30 to-emerald-500/30 rounded-2xl blur-md" />
               <div className="relative w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-lg shadow-green-500/25 border border-green-400/20">
-                ðŸšœ
+                👾
               </div>
               <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full shadow-sm" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-green-800 truncate">Farmer John</p>
+              <p className="text-sm font-bold text-green-800 truncate">Farmer</p>
               <p className="text-xs text-green-600 truncate">farmer@farmyledger.com</p>
             </div>
             <button className="w-8 h-8 text-green-500 hover:text-green-700 rounded-lg hover:bg-green-100/60 backdrop-blur-sm transition-all duration-300 flex items-center justify-center group">
