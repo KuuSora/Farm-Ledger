@@ -207,10 +207,10 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
       hint: "Manage your crops and fields." 
     },
     { 
-      view: "equipment", 
+      view: "hydroponics", 
       label: "Hydroponics", 
       icon: <HydroponicsIcon />, 
-      hint: "Track your hydroponic machinery." 
+      hint: "Manage your hydroponic machineries." 
     },
     { 
       view: "transactions", 
