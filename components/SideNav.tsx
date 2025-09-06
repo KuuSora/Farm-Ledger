@@ -7,161 +7,200 @@ interface NavItemProps {
   icon: React.ReactNode;
   label: string;
   isActive: boolean;
+  isExpanded: boolean;
   onClick: () => void;
   hasNotification?: boolean;
   badge?: string | number;
-  isMobile?: boolean;
 }
 
 const NavItem: React.FC<NavItemProps> = ({
   icon,
   label,
   isActive,
+  isExpanded,
   onClick,
   hasNotification = false,
-  badge,
-  isMobile = false
+  badge
 }) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+
   return (
-    <button
-      onClick={onClick}
-      className={`
-        flex items-center justify-center h-12 px-4 rounded-2xl cursor-pointer
-        transition-all duration-300 ease-out relative overflow-hidden
-        backdrop-blur-sm border will-change-transform group
-        ${isMobile ? 'w-full' : 'min-w-12'}
-        ${isActive 
-          ? "bg-gradient-to-r from-green-600 via-green-700 to-emerald-700 text-white shadow-xl shadow-green-500/30 border-green-400/50 transform scale-[1.02]" 
-          : "text-green-700 hover:bg-green-50/80 hover:text-green-800 hover:shadow-lg hover:border-green-200/60 border-transparent hover:scale-[1.01]"
-        }
-        active:scale-[0.98] select-none
-      `}
-    >
-      {/* Glowing effect for active item */}
-      {isActive && (
-        <>
-          <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 via-green-500/20 to-emerald-500/20 rounded-2xl blur-sm" />
-          <div className="absolute left-1 top-2 bottom-2 w-1 bg-white/90 rounded-full" />
-        </>
-      )}
-      
-      {/* Icon container */}
-      <div className="relative flex items-center justify-center w-8 h-8 flex-shrink-0">
-        <div className={`
-          transition-all duration-300 ease-out relative will-change-transform
+    <div className="relative">
+      <button
+        onClick={onClick}
+        onMouseEnter={() => !isExpanded && setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
+        className={`
+          relative w-full flex items-center h-12 px-3 rounded-xl cursor-pointer
+          transition-all duration-200 ease-out group overflow-hidden
           ${isActive 
-            ? 'scale-110 drop-shadow-sm' 
-            : 'group-hover:scale-110 group-hover:drop-shadow-sm'
+            ? "bg-green-600 text-white shadow-lg shadow-green-600/25" 
+            : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+          }
+          active:scale-[0.98] select-none
+        `}
+      >
+        {/* Active indicator */}
+        {isActive && (
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full" />
+        )}
+        
+        {/* Icon container - always visible */}
+        <div className={`
+          relative flex items-center justify-center w-8 h-8 flex-shrink-0
+          ${isExpanded ? 'mr-3' : 'mx-auto'}
+          transition-all duration-200
+        `}>
+          <div className={`
+            transition-all duration-200 ease-out
+            ${isActive ? 'scale-110' : 'group-hover:scale-105'}
+          `}>
+            {icon}
+          </div>
+          
+          {/* Notification dot */}
+          {hasNotification && (
+            <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white shadow-sm">
+              <div className="absolute inset-0 bg-red-500 rounded-full animate-pulse" />
+            </div>
+          )}
+          
+          {/* Badge */}
+          {badge && (
+            <div className="absolute -top-1 -right-1 min-w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center border-2 border-white font-medium leading-none">
+              {badge}
+            </div>
+          )}
+        </div>
+
+        {/* Label - only visible when expanded */}
+        <span className={`
+          font-medium text-sm whitespace-nowrap transition-all duration-200
+          ${isExpanded 
+            ? "opacity-100 translate-x-0" 
+            : "opacity-0 translate-x-2 absolute"
           }
         `}>
-          {icon}
-        </div>
-        
-        {/* Notification dot */}
-        {hasNotification && (
-          <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-full border-2 border-white shadow-lg animate-pulse">
-            <div className="absolute inset-0 bg-orange-400 rounded-full animate-ping opacity-75" />
-          </div>
-        )}
-        
-        {/* Badge */}
-        {badge && (
-          <div className="absolute -top-1 -right-1 min-w-5 h-5 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs rounded-full flex items-center justify-center border-2 border-white font-semibold shadow-lg">
-            {badge}
-          </div>
-        )}
-      </div>
-
-      {/* Label for mobile */}
-      {isMobile && (
-        <span className="ml-3 font-semibold text-sm tracking-wide truncate">
           {label}
         </span>
-      )}
 
-      {/* Tooltip for desktop */}
-      {!isMobile && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+        {/* Hover effect */}
+        <div className={`
+          absolute inset-0 bg-slate-50 rounded-xl transition-opacity duration-200 pointer-events-none -z-10
+          ${!isActive && 'group-hover:opacity-100 opacity-0'}
+        `} />
+      </button>
+
+      {/* Tooltip for collapsed state */}
+      {showTooltip && !isExpanded && (
+        <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 pointer-events-none">
           <div className="bg-slate-900 text-white px-3 py-2 rounded-lg text-sm font-medium shadow-xl whitespace-nowrap">
             {label}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-900 rotate-45 -mt-1" />
+            <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-900" />
           </div>
         </div>
       )}
-    </button>
+    </div>
   );
 };
 
-interface TopNavProps {
-  // No need for setIsExpanded since we're not expanding
+interface SideNavProps {
+  // Props can be added here if needed
 }
 
-const TopNav: React.FC<TopNavProps> = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const { viewState, setViewState, triggerUIInteraction } = useFarm();
+const SideNav: React.FC<SideNavProps> = () => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const { viewState, setViewState } = useFarm();
 
-  // Handle outside click for mobile menu
+  // Handle outside click for mobile
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMobileMenuOpen(false);
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+        if (isMobileOpen && window.innerWidth < 1024) {
+          setIsMobileOpen(false);
+        }
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMobileOpen]);
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsMobileOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const handleNav = (view: View, type?: TransactionType) => {
     setViewState({ view, type });
-    setIsMobileMenuOpen(false);
+    setIsMobileOpen(false);
+  };
+
+  const handleMouseEnter = () => {
+    if (window.innerWidth >= 1024) {
+      setIsExpanded(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (window.innerWidth >= 1024) {
+      setIsExpanded(false);
+    }
   };
 
   const navItems = [
     { 
       view: "dashboard", 
       label: "Dashboard", 
-      icon: <DashboardIcon />, 
+      icon: <DashboardIcon className="w-5 h-5" />, 
       hasNotification: true
     },
     { 
       view: "crops", 
       label: "Crops", 
-      icon: <CropsIcon />
+      icon: <CropsIcon className="w-5 h-5" />
     },
     { 
       view: "equipment", 
       label: "Hydroponics", 
-      icon: <HydroponicsIcon />
+      icon: <HydroponicsIcon className="w-5 h-5" />
     },
     { 
       view: "transactions", 
       type: TransactionType.INCOME, 
       label: "Income", 
-      icon: <IncomeIcon />, 
+      icon: <IncomeIcon className="w-5 h-5" />, 
       badge: "12"
     },
     { 
       view: "transactions", 
       type: TransactionType.EXPENSE, 
       label: "Expenses", 
-      icon: <ExpensesIcon />
+      icon: <ExpensesIcon className="w-5 h-5" />
     },
     { 
       view: "reports", 
       label: "Reports", 
-      icon: <ReportsIcon />
+      icon: <ReportsIcon className="w-5 h-5" />
     },
     { 
       view: "summary", 
       label: "Summary", 
-      icon: <DocumentIcon />
+      icon: <DocumentIcon className="w-5 h-5" />
     },
     { 
       view: "farm-ai", 
       label: "Farm AI", 
-      icon: <FarmAIIcon />, 
+      icon: <FarmAIIcon className="w-5 h-5" />, 
       hasNotification: true
     },
   ];
@@ -169,141 +208,87 @@ const TopNav: React.FC<TopNavProps> = () => {
   const settingsItem = {
     view: "settings",
     label: "Settings",
-    icon: <SettingsIcon />
+    icon: <SettingsIcon className="w-5 h-5" />
   };
 
   return (
-    <header className="relative">
-      {/* Top Navigation Bar */}
-      <div className="bg-gradient-to-r from-green-50/95 via-emerald-50/90 to-green-100/95 backdrop-blur-xl border-b border-green-200/60 shadow-lg">
-        <div className="px-4 sm:px-6">
-          <div className="flex items-center justify-between h-20">
-            {/* Logo Section */}
-            <div className="flex items-center gap-4">
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-br from-green-400/30 to-emerald-500/30 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-300" />
-                <div className="relative w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/25 group-hover:scale-105 transition-transform duration-300 border border-green-400/20">
-                  <CropsIcon className="w-7 h-7 text-white drop-shadow-sm" />
-                </div>
-              </div>
-              <div>
-                <h1 className="text-xl font-black bg-gradient-to-r from-green-800 via-green-700 to-emerald-800 bg-clip-text text-transparent leading-tight">
-                  FARMY'S
-                </h1>
-                <p className="text-sm font-semibold text-green-600 -mt-1">LEDGER</p>
-              </div>
+    <>
+      {/* Mobile menu button */}
+      <button
+        onClick={() => setIsMobileOpen(!isMobileOpen)}
+        className={`
+          fixed top-4 left-4 z-50 lg:hidden
+          w-11 h-11 bg-white border border-slate-200 shadow-lg
+          flex items-center justify-center transition-all duration-200
+          hover:scale-105 active:scale-95 rounded-xl
+          ${isMobileOpen ? 'text-green-600' : 'text-slate-600 hover:text-slate-900'}
+        `}
+      >
+        <div className="relative w-5 h-5">
+          <span className={`
+            absolute top-1 left-0 w-5 h-0.5 bg-current rounded-full
+            transition-all duration-200 origin-center
+            ${isMobileOpen ? 'rotate-45 top-2.5' : ''}
+          `} />
+          <span className={`
+            absolute top-2.5 left-0 w-5 h-0.5 bg-current rounded-full
+            transition-all duration-200
+            ${isMobileOpen ? 'opacity-0 scale-0' : 'opacity-100 scale-100'}
+          `} />
+          <span className={`
+            absolute top-4 left-0 w-5 h-0.5 bg-current rounded-full
+            transition-all duration-200 origin-center
+            ${isMobileOpen ? '-rotate-45 top-2.5' : ''}
+          `} />
+        </div>
+      </button>
+
+      {/* Sidebar */}
+      <aside
+        ref={sidebarRef}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        className={`
+          fixed top-0 left-0 h-full bg-white border-r border-slate-200 shadow-xl z-40
+          flex flex-col transition-all duration-300 ease-out
+          ${isExpanded ? 'w-64' : 'w-16'}
+          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}
+      >
+        {/* Header */}
+        <div className={`
+          flex items-center h-16 px-4 border-b border-slate-200 bg-slate-50
+          ${isExpanded ? 'justify-start' : 'justify-center'}
+          transition-all duration-300
+        `}>
+          <div className="flex items-center gap-3">
+            {/* Logo */}
+            <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
+              <CropsIcon className="w-5 h-5 text-white" />
             </div>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-2">
-              {navItems.map((item) => (
-                <NavItem
-                  key={`${item.view}-${item.type || ''}`}
-                  label={item.label}
-                  icon={item.icon}
-                  isActive={
-                    viewState.view === item.view &&
-                    (item.type ? viewState.type === item.type : true)
-                  }
-                  onClick={() => handleNav(item.view as View, item.type as TransactionType)}
-                  hasNotification={item.hasNotification}
-                  badge={item.badge}
-                />
-              ))}
-              
-              {/* Separator */}
-              <div className="w-px h-8 bg-green-200/60 mx-2" />
-              
-              {/* Settings */}
-              <NavItem
-                label={settingsItem.label}
-                icon={settingsItem.icon}
-                isActive={viewState.view === settingsItem.view}
-                onClick={() => handleNav(settingsItem.view as View)}
-              />
-            </div>
-
-            {/* User Profile & Mobile Menu Button */}
-            <div className="flex items-center gap-4">
-              {/* User Profile (Desktop) */}
-              <div className="hidden md:flex items-center gap-3">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-green-400/30 to-emerald-500/30 rounded-2xl blur-md" />
-                  <div className="relative w-10 h-10 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-lg shadow-green-500/25 border border-green-400/20">
-                    🚜
-                  </div>
-                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full shadow-sm" />
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-bold text-green-800">Farmer John</p>
-                  <p className="text-xs text-green-600">Online</p>
-                </div>
-              </div>
-
-              {/* Mobile Menu Button */}
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden w-12 h-12 bg-green-50 hover:bg-green-100 border border-green-200/50 hover:border-green-300/50 text-green-700 rounded-2xl flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95"
-              >
-                <div className="relative w-6 h-6">
-                  <span className={`
-                    absolute top-1.5 left-0 w-6 h-0.5 bg-current rounded-full
-                    transition-all duration-300 origin-center
-                    ${isMobileMenuOpen ? 'rotate-45 top-3' : ''}
-                  `} />
-                  <span className={`
-                    absolute top-3 left-0 w-6 h-0.5 bg-current rounded-full
-                    transition-all duration-300
-                    ${isMobileMenuOpen ? 'opacity-0 scale-0' : 'opacity-100 scale-100'}
-                  `} />
-                  <span className={`
-                    absolute top-4.5 left-0 w-6 h-0.5 bg-current rounded-full
-                    transition-all duration-300 origin-center
-                    ${isMobileMenuOpen ? '-rotate-45 top-3' : ''}
-                  `} />
-                </div>
-              </button>
+            
+            {/* Brand name */}
+            <div className={`
+              transition-all duration-300
+              ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 absolute'}
+            `}>
+              <h1 className="text-lg font-bold text-slate-900 leading-none">
+                FARMY'S
+              </h1>
+              <p className="text-xs font-medium text-green-600 -mt-0.5">LEDGER</p>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Mobile Menu Dropdown */}
-      <div
-        ref={menuRef}
-        className={`
-          absolute top-full left-0 right-0 z-50 md:hidden
-          bg-gradient-to-b from-green-50/98 to-emerald-50/95 backdrop-blur-xl
-          border-b border-green-200/60 shadow-2xl
-          transition-all duration-300 ease-out
-          ${isMobileMenuOpen 
-            ? 'opacity-100 translate-y-0 visible' 
-            : 'opacity-0 -translate-y-4 invisible'
-          }
-        `}
-      >
-        <div className="p-4">
-          {/* User Profile (Mobile) */}
-          <div className="flex items-center gap-4 p-4 bg-green-100/60 rounded-2xl mb-4">
-            <div className="relative">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-lg">
-                🚜
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full" />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-green-800">Farmer John</p>
-              <p className="text-xs text-green-600">farmer@farmyledger.com</p>
-            </div>
-          </div>
-
-          {/* Mobile Navigation Items */}
-          <div className="space-y-2">
+        {/* Navigation */}
+        <nav className="flex-1 px-3 py-4 overflow-y-auto">
+          <div className="space-y-1">
             {navItems.map((item) => (
               <NavItem
-                key={`${item.view}-${item.type || ''}-mobile`}
+                key={`${item.view}-${item.type || ''}`}
                 label={item.label}
                 icon={item.icon}
+                isExpanded={isExpanded}
                 isActive={
                   viewState.view === item.view &&
                   (item.type ? viewState.type === item.type : true)
@@ -311,34 +296,55 @@ const TopNav: React.FC<TopNavProps> = () => {
                 onClick={() => handleNav(item.view as View, item.type as TransactionType)}
                 hasNotification={item.hasNotification}
                 badge={item.badge}
-                isMobile={true}
               />
             ))}
-            
-            {/* Separator */}
-            <div className="h-px bg-green-200/60 my-4" />
-            
-            {/* Settings (Mobile) */}
-            <NavItem
-              label={settingsItem.label}
-              icon={settingsItem.icon}
-              isActive={viewState.view === settingsItem.view}
-              onClick={() => handleNav(settingsItem.view as View)}
-              isMobile={true}
-            />
+          </div>
+        </nav>
+
+        {/* Settings */}
+        <div className="px-3 py-4 border-t border-slate-200 bg-slate-50/50">
+          <NavItem
+            label={settingsItem.label}
+            icon={settingsItem.icon}
+            isExpanded={isExpanded}
+            isActive={viewState.view === settingsItem.view}
+            onClick={() => handleNav(settingsItem.view as View)}
+          />
+        </div>
+
+        {/* User profile */}
+        <div className={`
+          p-4 border-t border-slate-200 bg-slate-50
+          ${isExpanded ? 'block' : 'hidden'}
+        `}>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white text-sm font-medium shadow-sm flex-shrink-0">
+              FJ
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-slate-900 truncate">Farmer John</p>
+              <p className="text-xs text-slate-500 truncate">farmer@example.com</p>
+            </div>
+            <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
           </div>
         </div>
-      </div>
+      </aside>
 
-      {/* Mobile Backdrop */}
-      {isMobileMenuOpen && (
+      {/* Mobile overlay */}
+      {isMobileOpen && (
         <div 
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
-          onClick={() => setIsMobileMenuOpen(false)}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden transition-opacity duration-300"
+          onClick={() => setIsMobileOpen(false)}
         />
       )}
-    </header>
+
+      {/* Content spacer for desktop */}
+      <div className={`
+        hidden lg:block transition-all duration-300
+        ${isExpanded ? 'w-64' : 'w-16'}
+      `} />
+    </>
   );
 };
 
-export default TopNav;
+export default SideNav;
