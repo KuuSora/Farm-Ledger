@@ -183,7 +183,7 @@ const Dashboard: React.FC = () => {
 
   const handleAddCropClick = () => setViewState({ view: 'crops', payload: { openForm: true } });
   const handleAddTransactionClick = (type: TransactionType) => setViewState({ view: 'transactions', type, payload: { openForm: true } });
-  const handleAddHydroponicsClick = () => setViewState({ view: 'hydroponics', payload: { openForm: true } });
+  const handleHydroponicsClick = () => setViewState({ view: 'hydroponics', payload: {} });
   const handleCropClick = (crop: Crop) => setViewState({ view: 'crops', payload: { detailedCropId: crop.id } });
   const handleTransactionClick = (tx: Transaction) => setViewState({ view: 'transactions', type: tx.type, payload: { selectedTransactionId: tx.id } });
   const handleEquipmentClick = (item: Equipment) => setViewState({ view: 'equipment', payload: { detailedEquipmentId: item.id } });
@@ -219,15 +219,15 @@ const Dashboard: React.FC = () => {
           onMouseEnter={() => triggerUIInteraction('Add a new crop or field to track.')}
           onMouseLeave={clearHint}
         />
-        <QuickActionButton
-          icon={<HydroponicsIcon className="w-6 h-6 text-emerald-300" />}
-          label="Add Hydroponics"
-          onClick={handleAddHydroponicsClick}
-          className="bg-gradient-to-tr from-emerald-600 to-emerald-500"
-          onMouseEnter={() => triggerUIInteraction('Add a new hydroponics bed/tower to track.')}
+        <QuickActionButton 
+          icon={<HydroponicsIcon className="w-8 h-8 text-green-500" />}
+          label="Hydroponics"
+          onClick={handleHydroponicsClick}
+          className="bg-green-500 hover:bg-green-600"
+          onMouseEnter={() => triggerUIInteraction('Manage your hydroponic machineries and systems.')}
           onMouseLeave={clearHint}
         />
-      </div>
+     </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
