@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import SideNav from './components/SideNav';
 import Dashboard from './views/Dashboard';
 import Crops from './views/Crops';
+import Hydroponics from './views/Hydroponics';
 import Transactions from './views/Transactions';
 import Reports from './views/Reports';
 import Settings from './views/Settings';
@@ -16,13 +17,13 @@ import FloatingAIChat from './components/FloatingAIChat';
 const viewTitles: Record<View | 'hydroponics', string> = {
   'dashboard': 'Dashboard',
   'crops': 'Crops Management',
+  'hydroponics': 'Hydroponics Machineries', // ✅ Added this
   'transactions': 'Transactions',
   'reports': 'Reports & Analytics',
   'settings': 'Settings',
   'summary': 'Summary & Export',
   'farm-ai': 'Farm AI Tools',
   'equipment': 'Equipment',
-  'hydroponics': 'Hydroponic Machineries', // ✅ Added this
 };
 
 const App: React.FC = () => {
@@ -58,8 +59,7 @@ const App: React.FC = () => {
         return <FarmAI />;
       case 'equipment':
         return <Equipment key={key} payload={payload} />;
-      case 'hydroponics': // ✅ New route
-        return <Equipment key={key} payload={payload} />;
+      
       default:
         return <Dashboard />;
     }
@@ -97,7 +97,9 @@ export default App;
         return <Dashboard />;
       case 'crops':
         return <Crops key={key} payload={payload} />;
-      case 'transactions':
+        case 'hydroponics': // ✅ New route
+        return <Hydroponics key={key} payload={payload} />;
+      case 'transactions:
         return <Transactions key={key} defaultTransactionType={type || TransactionType.INCOME} payload={payload} />;
       case 'reports':
         return <Reports />;
