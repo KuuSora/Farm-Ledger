@@ -183,7 +183,7 @@ const Dashboard: React.FC = () => {
   const formatDate = (date: Date) => date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   const handleAddCropClick = () => setViewState({ view: 'crops', payload: { openForm: true } });
   const handleAddTransactionClick = (type: TransactionType) => setViewState({ view: 'transactions', type, payload: { openForm: true } });
-  const handleHydroponicsClick = () => setViewState({ view: 'hydroponics', payload: { openForm: true } });
+  const handleAddHydroponicsClick = () => setViewState({ view: 'hydroponics', payload: { openForm: true } });
   const handleCropClick = (crop: Crop) => setViewState({ view: 'crops', payload: { detailedCropId: crop.id } });
   
   const handleTransactionClick = (tx: Transaction) => setViewState({ view: 'transactions', type: tx.type, payload: { selectedTransactionId: tx.id } });
