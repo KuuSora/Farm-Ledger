@@ -111,12 +111,12 @@ const NavItem: React.FC<NavItemProps> = ({
         `} />
       </div>
 
-      {/* Enhanced tooltip */}
+      {/* Tooltip */}
       {showTooltip && !isExpanded && (
-        <div className="absolute left-20 top-1/2 -translate-y-1/2 z-50 animate-in slide-in-from-left-2 duration-200">
-          <div className="bg-green-900/95 backdrop-blur-xl text-white px-4 py-2.5 rounded-xl text-sm font-medium shadow-2xl whitespace-nowrap border border-green-700/50">
+        <div className="absolute left-16 top-1/2 -translate-y-1/2 z-50 animate-in slide-in-from-left-2 duration-200">
+          <div className="bg-slate-900 text-white px-3 py-2 rounded-lg text-sm font-medium shadow-xl whitespace-nowrap">
             {label}
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1.5 w-3 h-3 bg-green-900/95 rotate-45 border-l border-b border-green-700/50" />
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-slate-900 rotate-45" />
           </div>
         </div>
       )}
