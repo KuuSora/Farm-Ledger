@@ -402,25 +402,26 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           </div>
         </div>
 
-        {/* Enhanced user profile section - responsive sizing */}
         <div className={`
-          border-t border-gray-200/50 p-3 lg:p-5 bg-gradient-to-r from-gray-50/60 to-gray-100/40
+          border-t border-gray-200 p-3 lg:p-5 bg-gray-50
           ${isExpanded ? 'opacity-100' : 'opacity-0'}
-          transition-opacity duration-500
+          transition-opacity duration-300
         `}>
           <div className="flex items-center gap-3">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-indigo-500/20 rounded-xl lg:rounded-2xl blur-md" />
-              <div className="relative w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl lg:rounded-2xl flex items-center justify-center text-white font-black text-sm lg:text-lg shadow-lg shadow-blue-500/20 border border-blue-400/20">
-                🚜
-              </div>
-              <div className="absolute -bottom-0.5 -right-0.5 lg:-bottom-1 lg:-right-1 w-3 h-3 lg:w-4 lg:h-4 bg-green-500 border-2 border-white rounded-full shadow-sm" />
+            <div className="w-10 h-10 lg:w-12 lg:h-12 bg-blue-600 rounded-xl lg:rounded-2xl flex items-center justify-center text-white font-bold text-sm lg:text-lg shadow-md">
+              🚜
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs lg:text-sm font-bold text-gray-800 truncate">Farmer John</p>
               <p className="text-xs text-gray-600 truncate">farmer@farmyledger.com</p>
             </div>
-            <button className="w-6 h-6 lg:w-8 lg:h-8 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100/60 backdrop-blur-sm transition-all duration-300 flex items-center justify-center group">
+            <button className="w-6 h-6 lg:w-8 lg:h-8 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center">
+              <svg className="w-3 h-3 lg:w-4 lg:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+              </svg>
+            </button>
+          </div>
+        </div> transition-all duration-300 flex items-center justify-center group">
               <svg className="w-3 h-3 lg:w-4 lg:h-4 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
               </svg>
@@ -429,69 +430,16 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
         </div>
       </nav>
 
-            {/* Enhanced mobile overlay with better backdrop */}
+      {/* Mobile overlay - simplified */}
       {isMobileOpen && (
         <div 
-          className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-30 lg:hidden"
-          style={{ 
-            animation: 'fadeIn 0.3s ease-out',
-            WebkitBackdropFilter: 'blur(4px)',
-            backdropFilter: 'blur(4px)'
-          }}
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
 
       <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        
-        .animate-in {
-          animation: slideIn 0.2s ease-out;
-        }
-        
-        .slide-in-from-left-2 {
-          animation: slideInFromLeft 0.2s ease-out;
-        }
-        
-        @keyframes slideIn {
-          from { 
-            opacity: 0;
-            transform: scale(0.95);
-          }
-          to { 
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        
-        @keyframes slideInFromLeft {
-          from { 
-            opacity: 0;
-            transform: translateX(-8px);
-          }
-          to { 
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-
-        /* Enhanced mobile viewport optimization */
-        @media (max-width: 1023px) {
-          .transition-all {
-            transition-duration: 0.25s;
-          }
-        }
-
-        /* Hardware acceleration for smooth scrolling */
-        .overflow-y-auto {
-          overflow-scrolling: touch;
-          -webkit-overflow-scrolling: touch;
-        }
-
-        /* Enhanced custom scrollbar */
+        /* Custom scrollbar */
         .overflow-y-auto::-webkit-scrollbar {
           width: 4px;
         }
@@ -505,15 +453,6 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           background: transparent;
         }
 
-        .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-          background-color: rgba(156, 163, 175, 0.8);
-        }
-
-        /* Performance optimizations */
-        .will-change-transform {
-          will-change: transform;
-        }
-
         /* Reduce motion for accessibility */
         @media (prefers-reduced-motion: reduce) {
           * {
@@ -521,15 +460,6 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
             animation-iteration-count: 1 !important;
             transition-duration: 0.01ms !important;
           }
-        }
-
-        /* Enhanced responsive breakpoints */
-        @media (min-width: 1024px) and (max-width: 1279px) {
-          /* Tablet landscape optimizations */
-        }
-        
-        @media (min-width: 1280px) {
-          /* Desktop optimizations */
         }
       `}</style>
     </>
