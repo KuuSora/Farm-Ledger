@@ -41,26 +41,27 @@ const NavItem: React.FC<NavItemProps> = ({
           setShowTooltip(false);
         }}
         className={`
-          flex items-center h-12 px-4 mx-3 rounded-2xl cursor-pointer
-          transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] relative overflow-hidden
-          backdrop-blur-sm border will-change-transform
+          flex items-center h-12 lg:h-14 px-3 lg:px-4 mx-2 lg:mx-3 rounded-xl lg:rounded-2xl cursor-pointer
+          transition-all duration-300 ease-out relative overflow-hidden
+          backdrop-blur-sm border will-change-transform select-none
           ${isActive 
-            ? "bg-gradient-to-r from-green-600 via-green-700 to-emerald-700 text-white shadow-xl shadow-green-500/30 border-green-400/50 transform scale-[1.02]" 
-            : "text-green-700 hover:bg-green-50/80 hover:text-green-800 hover:shadow-lg hover:border-green-200/60 border-transparent hover:scale-[1.01]"
+            ? "bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 text-white shadow-xl shadow-blue-500/30 border-blue-400/30 scale-[1.02] lg:scale-[1.03]" 
+            : "text-gray-700 hover:bg-white/80 hover:text-gray-900 hover:shadow-lg hover:border-gray-200/60 border-transparent hover:scale-[1.01]"
           }
-          active:scale-[0.98] select-none group
+          active:scale-[0.98] group
         `}
       >
-        {/* Glowing effect for active item */}
+        {/* Enhanced active state indicator */}
         {isActive && (
           <>
-            <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 via-green-500/20 to-emerald-500/20 rounded-2xl blur-sm" />
-            <div className="absolute left-1 top-2 bottom-2 w-1 bg-white/90 rounded-full" />
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-indigo-500/20 to-purple-500/20 rounded-xl lg:rounded-2xl blur-sm" />
+            <div className="absolute left-1 top-2 bottom-2 w-1 bg-white/90 rounded-full shadow-sm" />
+            <div className="absolute inset-0 rounded-xl lg:rounded-2xl border border-white/20" />
           </>
         )}
         
-        {/* Icon container with enhanced styling */}
-        <div className="relative flex items-center justify-center w-8 h-8 mr-3 flex-shrink-0">
+        {/* Icon container with enhanced responsive sizing */}
+        <div className="relative flex items-center justify-center w-6 h-6 lg:w-8 lg:h-8 mr-2 lg:mr-3 flex-shrink-0">
           <div className={`
             transition-all duration-300 ease-out relative will-change-transform
             ${isActive 
@@ -68,32 +69,34 @@ const NavItem: React.FC<NavItemProps> = ({
               : 'group-hover:scale-110 group-hover:drop-shadow-sm'
             }
           `}>
-            {icon}
-            {/* Subtle glow effect */}
-            {(isActive || false) && (
-              <div className="absolute inset-0 bg-white/30 rounded-lg blur-md -z-10" />
+            <div className="w-5 h-5 lg:w-6 lg:h-6">
+              {icon}
+            </div>
+            {/* Glow effect for active state */}
+            {isActive && (
+              <div className="absolute inset-0 bg-white/20 rounded-lg blur-md -z-10" />
             )}
           </div>
           
-          {/* Enhanced notification dot */}
+          {/* Enhanced notification dot - responsive sizing */}
           {hasNotification && (
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-full border-2 border-white shadow-lg animate-pulse">
+            <div className="absolute -top-1 -right-1 w-2.5 h-2.5 lg:w-3 lg:h-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-full border border-white shadow-lg animate-pulse">
               <div className="absolute inset-0 bg-orange-400 rounded-full animate-ping opacity-75" />
             </div>
           )}
           
-          {/* Enhanced badge */}
+          {/* Enhanced badge - responsive sizing */}
           {badge && (
-            <div className="absolute -top-1 -right-1 min-w-5 h-5 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs rounded-full flex items-center justify-center border-2 border-white font-semibold shadow-lg">
-              {badge}
+            <div className="absolute -top-1 -right-1 min-w-4 h-4 lg:min-w-5 lg:h-5 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs rounded-full flex items-center justify-center border border-white font-semibold shadow-lg">
+              <span className="text-xs lg:text-sm">{badge}</span>
             </div>
           )}
         </div>
 
-        {/* Label with smooth animation */}
+        {/* Label with responsive text sizing */}
         <span 
           className={`
-            font-semibold text-sm tracking-wide truncate transition-all duration-300 ease-out will-change-transform
+            font-semibold text-xs lg:text-sm tracking-wide truncate transition-all duration-300 ease-out will-change-transform
             ${isExpanded 
               ? "opacity-100 translate-x-0 max-w-none" 
               : "opacity-0 translate-x-4 max-w-0 overflow-hidden"
@@ -103,20 +106,20 @@ const NavItem: React.FC<NavItemProps> = ({
           {label}
         </span>
 
-        {/* Ripple effect on hover */}
+        {/* Hover ripple effect */}
         <div className={`
-          absolute inset-0 bg-gradient-to-r from-green-500/10 via-green-400/10 to-emerald-500/10 rounded-2xl
+          absolute inset-0 bg-gradient-to-r from-blue-500/10 via-indigo-400/10 to-purple-500/10 rounded-xl lg:rounded-2xl
           transition-all duration-500 pointer-events-none
           ${!isActive ? 'opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100' : 'opacity-0'}
         `} />
       </div>
 
-      {/* Tooltip */}
+      {/* Enhanced responsive tooltip */}
       {showTooltip && !isExpanded && (
-        <div className="absolute left-16 top-1/2 -translate-y-1/2 z-50 animate-in slide-in-from-left-2 duration-200">
-          <div className="bg-slate-900 text-white px-3 py-2 rounded-lg text-sm font-medium shadow-xl whitespace-nowrap">
+        <div className="absolute left-14 lg:left-16 top-1/2 -translate-y-1/2 z-50 animate-in slide-in-from-left-2 duration-200">
+          <div className="bg-gray-900 text-white px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg text-xs lg:text-sm font-medium shadow-xl whitespace-nowrap">
             {label}
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-slate-900 rotate-45" />
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-900 rotate-45" />
           </div>
         </div>
       )}
@@ -139,7 +142,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
-        if (isMobileOpen && window.innerWidth < 768) {
+        if (isMobileOpen && window.innerWidth < 1024) {
           setIsMobileOpen(false);
         }
       }
@@ -149,10 +152,10 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isMobileOpen]);
 
-  // Handle window resize
+  // Enhanced window resize handler
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 768) {
+      if (window.innerWidth >= 1024) {
         setIsMobileOpen(false);
       }
     };
@@ -162,14 +165,14 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
   }, []);
 
   const handleMouseEnter = () => {
-    if (window.innerWidth >= 768 && !isCollapsed) {
+    if (window.innerWidth >= 1024 && !isCollapsed) {
       setIsHovered(true);
       setIsExpanded(true);
     }
   };
 
   const handleMouseLeave = () => {
-    if (window.innerWidth >= 768 && !isCollapsed) {
+    if (window.innerWidth >= 1024 && !isCollapsed) {
       setIsHovered(false);
       setIsExpanded(false);
     }
@@ -259,78 +262,69 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
 
   return (
     <>
-      {/* Enhanced mobile menu button */}
+      {/* Enhanced mobile menu button with better positioning */}
       <button
         onClick={toggleMobile}
         className={`
-          fixed top-5 left-5 z-50 md:hidden
-          w-14 h-14 backdrop-blur-xl border shadow-2xl
-          flex items-center justify-center transition-all duration-500 ease-out will-change-transform
+          fixed top-4 left-4 z-50 lg:hidden
+          w-12 h-12 backdrop-blur-xl border shadow-2xl
+          flex items-center justify-center transition-all duration-300 ease-out will-change-transform
           active:scale-90 hover:scale-105
           ${isMobileOpen 
-            ? 'bg-gradient-to-br from-green-600 to-emerald-700 border-green-400/50 text-white shadow-green-500/25 rotate-90' 
-            : 'bg-green-50/90 border-green-200/50 text-green-700 hover:text-green-800 hover:bg-green-50 hover:border-green-300/50'
+            ? 'bg-gradient-to-br from-blue-500 to-indigo-600 border-blue-400/50 text-white shadow-blue-500/25 rotate-90' 
+            : 'bg-white/90 border-gray-200/50 text-gray-700 hover:text-gray-900 hover:bg-white hover:border-gray-300/50'
           }
-          rounded-2xl
+          rounded-xl
         `}
       >
-        <div className="relative w-6 h-6">
+        <div className="relative w-5 h-5">
           {/* Animated hamburger/close icon */}
           <span className={`
-            absolute top-1.5 left-0 w-6 h-0.5 bg-current rounded-full
+            absolute top-1 left-0 w-5 h-0.5 bg-current rounded-full
             transition-all duration-300 origin-center will-change-transform
-            ${isMobileOpen ? 'rotate-45 top-3' : ''}
+            ${isMobileOpen ? 'rotate-45 top-2.5' : ''}
           `} />
           <span className={`
-            absolute top-3 left-0 w-6 h-0.5 bg-current rounded-full
+            absolute top-2.5 left-0 w-5 h-0.5 bg-current rounded-full
             transition-all duration-300 will-change-transform
             ${isMobileOpen ? 'opacity-0 scale-0' : 'opacity-100 scale-100'}
           `} />
           <span className={`
-            absolute top-4.5 left-0 w-6 h-0.5 bg-current rounded-full
+            absolute top-4 left-0 w-5 h-0.5 bg-current rounded-full
             transition-all duration-300 origin-center will-change-transform
-            ${isMobileOpen ? '-rotate-45 top-3' : ''}
+            ${isMobileOpen ? '-rotate-45 top-2.5' : ''}
           `} />
         </div>
         
         {/* Glow effect when active */}
         {isMobileOpen && (
-          <div className="absolute inset-0 bg-gradient-to-br from-green-400/30 to-emerald-500/30 rounded-2xl blur-xl -z-10 animate-pulse" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/30 to-indigo-500/30 rounded-xl blur-xl -z-10 animate-pulse" />
         )}
       </button>
 
-      {/* Enhanced sidebar with farm-themed design */}
+      {/* Enhanced sidebar with modern glass morphism design */}
       <nav
         ref={sidebarRef}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         className={`
           fixed top-0 left-0 h-full flex flex-col z-40
-          backdrop-blur-2xl bg-gradient-to-b from-green-50/95 via-emerald-50/90 to-green-100/95
-          border-r border-green-200/60 shadow-2xl shadow-green-900/10
-          transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] will-change-transform
-          ${isExpanded ? 'w-72' : 'w-20'}
-          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+          backdrop-blur-xl bg-white/90 border-r border-gray-200/50 shadow-2xl shadow-gray-900/5
+          transition-all duration-500 ease-out will-change-transform
+          ${isExpanded ? 'w-64 lg:w-72' : 'w-16 lg:w-20'}
+          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
-        style={{
-          background: `linear-gradient(180deg, 
-            rgba(240, 253, 244, 0.95) 0%, 
-            rgba(236, 253, 245, 0.90) 50%, 
-            rgba(220, 252, 231, 0.95) 100%)`,
-          WebkitBackdropFilter: 'blur(20px)',
-          backdropFilter: 'blur(20px)'
-        }}
       >
-        {/* Enhanced farm-themed header */}
-        <div className="flex items-center justify-between h-20 px-5 border-b border-green-200/60 bg-gradient-to-r from-green-100/60 to-emerald-100/60">
-          <div className="flex items-center gap-4">
+        {/* Enhanced header with better spacing */}
+        <div className="flex items-center justify-between h-16 lg:h-20 px-3 lg:px-5 border-b border-gray-200/50 bg-gradient-to-r from-gray-50/60 to-gray-100/40">
+          <div className="flex items-center gap-3">
             <div className="relative group">
-              {/* Farm logo container with enhanced styling */}
-              <div className="absolute inset-0 bg-gradient-to-br from-green-400/30 to-emerald-500/30 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-300" />
-              <div className="relative w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/25 group-hover:scale-105 transition-transform duration-300 border border-green-400/20 will-change-transform">
-                {/* Farm-themed logo - visible when collapsed */}
+              {/* Logo container with enhanced styling */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-indigo-500/20 rounded-xl lg:rounded-2xl blur-lg group-hover:blur-xl transition-all duration-300" />
+              <div className="relative w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300 border border-blue-400/20">
+                {/* Logo - visible when collapsed */}
                 <div className={`transition-all duration-300 will-change-transform ${isExpanded ? 'opacity-0 scale-0' : 'opacity-100 scale-100'}`}>
-                  <svg className="w-7 h-7 text-white drop-shadow-sm" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 lg:w-6 lg:h-6 text-white drop-shadow-sm" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" />
                     <path d="M12 16C12 16 8 18 8 22H16C16 18 12 16 12 16Z" />
                     <circle cx="12" cy="19" r="1" />
@@ -338,7 +332,9 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
                 </div>
                 {/* Crops icon when expanded */}
                 <div className={`absolute transition-all duration-300 will-change-transform ${isExpanded ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}>
-                  <CropsIcon className="w-7 h-7 text-white drop-shadow-sm" />
+                  <div className="w-5 h-5 lg:w-6 lg:h-6 text-white drop-shadow-sm">
+                    <CropsIcon />
+                  </div>
                 </div>
               </div>
             </div>
@@ -346,33 +342,33 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
               transition-all duration-500 ease-out will-change-transform
               ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}
             `}>
-              <h1 className="text-xl font-black bg-gradient-to-r from-green-800 via-green-700 to-emerald-800 bg-clip-text text-transparent leading-tight">
+              <h1 className="text-lg lg:text-xl font-black bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 bg-clip-text text-transparent leading-tight">
                 FARMY'S
               </h1>
-              <p className="text-sm font-semibold text-green-600 -mt-1">LEDGER</p>
+              <p className="text-xs lg:text-sm font-semibold text-gray-600 -mt-1">LEDGER</p>
             </div>
           </div>
           
-          {/* Enhanced desktop collapse button */}
+          {/* Desktop collapse button with better responsive sizing */}
           <button
             onClick={toggleCollapse}
             className={`
-              hidden md:flex items-center justify-center w-10 h-10
-              text-green-500 hover:text-green-700 rounded-xl
-              hover:bg-green-100/60 backdrop-blur-sm border border-transparent hover:border-green-200/50
+              hidden lg:flex items-center justify-center w-8 h-8 lg:w-10 lg:h-10
+              text-gray-500 hover:text-gray-700 rounded-lg lg:rounded-xl
+              hover:bg-gray-100/60 backdrop-blur-sm border border-transparent hover:border-gray-200/50
               transition-all duration-300 hover:scale-105 active:scale-95 will-change-transform
               ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}
             `}
           >
-            <svg className={`w-5 h-5 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-4 h-4 lg:w-5 lg:h-5 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
         </div>
 
-        {/* Enhanced navigation items */}
-        <div className="flex-1 flex flex-col py-6 overflow-hidden">
-          <ul className="flex-1 space-y-2 overflow-y-auto px-1" style={{ WebkitOverflowScrolling: 'touch' }}>
+        {/* Enhanced navigation items with better spacing */}
+        <div className="flex-1 flex flex-col py-4 lg:py-6 overflow-hidden">
+          <ul className="flex-1 space-y-1 lg:space-y-2 overflow-y-auto px-1" style={{ WebkitOverflowScrolling: 'touch' }}>
             {navItems.map((item) => (
               <NavItem
                 key={`${item.view}-${item.type || ''}`}
@@ -392,8 +388,8 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
             ))}
           </ul>
 
-          {/* Enhanced settings section */}
-          <div className="border-t border-green-200/60 pt-4 mt-4">
+          {/* Settings section with enhanced spacing */}
+          <div className="border-t border-gray-200/50 pt-3 lg:pt-4 mt-3 lg:mt-4">
             <NavItem
               label={settingsItem.label}
               icon={settingsItem.icon}
@@ -406,26 +402,26 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           </div>
         </div>
 
-        {/* Enhanced farm-themed user profile section */}
+        {/* Enhanced user profile section - responsive sizing */}
         <div className={`
-          border-t border-green-200/60 p-5 bg-gradient-to-r from-green-100/60 to-emerald-100/60
+          border-t border-gray-200/50 p-3 lg:p-5 bg-gradient-to-r from-gray-50/60 to-gray-100/40
           ${isExpanded ? 'opacity-100' : 'opacity-0'}
           transition-opacity duration-500
         `}>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-400/30 to-emerald-500/30 rounded-2xl blur-md" />
-              <div className="relative w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-lg shadow-green-500/25 border border-green-400/20">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-indigo-500/20 rounded-xl lg:rounded-2xl blur-md" />
+              <div className="relative w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl lg:rounded-2xl flex items-center justify-center text-white font-black text-sm lg:text-lg shadow-lg shadow-blue-500/20 border border-blue-400/20">
                 🚜
               </div>
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full shadow-sm" />
+              <div className="absolute -bottom-0.5 -right-0.5 lg:-bottom-1 lg:-right-1 w-3 h-3 lg:w-4 lg:h-4 bg-green-500 border-2 border-white rounded-full shadow-sm" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-green-800 truncate">Farmer John</p>
-              <p className="text-xs text-green-600 truncate">farmer@farmyledger.com</p>
+              <p className="text-xs lg:text-sm font-bold text-gray-800 truncate">Farmer John</p>
+              <p className="text-xs text-gray-600 truncate">farmer@farmyledger.com</p>
             </div>
-            <button className="w-8 h-8 text-green-500 hover:text-green-700 rounded-lg hover:bg-green-100/60 backdrop-blur-sm transition-all duration-300 flex items-center justify-center group">
-              <svg className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button className="w-6 h-6 lg:w-8 lg:h-8 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100/60 backdrop-blur-sm transition-all duration-300 flex items-center justify-center group">
+              <svg className="w-3 h-3 lg:w-4 lg:h-4 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
               </svg>
             </button>
@@ -433,14 +429,14 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
         </div>
       </nav>
 
-      {/* Enhanced mobile overlay */}
+            {/* Enhanced mobile overlay with better backdrop */}
       {isMobileOpen && (
         <div 
-          className="fixed inset-0 bg-gradient-to-br from-green-900/60 via-emerald-800/40 to-green-900/60 backdrop-blur-lg z-30 md:hidden"
+          className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-30 lg:hidden"
           style={{ 
-            animation: 'fadeIn 0.5s ease-out',
-            WebkitBackdropFilter: 'blur(8px)',
-            backdropFilter: 'blur(8px)'
+            animation: 'fadeIn 0.3s ease-out',
+            WebkitBackdropFilter: 'blur(4px)',
+            backdropFilter: 'blur(4px)'
           }}
           onClick={() => setIsMobileOpen(false)}
         />
@@ -482,8 +478,8 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           }
         }
 
-        /* Mobile viewport optimization */
-        @media (max-width: 767px) {
+        /* Enhanced mobile viewport optimization */
+        @media (max-width: 1023px) {
           .transition-all {
             transition-duration: 0.25s;
           }
@@ -495,18 +491,22 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           -webkit-overflow-scrolling: touch;
         }
 
-        /* Custom scrollbar */
+        /* Enhanced custom scrollbar */
         .overflow-y-auto::-webkit-scrollbar {
-          width: 6px;
+          width: 4px;
         }
         
         .overflow-y-auto::-webkit-scrollbar-thumb {
-          background-color: rgba(134, 239, 172, 0.8);
-          border-radius: 3px;
+          background-color: rgba(156, 163, 175, 0.6);
+          border-radius: 2px;
         }
         
         .overflow-y-auto::-webkit-scrollbar-track {
           background: transparent;
+        }
+
+        .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+          background-color: rgba(156, 163, 175, 0.8);
         }
 
         /* Performance optimizations */
@@ -521,6 +521,15 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
             animation-iteration-count: 1 !important;
             transition-duration: 0.01ms !important;
           }
+        }
+
+        /* Enhanced responsive breakpoints */
+        @media (min-width: 1024px) and (max-width: 1279px) {
+          /* Tablet landscape optimizations */
+        }
+        
+        @media (min-width: 1280px) {
+          /* Desktop optimizations */
         }
       `}</style>
     </>
