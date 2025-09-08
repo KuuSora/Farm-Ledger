@@ -247,7 +247,7 @@ const Dashboard = () => {
   const formatDate = (date) => date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   const handleAddCropClick = () => setViewState({ view: 'crops', payload: { openForm: true } });
   const handleAddTransactionClick = (type) => setViewState({ view: 'transactions', type, payload: { openForm: true } });
-  const handleAddHydroponicsClick = () => setViewState({ view: 'hydroponics', payload: { openForm: true } });
+  const handleAddHydroponicsClick = () => setViewState({ view: 'equipment', payload: { openForm: true } });
   const handleCropClick = (crop) => setViewState({ view: 'crops', payload: { detailedCropId: crop.id } });
   
   const handleTransactionClick = (tx) => setViewState({ view: 'transactions', type: tx.type, payload: { selectedTransactionId: tx.id } });
