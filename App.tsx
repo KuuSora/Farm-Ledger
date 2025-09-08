@@ -53,12 +53,4 @@ const AppContent: React.FC = () => {
   );
 };
 
-const App: React.FC = () => {
-  return (
-    <FarmProvider>
-      <AppContent />
-    </FarmProvider>
-  );
-};
-
 export default App;
