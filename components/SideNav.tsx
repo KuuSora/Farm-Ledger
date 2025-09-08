@@ -202,7 +202,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
     { 
       view: "transaction", 
       label: "Transaction", 
-      icon: <HydroponicsIcon />, 
+      icon: <TransactionsIcon />, 
       hint: "Monitor hydroponic systems" 
     },
   ];
