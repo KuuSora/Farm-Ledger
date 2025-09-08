@@ -475,7 +475,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
               </div>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-slate-800 truncate">Farmer John</p>
+              <p className="text-sm font-bold text-slate-800 truncate">John & Frenz</p>
               <p className="text-xs text-slate-500 truncate">Premium Account • Active</p>
             </div>
             <button className="w-8 h-8 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100/80 transition-all duration-200 flex items-center justify-center group">
