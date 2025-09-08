@@ -10,7 +10,6 @@ import Equipment from './views/Equipment';
 import { TransactionType } from './types';
 import { useFarm, FarmProvider } from './context/FarmContext';
 import IntegratedLayout from './components/IntegratedLayout';
-import { TeamProvider } from './context/TeamContext';
 
 const AppContent: React.FC = () => {
   const { viewState } = useFarm();
@@ -51,16 +50,6 @@ const AppContent: React.FC = () => {
     <IntegratedLayout>
       {renderView()}
     </IntegratedLayout>
-  );
-};
-
-const App: React.FC = () => {
-  return (
-    <FarmProvider>
-      <TeamProvider>
-        <AppContent />
-      </TeamProvider>
-    </FarmProvider>
   );
 };
 
