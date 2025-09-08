@@ -12,9 +12,9 @@ import { TransactionType } from './types';
 import { useFarm } from './context/FarmContext';
 import IntegratedLayout from './components/IntegratedLayout';
 import { TeamProvider } from './context/TeamContext';
-import { FarmProvider } from './context/FarmContext'; // Your existing context
+import { FarmProvider } from './context/FarmContext';
 
-const App: React.FC = () => {
+const MainApp: React.FC = () => {
   const { viewState } = useFarm();
 
   const renderView = () => {
@@ -56,14 +56,14 @@ const App: React.FC = () => {
   );
 };
 
-function App() {
+const App: React.FC = () => {
   return (
     <FarmProvider>
       <TeamProvider>
-        {/* Your existing app components */}
-        <YourMainComponent />
+        <MainApp />
       </TeamProvider>
     </FarmProvider>
   );
-}
+};
+
 export default App;
