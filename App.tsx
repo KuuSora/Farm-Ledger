@@ -1,3 +1,4 @@
+// App.tsx
 import React from 'react';
 import Dashboard from './views/Dashboard';
 import Crops from './views/Crops';
@@ -7,20 +8,9 @@ import Settings from './views/Settings';
 import Summary from './views/Summary';
 import FarmAI from './views/FarmAI';
 import Equipment from './views/Equipment';
-import { View, TransactionType } from './types';
+import { TransactionType } from './types';
 import { useFarm } from './context/FarmContext';
 import IntegratedLayout from './components/IntegratedLayout';
-
-const viewTitles: Record<View, string> = {
-  dashboard: 'Dashboard',
-  crops: 'Crops Management',
-  transactions: 'Transactions',
-  reports: 'Reports & Analytics',
-  settings: 'Settings',
-  summary: 'Summary & Export',
-  'farm-ai': 'Farm AI Tools',
-  equipment: 'Hydroponic Machineries',
-};
 
 const App: React.FC = () => {
   const { viewState } = useFarm();
@@ -57,7 +47,11 @@ const App: React.FC = () => {
     }
   };
 
-  return <IntegratedLayout>{renderView()}</IntegratedLayout>;
+  return (
+    <IntegratedLayout>
+      {renderView()}
+    </IntegratedLayout>
+  );
 };
 
 export default App;
