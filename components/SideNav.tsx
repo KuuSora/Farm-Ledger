@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { View, TransactionType } from "../types";
 import { DashboardIcon, CropsIcon, IncomeIcon, ExpensesIcon, ReportsIcon, SettingsIcon, DocumentIcon, FarmAIIcon, HydroponicsIcon } from "./icons";
 import { useFarm } from "../context/FarmContext";
@@ -16,7 +16,8 @@ interface NavItemProps {
   badge?: string | number;
 }
 
-const NavItem: React.FC<NavItemProps> = ({
+// Memoize NavItem to prevent unnecessary re-renders when parent state changes but its props don't
+const NavItem: React.FC<NavItemProps> = React.memo(({
   icon,
   label,
   isActive,
@@ -28,6 +29,40 @@ const NavItem: React.FC<NavItemProps> = ({
   badge
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
+
+  // Optimized class strings to reduce concatenation overhead
+  const itemClasses = useMemo(() => `
+    flex items-center h-12 lg:h-14 px-3 lg:px-4 mx-2 lg:mx-3 rounded-xl lg:rounded-2xl cursor-pointer
+    transition-all duration-300 ease-out relative overflow-hidden
+    backdrop-blur-sm border will-change-transform select-none
+    ${isActive 
+      ? "bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 text-white shadow-xl shadow-blue-500/30 border-blue-400/30 scale-[1.02] lg:scale-[1.03]" 
+      : "text-gray-700 hover:bg-white/80 hover:text-gray-900 hover:shadow-lg hover:border-gray-200/60 border-transparent hover:scale-[1.01]"
+    }
+    active:scale-[0.98] group
+  `, [isActive]);
+
+  const iconContainerClasses = useMemo(() => `
+    transition-all duration-300 ease-out relative will-change-transform
+    ${isActive 
+      ? 'scale-110 drop-shadow-sm' 
+      : 'group-hover:scale-110 group-hover:drop-shadow-sm'
+    }
+  `, [isActive]);
+
+  const labelClasses = useMemo(() => `
+    font-semibold text-xs lg:text-sm tracking-wide truncate transition-all duration-300 ease-out will-change-transform
+    ${isExpanded 
+      ? "opacity-100 translate-x-0 max-w-none" 
+      : "opacity-0 translate-x-4 max-w-0 overflow-hidden"
+    }
+  `, [isExpanded]);
+
+  const rippleClasses = useMemo(() => `
+    absolute inset-0 bg-gradient-to-r from-blue-500/10 via-indigo-400/10 to-purple-500/10 rounded-xl lg:rounded-2xl
+    transition-all duration-500 pointer-events-none
+    ${!isActive ? 'opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100' : 'opacity-0'}
+  `, [isActive]);
 
   return (
     <li className="relative group">
@@ -41,16 +76,7 @@ const NavItem: React.FC<NavItemProps> = ({
           onMouseLeave();
           setShowTooltip(false);
         }}
-        className={`
-          flex items-center h-12 lg:h-14 px-3 lg:px-4 mx-2 lg:mx-3 rounded-xl lg:rounded-2xl cursor-pointer
-          transition-all duration-300 ease-out relative overflow-hidden
-          backdrop-blur-sm border will-change-transform select-none
-          ${isActive 
-            ? "bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 text-white shadow-xl shadow-blue-500/30 border-blue-400/30 scale-[1.02] lg:scale-[1.03]" 
-            : "text-gray-700 hover:bg-white/80 hover:text-gray-900 hover:shadow-lg hover:border-gray-200/60 border-transparent hover:scale-[1.01]"
-          }
-          active:scale-[0.98] group
-        `}
+        className={itemClasses}
       >
         {/* Enhanced active state indicator */}
         {isActive && (
@@ -63,13 +89,7 @@ const NavItem: React.FC<NavItemProps> = ({
         
         {/* Icon container with enhanced responsive sizing */}
         <div className="relative flex items-center justify-center w-6 h-6 lg:w-8 lg:h-8 mr-2 lg:mr-3 flex-shrink-0">
-          <div className={`
-            transition-all duration-300 ease-out relative will-change-transform
-            ${isActive 
-              ? 'scale-110 drop-shadow-sm' 
-              : 'group-hover:scale-110 group-hover:drop-shadow-sm'
-            }
-          `}>
+          <div className={iconContainerClasses}>
             <div className="w-5 h-5 lg:w-6 lg:h-6">
               {icon}
             </div>
@@ -86,7 +106,6 @@ const NavItem: React.FC<NavItemProps> = ({
             </div>
           )}
           
-          {/* Enhanced badge - responsive sizing */}
           {badge && (
             <div className="absolute -top-1 -right-1 min-w-4 h-4 lg:min-w-5 lg:h-5 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs rounded-full flex items-center justify-center border border-white font-semibold shadow-lg">
               <span className="text-xs lg:text-sm">{badge}</span>
@@ -95,27 +114,14 @@ const NavItem: React.FC<NavItemProps> = ({
         </div>
 
         {/* Label with responsive text sizing */}
-        <span 
-          className={`
-            font-semibold text-xs lg:text-sm tracking-wide truncate transition-all duration-300 ease-out will-change-transform
-            ${isExpanded 
-              ? "opacity-100 translate-x-0 max-w-none" 
-              : "opacity-0 translate-x-4 max-w-0 overflow-hidden"
-            }
-          `}
-        >
+        <span className={labelClasses}>
           {label}
         </span>
 
         {/* Hover ripple effect */}
-        <div className={`
-          absolute inset-0 bg-gradient-to-r from-blue-500/10 via-indigo-400/10 to-purple-500/10 rounded-xl lg:rounded-2xl
-          transition-all duration-500 pointer-events-none
-          ${!isActive ? 'opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100' : 'opacity-0'}
-        `} />
+        <div className={rippleClasses} />
       </div>
 
-      {/* Enhanced responsive tooltip */}
       {showTooltip && !isExpanded && (
         <div className="absolute left-14 lg:left-16 top-1/2 -translate-y-1/2 z-50 animate-in slide-in-from-left-2 duration-200">
           <div className="bg-gray-900 text-white px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg text-xs lg:text-sm font-medium shadow-xl whitespace-nowrap">
@@ -126,18 +132,27 @@ const NavItem: React.FC<NavItemProps> = ({
       )}
     </li>
   );
-};
+});
 
 interface SideNavProps {
   setIsExpanded: (isExpanded: boolean) => void;
 }
 
-const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
+const SideNav: React.FC<SideNavProps> = ({ setIsExpanded: setParentIsExpanded }) => { // Renamed for clarity
   const [isHovered, setIsHovered] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const { viewState, setViewState, triggerUIInteraction } = useFarm();
+
+  // Memoize the expanded state calculation to avoid recalculating on every render
+  const isExpanded = useMemo(() => isMobileOpen || (isHovered && !isCollapsed) || isCollapsed, [isMobileOpen, isHovered, isCollapsed]);
+
+  // Sync isExpanded with parent only when it changes
+  useEffect(() => {
+    setParentIsExpanded(isExpanded);
+  }, [isExpanded, setParentIsExpanded]);
+
 
   // Handle outside click for mobile
   useEffect(() => {
@@ -151,52 +166,54 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isMobileOpen]);
+  }, [isMobileOpen]); // Dependency on isMobileOpen is correct here
 
   // Enhanced window resize handler
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
-        setIsMobileOpen(false);
+        setIsMobileOpen(false); // Close mobile menu on desktop resize
+        // Ensure collapsed state is maintained if it was set
+        if (!isCollapsed) {
+          setIsHovered(false); // Reset hover state to collapse if not collapsed
+        }
       }
     };
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [isCollapsed]); // Added isCollapsed to dependency to react to its changes
 
-  const handleMouseEnter = () => {
+  // Use useCallback for event handlers to prevent unnecessary re-creation and optimize NavItem re-renders
+  const handleMouseEnter = useCallback(() => {
     if (window.innerWidth >= 1024 && !isCollapsed) {
       setIsHovered(true);
-      setIsExpanded(true);
     }
-  };
+  }, [isCollapsed]);
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     if (window.innerWidth >= 1024 && !isCollapsed) {
       setIsHovered(false);
-      setIsExpanded(false);
     }
-  };
+  }, [isCollapsed]);
 
-  const handleNav = (view: View, type?: TransactionType) => {
+  const handleNav = useCallback((view: View, type?: TransactionType) => {
     setViewState({ view, type });
-    setIsMobileOpen(false);
-  };
+    setIsMobileOpen(false); // Close mobile menu on navigation
+  }, [setViewState]);
 
-  const clearHint = () => triggerUIInteraction(null);
+  const clearHint = useCallback(() => triggerUIInteraction(null), [triggerUIInteraction]);
 
-  const toggleCollapse = () => {
-    setIsCollapsed(!isCollapsed);
-    setIsExpanded(!isCollapsed);
-    setIsHovered(false);
-  };
+  const toggleCollapse = useCallback(() => {
+    setIsCollapsed(prev => !prev);
+    setIsHovered(false); // Reset hover state when collapsing/expanding manually
+  }, []);
 
-  const toggleMobile = () => {
-    setIsMobileOpen(!isMobileOpen);
-  };
+  const toggleMobile = useCallback(() => {
+    setIsMobileOpen(prev => !prev);
+  }, []);
 
-  const navItems = [
+  const navItems = useMemo(() => [
     { 
       view: "dashboard", 
       label: "Dashboard", 
@@ -250,33 +267,53 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
       hint: "Use AI-powered tools for your farm.",
       hasNotification: true
     },
-  ];
+  ], []); // Depend on nothing as this array is static
 
-  const settingsItem = {
+  const settingsItem = useMemo(() => ({
     view: "settings",
     label: "Settings",
     icon: <SettingsIcon />,
     hint: "Configure your app settings.",
-  };
+  }), []); // Depend on nothing as this object is static
 
-  const isExpanded = isMobileOpen || (isHovered && !isCollapsed) || isCollapsed;
+  // Optimized class strings for the sidebar itself
+  const navClasses = useMemo(() => `
+    fixed top-0 left-0 h-full flex flex-col z-40
+    backdrop-blur-xl bg-white/90 border-r border-gray-200/50 shadow-2xl shadow-gray-900/5
+    transition-all duration-300 ease-out will-change-transform
+    ${isExpanded ? 'w-64 lg:w-72' : 'w-16 lg:w-20'}
+    ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+  `, [isExpanded, isMobileOpen]);
+
+  // Optimized class for mobile button
+  const mobileButtonClasses = useMemo(() => `
+    fixed top-4 left-4 z-50 lg:hidden
+    w-12 h-12 backdrop-blur-xl border shadow-2xl
+    flex items-center justify-center transition-all duration-300 ease-out will-change-transform
+    active:scale-90 hover:scale-105
+    ${isMobileOpen 
+      ? 'bg-gradient-to-br from-blue-500 to-indigo-600 border-blue-400/50 text-white shadow-blue-500/25 rotate-90' 
+      : 'bg-white/90 border-gray-200/50 text-gray-700 hover:text-gray-900 hover:bg-white hover:border-gray-300/50'
+    }
+    rounded-xl
+  `, [isMobileOpen]);
+
+  // Optimized class for desktop collapse button
+  const collapseButtonClasses = useMemo(() => `
+    hidden lg:flex items-center justify-center w-8 h-8 lg:w-10 lg:h-10
+    text-gray-500 hover:text-gray-700 rounded-lg lg:rounded-xl
+    hover:bg-gray-100/60 backdrop-blur-sm border border-transparent hover:border-gray-200/50
+    transition-all duration-300 hover:scale-105 active:scale-95 will-change-transform
+    ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}
+  `, [isExpanded]);
+
 
   return (
     <>
       {/* Enhanced mobile menu button with better positioning */}
       <button
         onClick={toggleMobile}
-        className={`
-          fixed top-4 left-4 z-50 lg:hidden
-          w-12 h-12 backdrop-blur-xl border shadow-2xl
-          flex items-center justify-center transition-all duration-300 ease-out will-change-transform
-          active:scale-90 hover:scale-105
-          ${isMobileOpen 
-            ? 'bg-gradient-to-br from-blue-500 to-indigo-600 border-blue-400/50 text-white shadow-blue-500/25 rotate-90' 
-            : 'bg-white/90 border-gray-200/50 text-gray-700 hover:text-gray-900 hover:bg-white hover:border-gray-300/50'
-          }
-          rounded-xl
-        `}
+        className={mobileButtonClasses}
       >
         <div className="relative w-5 h-5">
           {/* Animated hamburger/close icon */}
@@ -308,13 +345,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
         ref={sidebarRef}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className={`
-          fixed top-0 left-0 h-full flex flex-col z-40
-          backdrop-blur-xl bg-white/90 border-r border-gray-200/50 shadow-2xl shadow-gray-900/5
-          transition-all duration-500 ease-out will-change-transform
-          ${isExpanded ? 'w-64 lg:w-72' : 'w-16 lg:w-20'}
-          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        `}
+        className={navClasses}
       >
         {/* Enhanced header with better spacing */}
         <div className="flex items-center justify-between h-16 lg:h-20 px-3 lg:px-5 border-b border-gray-200/50 bg-gradient-to-r from-gray-50/60 to-gray-100/40">
@@ -353,13 +384,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           {/* Desktop collapse button with better responsive sizing */}
           <button
             onClick={toggleCollapse}
-            className={`
-              hidden lg:flex items-center justify-center w-8 h-8 lg:w-10 lg:h-10
-              text-gray-500 hover:text-gray-700 rounded-lg lg:rounded-xl
-              hover:bg-gray-100/60 backdrop-blur-sm border border-transparent hover:border-gray-200/50
-              transition-all duration-300 hover:scale-105 active:scale-95 will-change-transform
-              ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}
-            `}
+            className={collapseButtonClasses}
           >
             <svg className={`w-4 h-4 lg:w-5 lg:h-5 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -381,8 +406,8 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
                   (item.type ? viewState.type === item.type : true)
                 }
                 onClick={() => handleNav(item.view as View, item.type as TransactionType)}
-                onMouseEnter={() => triggerUIInteraction(item.hint)}
-                onMouseLeave={clearHint}
+                onMouseEnter={() => triggerUIInteraction(item.hint)} // Direct call to triggerUIInteraction
+                onMouseLeave={clearHint} // Direct call to clearHint
                 hasNotification={item.hasNotification}
                 badge={item.badge}
               />
@@ -398,7 +423,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
               isActive={viewState.view === settingsItem.view}
               onClick={() => handleNav(settingsItem.view as View)}
               onMouseEnter={() => triggerUIInteraction(settingsItem.hint)}
-              onOnMouseLeave={clearHint}
+              onMouseLeave={clearHint} {/* Corrected typo here */}
             />
           </div>
         </div>
