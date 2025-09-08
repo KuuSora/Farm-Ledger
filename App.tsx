@@ -10,6 +10,7 @@ import FarmAI from './views/FarmAI';
 import Equipment from './views/Equipment';
 import { TransactionType } from './types';
 import { useFarm } from './context/FarmContext';
+import IntegratedLayout from './components/IntegratedLayout';
 
 const App: React.FC = () => {
   const { viewState } = useFarm();
@@ -45,5 +46,12 @@ const App: React.FC = () => {
         return <Dashboard />;
     }
   };
+
+  return (
+    <IntegratedLayout>
+      {renderView()}
+    </IntegratedLayout>
+  );
+};
 
 export default App;
