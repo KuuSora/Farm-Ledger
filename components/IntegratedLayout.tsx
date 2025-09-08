@@ -3,7 +3,11 @@ import React, { useState, useEffect } from 'react';
 import SideNav from './components/SideNav';
 import Dashboard from './views/Dashboard';
 
-const IntegratedLayout = () => {
+interface IntegratedLayoutProps {
+  children?: React.ReactNode; // optional, so Dashboard is default
+}
+
+const IntegratedLayout: React.FC<IntegratedLayoutProps> = ({ children }) => {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -31,17 +35,16 @@ const IntegratedLayout = () => {
       <SideNav setIsExpanded={setSidebarExpanded} />
       
       {/* Main Content Area */}
-      <div className={`
-        flex-1 transition-all duration-400 ease-out
-        ${/* Desktop spacing based on sidebar state */}
-        ${!isMobile ? (
-          sidebarExpanded ? 'ml-72' : 'ml-20'
-        ) : 'ml-0'}
-      `}>
-        {/* Dashboard Content */}
+      <div
+        className={`
+          flex-1 transition-all duration-400 ease-out
+          ${!isMobile ? (sidebarExpanded ? 'ml-72' : 'ml-20') : 'ml-0'}
+        `}
+      >
         <div className="min-h-screen">
           <div className="max-w-7xl mx-auto space-y-6 px-4 md:px-6 py-6 pt-20 md:pt-6">
-            <Dashboard />
+            {/* If no children are passed, show Dashboard */}
+            {children || <Dashboard />}
           </div>
         </div>
       </div>
