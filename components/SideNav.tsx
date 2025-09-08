@@ -14,6 +14,7 @@ interface NavItemProps {
   onMouseLeave: () => void;
   hasNotification?: boolean;
   badge?: string | number;
+  isMobile?: boolean;
 }
 
 const NavItem: React.FC<NavItemProps> = ({
@@ -25,7 +26,8 @@ const NavItem: React.FC<NavItemProps> = ({
   onMouseEnter,
   onMouseLeave,
   hasNotification = false,
-  badge
+  badge,
+  isMobile = false
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
@@ -35,7 +37,7 @@ const NavItem: React.FC<NavItemProps> = ({
         onClick={onClick}
         onMouseEnter={() => {
           onMouseEnter();
-          if (!isExpanded) setShowTooltip(true);
+          if (!isExpanded && !isMobile) setShowTooltip(true);
         }}
         onMouseLeave={() => {
           onMouseLeave();
@@ -99,8 +101,8 @@ const NavItem: React.FC<NavItemProps> = ({
         )}
       </div>
 
-      {/* Enhanced tooltip for collapsed state */}
-      {showTooltip && !isExpanded && (
+      {/* Enhanced tooltip for collapsed state - Desktop only */}
+      {showTooltip && !isExpanded && !isMobile && (
         <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 z-50 animate-in slide-in-from-left-2 duration-300">
           <div className="relative bg-slate-800 text-white px-4 py-2.5 rounded-lg text-sm font-medium shadow-xl border border-slate-700 backdrop-blur-sm">
             {label}
@@ -114,13 +116,12 @@ const NavItem: React.FC<NavItemProps> = ({
 };
 
 interface SideNavProps {
-  setIsExpanded: (isExpanded: boolean) => void;
+  setIsExpanded?: (isExpanded: boolean) => void;
 }
 
 const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
-  const [isHovered, setIsHovered] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const { viewState, setViewState, triggerUIInteraction } = useFarm();
 
@@ -128,7 +129,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
-        if (isMobileOpen && window.innerWidth < 1024) {
+        if (isMobileOpen && window.innerWidth < 768) {
           setIsMobileOpen(false);
         }
       }
@@ -141,7 +142,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
   // Window resize handler
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) {
+      if (window.innerWidth >= 768) {
         setIsMobileOpen(false);
       }
     };
@@ -150,37 +151,32 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleMouseEnter = () => {
-    if (window.innerWidth >= 1024 && !isCollapsed) {
-      setIsHovered(true);
-      setIsExpanded(true);
+  // Notify parent about expansion changes
+  useEffect(() => {
+    if (setIsExpanded) {
+      const isExpanded = window.innerWidth >= 768 ? !isDesktopCollapsed : false;
+      setIsExpanded(isExpanded);
     }
-  };
-
-  const handleMouseLeave = () => {
-    if (window.innerWidth >= 1024 && !isCollapsed) {
-      setIsHovered(false);
-      setIsExpanded(false);
-    }
-  };
+  }, [isDesktopCollapsed, setIsExpanded]);
 
   const handleNav = (view: View, type?: TransactionType) => {
-    console.log('Navigating to:', view, type); // Debug log
+    console.log('Navigating to:', view, type);
     setViewState({ view, type });
     setIsMobileOpen(false);
   };
 
   const clearHint = () => triggerUIInteraction(null);
 
-  const toggleCollapse = () => {
-    setIsCollapsed(!isCollapsed);
-    setIsExpanded(!isCollapsed);
-    setIsHovered(false);
-  };
-
   const toggleMobile = () => {
     setIsMobileOpen(!isMobileOpen);
   };
+
+  const toggleDesktopCollapse = () => {
+    setIsDesktopCollapsed(!isDesktopCollapsed);
+  };
+
+  // Determine if sidebar should be expanded
+  const isExpanded = window.innerWidth >= 768 ? !isDesktopCollapsed : true;
 
   // Navigation items organized by sections
   const mainNavItems = [
@@ -252,15 +248,13 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
     hint: "Application preferences and configuration",
   };
 
-  const isExpanded = isMobileOpen || (isHovered && !isCollapsed) || isCollapsed;
-
   return (
     <>
-      {/* Enhanced mobile menu button */}
+      {/* Mobile menu button */}
       <button
         onClick={toggleMobile}
         className={`
-          fixed top-6 left-6 z-50 lg:hidden
+          fixed top-6 left-6 z-50 md:hidden
           w-12 h-12 backdrop-blur-xl shadow-lg border
           flex items-center justify-center transition-all duration-300 ease-out
           ${isMobileOpen 
@@ -292,14 +286,21 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
       {/* Main sidebar */}
       <nav
         ref={sidebarRef}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
         className={`
           fixed top-0 left-0 h-full flex flex-col z-40
           bg-white/95 backdrop-blur-xl border-r border-slate-200/60 shadow-2xl shadow-slate-900/5
           transition-all duration-400 ease-out
-          ${isExpanded ? 'w-72' : 'w-20'}
-          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          ${/* Mobile behavior */ ''}
+          ${window.innerWidth < 768 ? (
+            isMobileOpen 
+              ? 'w-72 translate-x-0' 
+              : 'w-72 -translate-x-full'
+          ) : (
+            /* Desktop behavior */
+            isDesktopCollapsed 
+              ? 'w-20 translate-x-0' 
+              : 'w-72 translate-x-0'
+          )}
         `}
       >
         {/* Enhanced header */}
@@ -331,16 +332,16 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           
           {/* Desktop collapse toggle */}
           <button
-            onClick={toggleCollapse}
+            onClick={toggleDesktopCollapse}
             className={`
-              hidden lg:flex items-center justify-center w-8 h-8 ml-auto
+              hidden md:flex items-center justify-center w-8 h-8 ml-auto
               text-slate-400 hover:text-slate-600 rounded-xl
               hover:bg-slate-100/80 backdrop-blur-sm transition-all duration-300
               ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}
               hover:scale-110 active:scale-95
             `}
           >
-            <svg className={`w-4 h-4 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-4 h-4 transition-transform duration-300 ${isDesktopCollapsed ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
@@ -374,6 +375,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
                     onMouseLeave={clearHint}
                     hasNotification={item.hasNotification}
                     badge={item.badge}
+                    isMobile={window.innerWidth < 768}
                   />
                 ))}
               </ul>
@@ -403,6 +405,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
                     onMouseLeave={clearHint}
                     hasNotification={item.hasNotification}
                     badge={item.badge}
+                    isMobile={window.innerWidth < 768}
                   />
                 ))}
               </ul>
@@ -432,6 +435,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
                     onMouseLeave={clearHint}
                     hasNotification={item.hasNotification}
                     badge={item.badge}
+                    isMobile={window.innerWidth < 768}
                   />
                 ))}
               </ul>
@@ -449,6 +453,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
                 onClick={() => handleNav(settingsItem.view as View)}
                 onMouseEnter={() => triggerUIInteraction(settingsItem.hint)}
                 onMouseLeave={clearHint}
+                isMobile={window.innerWidth < 768}
               />
             </ul>
           </div>
@@ -485,7 +490,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
       {/* Enhanced mobile overlay */}
       {isMobileOpen && (
         <div 
-          className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-30 lg:hidden transition-all duration-300"
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-30 md:hidden transition-all duration-300"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
