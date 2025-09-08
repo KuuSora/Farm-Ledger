@@ -11,9 +11,6 @@ import { TransactionType } from './types';
 import { useFarm, FarmProvider } from './context/FarmContext';
 import IntegratedLayout from './components/IntegratedLayout';
 
-const AppContent: React.FC = () => {
-  const { viewState } = useFarm();
-
   const renderView = () => {
     const { view, payload, type } = viewState;
     const key = type + (payload ? JSON.stringify(payload) : '');
