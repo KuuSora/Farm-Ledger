@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import SideNav from './SideNav';
 import Dashboard from '../views/Dashboard';
-import Card from './Card';
 
 interface IntegratedLayoutProps {
   children?: React.ReactNode; // optional, so Dashboard is default
