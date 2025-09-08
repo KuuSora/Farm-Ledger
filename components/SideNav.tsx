@@ -42,7 +42,7 @@ const NavItem: React.FC<NavItemProps> = ({
           setShowTooltip(false);
         }}
         className={`
-          flex items-center h-12 lg:h-14 px-3 lg:px-4 mx-2 lg:mx-3 rounded-xl lg:rounded-2xl cursor-pointer
+          flex items-center h-11 sm:h-12 lg:h-14 px-3 lg:px-4 mx-2 lg:mx-3 rounded-xl lg:rounded-2xl cursor-pointer
           transition-all duration-300 ease-out relative overflow-hidden
           backdrop-blur-sm border will-change-transform select-none
           ${isActive 
@@ -62,7 +62,7 @@ const NavItem: React.FC<NavItemProps> = ({
         )}
         
         {/* Icon container with enhanced responsive sizing */}
-        <div className="relative flex items-center justify-center w-6 h-6 lg:w-8 lg:h-8 mr-2 lg:mr-3 flex-shrink-0">
+        <div className="relative flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 mr-2 sm:mr-3 lg:mr-3 flex-shrink-0">
           <div className={`
             transition-all duration-300 ease-out relative will-change-transform
             ${isActive 
@@ -70,7 +70,7 @@ const NavItem: React.FC<NavItemProps> = ({
               : 'group-hover:scale-110 group-hover:drop-shadow-sm'
             }
           `}>
-            <div className="w-5 h-5 lg:w-6 lg:h-6">
+            <div className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6">
               {icon}
             </div>
             {/* Glow effect for active state */}
@@ -81,15 +81,15 @@ const NavItem: React.FC<NavItemProps> = ({
           
           {/* Enhanced notification dot - responsive sizing */}
           {hasNotification && (
-            <div className="absolute -top-1 -right-1 w-2.5 h-2.5 lg:w-3 lg:h-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-full border border-white shadow-lg animate-pulse">
+            <div className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-3 lg:h-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-full border border-white shadow-lg animate-pulse">
               <div className="absolute inset-0 bg-orange-400 rounded-full animate-ping opacity-75" />
             </div>
           )}
           
           {/* Enhanced badge - responsive sizing */}
           {badge && (
-            <div className="absolute -top-1 -right-1 min-w-4 h-4 lg:min-w-5 lg:h-5 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs rounded-full flex items-center justify-center border border-white font-semibold shadow-lg">
-              <span className="text-xs lg:text-sm">{badge}</span>
+            <div className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 min-w-3 h-3 sm:min-w-4 sm:h-4 lg:min-w-5 lg:h-5 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs rounded-full flex items-center justify-center border border-white font-semibold shadow-lg">
+              <span className="text-xs">{badge}</span>
             </div>
           )}
         </div>
@@ -97,7 +97,7 @@ const NavItem: React.FC<NavItemProps> = ({
         {/* Label with responsive text sizing */}
         <span 
           className={`
-            font-semibold text-xs lg:text-sm tracking-wide truncate transition-all duration-300 ease-out will-change-transform
+            font-semibold text-xs sm:text-sm lg:text-sm tracking-wide truncate transition-all duration-300 ease-out will-change-transform
             ${isExpanded 
               ? "opacity-100 translate-x-0 max-w-none" 
               : "opacity-0 translate-x-4 max-w-0 overflow-hidden"
@@ -117,8 +117,8 @@ const NavItem: React.FC<NavItemProps> = ({
 
       {/* Enhanced responsive tooltip */}
       {showTooltip && !isExpanded && (
-        <div className="absolute left-14 lg:left-16 top-1/2 -translate-y-1/2 z-50 animate-in slide-in-from-left-2 duration-200">
-          <div className="bg-gray-900 text-white px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg text-xs lg:text-sm font-medium shadow-xl whitespace-nowrap">
+        <div className="absolute left-12 sm:left-14 lg:left-16 top-1/2 -translate-y-1/2 z-50 animate-in slide-in-from-left-2 duration-200">
+          <div className="bg-gray-900 text-white px-2 sm:px-2 lg:px-3 py-1 sm:py-1.5 lg:py-2 rounded-lg text-xs lg:text-sm font-medium shadow-xl whitespace-nowrap">
             {label}
             <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-900 rotate-45" />
           </div>
@@ -211,10 +211,10 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
       hint: "Manage your crops and fields." 
     },
     { 
-      view: "equipment", 
+      view: "hydroponics", 
       label: "Hydroponics", 
       icon: <HydroponicsIcon />, 
-      hint: "Track your hydroponic machinery." 
+      hint: "Advanced hydroponic system management and monitoring." 
     },
     { 
       view: "transactions", 
@@ -267,8 +267,8 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
       <button
         onClick={toggleMobile}
         className={`
-          fixed top-4 left-4 z-50 lg:hidden
-          w-12 h-12 backdrop-blur-xl border shadow-2xl
+          fixed top-3 left-3 sm:top-4 sm:left-4 z-50 lg:hidden
+          w-10 h-10 sm:w-12 sm:h-12 backdrop-blur-xl border shadow-2xl
           flex items-center justify-center transition-all duration-300 ease-out will-change-transform
           active:scale-90 hover:scale-105
           ${isMobileOpen 
@@ -278,22 +278,22 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           rounded-xl
         `}
       >
-        <div className="relative w-5 h-5">
+        <div className="relative w-4 h-4 sm:w-5 sm:h-5">
           {/* Animated hamburger/close icon */}
           <span className={`
-            absolute top-1 left-0 w-5 h-0.5 bg-current rounded-full
+            absolute top-0.5 left-0 w-4 sm:w-5 h-0.5 bg-current rounded-full
             transition-all duration-300 origin-center will-change-transform
-            ${isMobileOpen ? 'rotate-45 top-2.5' : ''}
+            ${isMobileOpen ? 'rotate-45 top-2' : ''}
           `} />
           <span className={`
-            absolute top-2.5 left-0 w-5 h-0.5 bg-current rounded-full
+            absolute top-2 left-0 w-4 sm:w-5 h-0.5 bg-current rounded-full
             transition-all duration-300 will-change-transform
             ${isMobileOpen ? 'opacity-0 scale-0' : 'opacity-100 scale-100'}
           `} />
           <span className={`
-            absolute top-4 left-0 w-5 h-0.5 bg-current rounded-full
+            absolute top-3.5 left-0 w-4 sm:w-5 h-0.5 bg-current rounded-full
             transition-all duration-300 origin-center will-change-transform
-            ${isMobileOpen ? '-rotate-45 top-2.5' : ''}
+            ${isMobileOpen ? '-rotate-45 top-2' : ''}
           `} />
         </div>
         
@@ -312,20 +312,20 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           fixed top-0 left-0 h-full flex flex-col z-40
           backdrop-blur-xl bg-white/90 border-r border-gray-200/50 shadow-2xl shadow-gray-900/5
           transition-all duration-500 ease-out will-change-transform
-          ${isExpanded ? 'w-64 lg:w-72' : 'w-16 lg:w-20'}
+          ${isExpanded ? 'w-56 sm:w-64 lg:w-72' : 'w-14 sm:w-16 lg:w-20'}
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
         {/* Enhanced header with better spacing */}
-        <div className="flex items-center justify-between h-16 lg:h-20 px-3 lg:px-5 border-b border-gray-200/50 bg-gradient-to-r from-gray-50/60 to-gray-100/40">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between h-14 sm:h-16 lg:h-20 px-2.5 sm:px-3 lg:px-5 border-b border-gray-200/50 bg-gradient-to-r from-gray-50/60 to-gray-100/40">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="relative group">
               {/* Logo container with enhanced styling */}
               <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-indigo-500/20 rounded-xl lg:rounded-2xl blur-lg group-hover:blur-xl transition-all duration-300" />
-              <div className="relative w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300 border border-blue-400/20">
+              <div className="relative w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl lg:rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300 border border-blue-400/20">
                 {/* Logo - visible when collapsed */}
                 <div className={`transition-all duration-300 will-change-transform ${isExpanded ? 'opacity-0 scale-0' : 'opacity-100 scale-100'}`}>
-                  <svg className="w-5 h-5 lg:w-6 lg:h-6 text-white drop-shadow-sm" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white drop-shadow-sm" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" />
                     <path d="M12 16C12 16 8 18 8 22H16C16 18 12 16 12 16Z" />
                     <circle cx="12" cy="19" r="1" />
@@ -333,7 +333,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
                 </div>
                 {/* Crops icon when expanded */}
                 <div className={`absolute transition-all duration-300 will-change-transform ${isExpanded ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}>
-                  <div className="w-5 h-5 lg:w-6 lg:h-6 text-white drop-shadow-sm">
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white drop-shadow-sm">
                     <CropsIcon />
                   </div>
                 </div>
@@ -343,7 +343,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
               transition-all duration-500 ease-out will-change-transform
               ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}
             `}>
-              <h1 className="text-lg lg:text-xl font-black bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 bg-clip-text text-transparent leading-tight">
+              <h1 className="text-base sm:text-lg lg:text-xl font-black bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 bg-clip-text text-transparent leading-tight">
                 FARMY'S
               </h1>
               <p className="text-xs lg:text-sm font-semibold text-gray-600 -mt-1">LEDGER</p>
@@ -368,8 +368,8 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
         </div>
 
         {/* Enhanced navigation items with better spacing */}
-        <div className="flex-1 flex flex-col py-4 lg:py-6 overflow-hidden">
-          <ul className="flex-1 space-y-1 lg:space-y-2 overflow-y-auto px-1" style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div className="flex-1 flex flex-col py-3 sm:py-4 lg:py-6 overflow-hidden">
+          <ul className="flex-1 space-y-0.5 sm:space-y-1 lg:space-y-2 overflow-y-auto px-0.5 sm:px-1" style={{ WebkitOverflowScrolling: 'touch' }}>
             {navItems.map((item) => (
               <NavItem
                 key={`${item.view}-${item.type || ''}`}
@@ -390,7 +390,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
           </ul>
 
           {/* Settings section with enhanced spacing */}
-          <div className="border-t border-gray-200/50 pt-3 lg:pt-4 mt-3 lg:mt-4">
+          <div className="border-t border-gray-200/50 pt-2 sm:pt-3 lg:pt-4 mt-2 sm:mt-3 lg:mt-4">
             <NavItem
               label={settingsItem.label}
               icon={settingsItem.icon}
@@ -398,26 +398,27 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
               isActive={viewState.view === settingsItem.view}
               onClick={() => handleNav(settingsItem.view as View)}
               onMouseEnter={() => triggerUIInteraction(settingsItem.hint)}
-              onOnMouseLeave={clearHint}
+              onMouseLeave={clearHint}
             />
           </div>
         </div>
 
+        {/* Enhanced user profile section */}
         <div className={`
-          border-t border-gray-200 p-3 lg:p-5 bg-gray-50
+          border-t border-gray-200 p-2.5 sm:p-3 lg:p-5 bg-gradient-to-r from-gray-50 to-gray-100/50
           ${isExpanded ? 'opacity-100' : 'opacity-0'}
-          transition-opacity duration-300
+          transition-all duration-300
         `}>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 lg:w-12 lg:h-12 bg-blue-600 rounded-xl lg:rounded-2xl flex items-center justify-center text-white font-bold text-sm lg:text-lg shadow-md">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl lg:rounded-2xl flex items-center justify-center text-white font-bold text-sm lg:text-lg shadow-md group-hover:scale-105 transition-transform duration-300">
               🚜
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs lg:text-sm font-bold text-gray-800 truncate">Farmer John</p>
+              <p className="text-xs sm:text-xs lg:text-sm font-bold text-gray-800 truncate">Farmer John</p>
               <p className="text-xs text-gray-600 truncate">farmer@farmyledger.com</p>
             </div>
-            <button className="w-6 h-6 lg:w-8 lg:h-8 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center">
-              <svg className="w-3 h-3 lg:w-4 lg:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center">
+              <svg className="w-3 h-3 sm:w-3 sm:h-3 lg:w-4 lg:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
               </svg>
             </button>
