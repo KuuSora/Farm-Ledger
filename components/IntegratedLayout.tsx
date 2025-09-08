@@ -1,7 +1,7 @@
 // IntegratedLayout.tsx
 import React, { useState, useEffect } from 'react';
-import SideNav from './components/SideNav';
-import Dashboard from './views/Dashboard';
+import SideNav from './SideNav';
+import Dashboard from '../views/Dashboard';
 
 interface IntegratedLayoutProps {
   children?: React.ReactNode; // optional, so Dashboard is default
