@@ -165,6 +165,7 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
   };
 
   const handleNav = (view: View, type?: TransactionType) => {
+    console.log('Navigating to:', view, type); // Debug log
     setViewState({ view, type });
     setIsMobileOpen(false);
   };
