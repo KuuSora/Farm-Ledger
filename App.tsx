@@ -13,6 +13,11 @@ import Header from './components/Header';
 import { View, TransactionType } from './types';
 import { useFarm } from './context/FarmContext';
 import FloatingAIChat from './components/FloatingAIChat';
+import IntegratedLayout from './components/IntegratedLayout';
+
+function App() {
+  return <IntegratedLayout />;
+}
 
 const viewTitles: Record<View, string> = {
     'dashboard': 'Dashboard',
