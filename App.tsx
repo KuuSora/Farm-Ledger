@@ -1,4 +1,3 @@
-// App.tsx
 import React from 'react';
 import Dashboard from './views/Dashboard';
 import Crops from './views/Crops';
@@ -9,12 +8,11 @@ import Summary from './views/Summary';
 import FarmAI from './views/FarmAI';
 import Equipment from './views/Equipment';
 import { TransactionType } from './types';
-import { useFarm } from './context/FarmContext';
+import { useFarm, FarmProvider } from './context/FarmContext';
 import IntegratedLayout from './components/IntegratedLayout';
 import { TeamProvider } from './context/TeamContext';
-import { FarmProvider } from './context/FarmContext';
 
-const MainApp: React.FC = () => {
+const AppContent: React.FC = () => {
   const { viewState } = useFarm();
 
   const renderView = () => {
@@ -60,7 +58,7 @@ const App: React.FC = () => {
   return (
     <FarmProvider>
       <TeamProvider>
-        <MainApp />
+        <AppContent />
       </TeamProvider>
     </FarmProvider>
   );
