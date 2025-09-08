@@ -15,10 +15,6 @@ import { useFarm } from './context/FarmContext';
 import FloatingAIChat from './components/FloatingAIChat';
 import IntegratedLayout from './components/IntegratedLayout';
 
-function App() {
-  return <IntegratedLayout />;
-}
-
 const viewTitles: Record<View, string> = {
     'dashboard': 'Dashboard',
     'crops': 'Crops Management',
@@ -69,6 +65,10 @@ const App: React.FC = () => {
     }
   };
 
+  function App() {
+  return <IntegratedLayout />;
+  }
+  
   return (
     <div className="bg-background">
       <SideNav setIsExpanded={setIsSideNavExpanded} />
