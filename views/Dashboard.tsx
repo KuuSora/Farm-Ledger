@@ -52,7 +52,7 @@ const ChangeIndicator = ({ current, previous, isIncome = false }) => {
 
 const StatCard = ({ title, value, icon, colorClass, changeIndicator, onMouseEnter, onMouseLeave }) => (
   <div
-    className="group relative overflow-hidden rounded-2xl border border-white/20 bg-white/90 backdrop-blur-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 cursor-pointer"
+    className="group relative overflow-hidden rounded-2xl border border-white/20 bg-white/90 backdrop-blur-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1"
     onMouseEnter={onMouseEnter}
     onMouseLeave={onMouseLeave}
     role="group"
@@ -102,10 +102,20 @@ const QuickActionButton = ({ icon, label, onClick, className = '', onMouseEnter,
   </button>
 );
 
-// Market Snapshot Component
+/* ------------------------------- Market AI ------------------------------- */
+
 const MarketSnapshot = () => {
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState("Corn futures are showing steady growth this week, up 2.3% due to strong export demand. Weather conditions remain favorable for the upcoming planting season.");
+  const { loading, error, data, execute } = useGemini();
+  const fetchTrends = useCallback(() => {
+    const prompt = 'Provide a very brief (2-3 sentences) market snapshot for a major agricultural commodity like corn, wheat, or soybeans. Focus on a recent price movement or key influencing factor.';
+    execute(generateText, prompt);
+  }, [execute]);
+
+  useEffect(() => {
+    fetchTrends();
+    const id = setInterval(fetchTrends, 300000);
+    return () => clearInterval(id);
+  }, [fetchTrends]);
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-amber-200/50 bg-gradient-to-br from-amber-50/80 to-orange-50/80 backdrop-blur-sm shadow-lg">
@@ -113,7 +123,7 @@ const MarketSnapshot = () => {
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-2">
           <div className="p-2 rounded-lg bg-amber-100 shadow-md">
-            <MarketTrendsIcon />
+            <MarketTrendsIcon className="h-5 w-5 text-amber-600" />
           </div>
           <h3 className="text-base font-bold text-gray-900">Market Snapshot</h3>
         </div>
@@ -133,6 +143,12 @@ const MarketSnapshot = () => {
               <div className="h-3 w-5/6 rounded-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-size-200 animate-shimmer" />
             </div>
           )}
+          {error && (
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 border border-red-200">
+              <div className="w-3 h-3 rounded-full bg-red-500"></div>
+              <p className="text-red-700 text-sm font-medium">Could not load market data.</p>
+            </div>
+          )}
           {data && (
             <div className="p-3 rounded-lg bg-white/60 backdrop-blur-sm border border-white/40">
               <p className="text-gray-800 leading-relaxed text-sm font-medium">{data}</p>
@@ -147,485 +163,6 @@ const MarketSnapshot = () => {
           </div>
           <span>•</span>
           <span>Updated every 5 mins</span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Navigation Item Component
-const NavItem = ({ icon, label, isActive, isExpanded, onClick, hasNotification, badge, isMobile }) => {
-  const [showTooltip, setShowTooltip] = useState(false);
-
-  return (
-    <li className="relative group">
-      <div
-        onClick={onClick}
-        onMouseEnter={() => {
-          if (!isExpanded && !isMobile) setShowTooltip(true);
-        }}
-        onMouseLeave={() => {
-          setShowTooltip(false);
-        }}
-        className={`
-          relative flex items-center h-12 mx-2 rounded-xl cursor-pointer
-          transition-all duration-300 ease-out group overflow-hidden
-          ${isActive 
-            ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25" 
-            : "text-slate-600 hover:text-slate-900 hover:bg-slate-50/80 hover:shadow-sm"
-          }
-        `}
-      >
-        {/* Active state glow effect */}
-        {isActive && (
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-teal-500/20 rounded-xl blur-xl" />
-        )}
-
-        {/* Icon container */}
-        <div className={`
-          relative z-10 flex items-center justify-center flex-shrink-0 w-10 h-10 rounded-lg transition-all duration-300
-          ${isExpanded ? 'ml-3' : 'mx-auto'}
-          ${isActive ? 'bg-white/20 shadow-inner' : 'group-hover:bg-slate-100/50'}
-        `}>
-          <div className={`
-            w-5 h-5 transition-all duration-300
-            ${isActive ? 'text-white' : 'text-slate-600 group-hover:text-emerald-600'}
-          `}>
-            {icon}
-          </div>
-          
-          {/* Notification indicators */}
-          {hasNotification && (
-            <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-gradient-to-br from-orange-400 to-red-500 rounded-full border-2 border-white shadow-sm">
-              <div className="absolute inset-0 bg-orange-400 rounded-full animate-ping opacity-60" />
-            </div>
-          )}
-          
-          {badge && (
-            <div className="absolute -top-1 -right-1 min-w-5 h-5 bg-gradient-to-br from-orange-500 to-red-600 text-white text-xs rounded-full flex items-center justify-center border-2 border-white font-semibold shadow-md">
-              {badge}
-            </div>
-          )}
-        </div>
-
-        {/* Label with smooth animation */}
-        <div className={`
-          relative z-10 ml-3 transition-all duration-300 ease-out
-          ${isExpanded 
-            ? "opacity-100 translate-x-0 max-w-none" 
-            : "opacity-0 -translate-x-4 max-w-0 overflow-hidden"
-          }
-        `}>
-          <span className="font-semibold text-sm whitespace-nowrap">{label}</span>
-        </div>
-
-        {/* Active indicator line */}
-        {isActive && (
-          <div className="absolute left-0 top-2 bottom-2 w-1 bg-white rounded-r-full shadow-sm" />
-        )}
-      </div>
-
-      {/* Enhanced tooltip for collapsed state - Desktop only */}
-      {showTooltip && !isExpanded && !isMobile && (
-        <div className="absolute left-full top-1/2 -translate-y-1/2 ml-4 z-50">
-          <div className="relative bg-slate-800 text-white px-4 py-2.5 rounded-lg text-sm font-medium shadow-xl border border-slate-700 backdrop-blur-sm">
-            {label}
-            {/* Arrow */}
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 border-4 border-transparent border-r-slate-800" />
-          </div>
-        </div>
-      )}
-    </li>
-  );
-};
-
-// Sidebar Navigation Component
-const SideNav = () => {
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const { viewState, setViewState, triggerUIInteraction } = useFarm();
-
-  // Handle responsive behavior
-  useEffect(() => {
-    const checkIsMobile = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-      if (mobile) {
-        setIsMobileOpen(false);
-      }
-    };
-
-    checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
-    return () => window.removeEventListener('resize', checkIsMobile);
-  }, []);
-
-  const handleNav = (view, type) => {
-    setViewState({ view, type });
-    setIsMobileOpen(false);
-  };
-
-  const clearHint = () => triggerUIInteraction(null);
-
-  const toggleMobile = () => {
-    setIsMobileOpen(!isMobileOpen);
-  };
-
-  const toggleDesktopCollapse = () => {
-    setIsDesktopCollapsed(!isDesktopCollapsed);
-  };
-
-  // Determine if sidebar should be expanded
-  const isExpanded = isMobile ? true : !isDesktopCollapsed;
-
-// Navigation items organized by sections
-  const mainNavItems = [
-    { 
-      view: "dashboard", 
-      label: "Dashboard", 
-      icon: <DashboardIcon />, 
-      hint: "Overview of your farm operations",
-      hasNotification: true
-    },
-    { 
-      view: "crops", 
-      label: "Crops", 
-      icon: <CropsIcon />, 
-      hint: "Manage crops and field operations" 
-    },
-    { 
-      view: "equipment", 
-      label: "Hydroponics", 
-      icon: <HydroponicsIcon />, 
-      hint: "Monitor hydroponic systems" 
-    },
-  ];
-
-  const financeNavItems = [
-    { 
-      view: "transactions", 
-      type: TransactionType.INCOME, 
-      label: "Income", 
-      icon: <IncomeIcon />, 
-      hint: "Track farm revenue and sales",
-      badge: "12"
-    },
-    { 
-      view: "transactions", 
-      type: TransactionType.EXPENSE, 
-      label: "Expenses", 
-      icon: <ExpensesIcon />, 
-      hint: "Monitor farm costs and expenses" 
-    },
-    { 
-      view: "reports", 
-      label: "Reports", 
-      icon: <ReportsIcon />, 
-      hint: "Financial reports and analytics" 
-    },
-  ];
-
-  const toolsNavItems = [
-    { 
-      view: "summary", 
-      label: "Summary", 
-      icon: <DocumentIcon />, 
-      hint: "Generate comprehensive summaries" 
-    },
-    { 
-      view: "farm-ai", 
-      label: "Farm AI", 
-      icon: <FarmAIIcon />, 
-      hint: "AI-powered farm insights",
-      hasNotification: true
-    },
-  ];
-
-  const settingsItem = {
-    view: "settings",
-    label: "Settings",
-    icon: <SettingsIcon />,
-    hint: "Application preferences and configuration",
-  };
-
-  return (
-    <>
-      {/* Mobile menu button */}
-      <button
-        onClick={toggleMobile}
-        className={`
-          fixed top-6 left-6 z-50 md:hidden
-          w-12 h-12 backdrop-blur-xl shadow-lg border
-          flex items-center justify-center transition-all duration-300 ease-out
-          ${isMobileOpen 
-            ? 'bg-emerald-600 border-emerald-500 text-white shadow-emerald-500/30 rotate-90' 
-            : 'bg-white/95 border-slate-200 text-slate-700 hover:bg-white hover:shadow-xl hover:border-slate-300'
-          }
-          rounded-2xl hover:scale-105 active:scale-95
-        `}
-      >
-        <div className="relative w-5 h-5">
-          <span className={`
-            absolute top-1 left-0 w-5 h-0.5 bg-current rounded-full origin-center
-            transition-all duration-300 ease-out
-            ${isMobileOpen ? 'rotate-45 top-2.5 bg-white' : ''}
-          `} />
-          <span className={`
-            absolute top-2.5 left-0 w-5 h-0.5 bg-current rounded-full
-            transition-all duration-300 ease-out
-            ${isMobileOpen ? 'opacity-0 scale-0' : 'opacity-100 scale-100'}
-          `} />
-          <span className={`
-            absolute top-4 left-0 w-5 h-0.5 bg-current rounded-full origin-center
-            transition-all duration-300 ease-out
-            ${isMobileOpen ? '-rotate-45 top-2.5 bg-white' : ''}
-          `} />
-        </div>
-      </button>
-
-      {/* Main sidebar */}
-      <nav
-        className={`
-          fixed top-0 left-0 h-full flex flex-col z-40
-          bg-white/95 backdrop-blur-xl border-r border-slate-200/60 shadow-2xl shadow-slate-900/5
-          transition-all duration-400 ease-out
-          ${isMobile ? (
-            isMobileOpen 
-              ? 'w-72 translate-x-0' 
-              : 'w-72 -translate-x-full'
-          ) : (
-            isDesktopCollapsed 
-              ? 'w-20 translate-x-0' 
-              : 'w-72 translate-x-0'
-          )}
-        `}
-      >
-        {/* Enhanced header */}
-        <div className="relative flex items-center h-20 px-6 border-b border-slate-200/60 bg-gradient-to-r from-slate-50/80 to-emerald-50/40">
-          {/* Logo and brand */}
-          <div className="flex items-center gap-4">
-            <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/30 to-teal-500/30 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-500" />
-              <div className="relative w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/25 group-hover:scale-105 transition-all duration-300 border border-emerald-400/30">
-                <div className="w-6 h-6 text-white">
-                  <svg fill="currentColor" viewBox="0 0 24 24" className="drop-shadow-sm">
-                    <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" />
-                    <path d="M12 16C12 16 8 18 8 22H16C16 18 12 16 12 16Z" />
-                    <circle cx="12" cy="19" r="1" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-            <div className={`
-              transition-all duration-400 ease-out
-              ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}
-            `}>
-              <h1 className="text-xl font-black bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                FARMY'S LEDGER
-              </h1>
-              <p className="text-sm font-semibold text-emerald-600 -mt-0.5">Farm Management System</p>
-            </div>
-          </div>
-          
-          {/* Desktop collapse toggle */}
-          <button
-            onClick={toggleDesktopCollapse}
-            className={`
-              hidden md:flex items-center justify-center w-8 h-8 ml-auto
-              text-slate-400 hover:text-slate-600 rounded-xl
-              hover:bg-slate-100/80 backdrop-blur-sm transition-all duration-300
-              ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}
-              hover:scale-110 active:scale-95
-            `}
-          >
-            <svg className={`w-4 h-4 transition-transform duration-300 ${isDesktopCollapsed ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Navigation content */}
-        <div className="flex-1 flex flex-col py-6 overflow-hidden">
-          <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent px-1">
-            
-            {/* Main Operations Section */}
-            <div className="mb-8">
-              <div className={`
-                px-4 mb-3 transition-all duration-300
-                ${isExpanded ? 'opacity-100' : 'opacity-0'}
-              `}>
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Operations</h3>
-              </div>
-              <ul className="space-y-2">
-                {mainNavItems.map((item) => (
-                  <NavItem
-                    key={`${item.view}-${item.type || ''}`}
-                    label={item.label}
-                    icon={item.icon}
-                    isExpanded={isExpanded}
-                    isActive={
-                      viewState.view === item.view &&
-                      (item.type ? viewState.type === item.type : true)
-                    }
-                    onClick={() => handleNav(item.view, item.type)}
-                    hasNotification={item.hasNotification}
-                    badge={item.badge}
-                    isMobile={isMobile}
-                  />
-                ))}
-              </ul>
-            </div>
-
-            {/* Financial Section */}
-            <div className="mb-8">
-              <div className={`
-                px-4 mb-3 transition-all duration-300
-                ${isExpanded ? 'opacity-100' : 'opacity-0'}
-              `}>
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Financial</h3>
-              </div>
-              <ul className="space-y-2">
-                {financeNavItems.map((item) => (
-                  <NavItem
-                    key={`${item.view}-${item.type || ''}`}
-                    label={item.label}
-                    icon={item.icon}
-                    isExpanded={isExpanded}
-                    isActive={
-                      viewState.view === item.view &&
-                      (item.type ? viewState.type === item.type : true)
-                    }
-                    onClick={() => handleNav(item.view, item.type)}
-                    hasNotification={item.hasNotification}
-                    badge={item.badge}
-                    isMobile={isMobile}
-                  />
-                ))}
-              </ul>
-            </div>
-
-            {/* Tools Section */}
-            <div className="mb-8">
-              <div className={`
-                px-4 mb-3 transition-all duration-300
-                ${isExpanded ? 'opacity-100' : 'opacity-0'}
-              `}>
-                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Tools</h3>
-              </div>
-              <ul className="space-y-2">
-                {toolsNavItems.map((item) => (
-                  <NavItem
-                    key={`${item.view}-${item.type || ''}`}
-                    label={item.label}
-                    icon={item.icon}
-                    isExpanded={isExpanded}
-                    isActive={
-                      viewState.view === item.view &&
-                      (item.type ? viewState.type === item.type : true)
-                    }
-                    onClick={() => handleNav(item.view, item.type)}
-                    hasNotification={item.hasNotification}
-                    badge={item.badge}
-                    isMobile={isMobile}
-                  />
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Settings section */}
-          <div className="border-t border-slate-200/60 pt-6 mt-auto">
-            <ul>
-              <NavItem
-                label={settingsItem.label}
-                icon={settingsItem.icon}
-                isExpanded={isExpanded}
-                isActive={viewState.view === settingsItem.view}
-                onClick={() => handleNav(settingsItem.view)}
-                isMobile={isMobile}
-              />
-            </ul>
-          </div>
-        </div>
-
-        {/* Enhanced user profile section */}
-        <div className={`
-          border-t border-slate-200/60 p-4 bg-gradient-to-r from-slate-50/60 to-emerald-50/30 backdrop-blur-sm
-          transition-all duration-400 ease-out
-          ${isExpanded ? 'opacity-100' : 'opacity-0'}
-        `}>
-          <div className="flex items-center gap-4">
-            <div className="relative group">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-2xl flex items-center justify-center text-2xl shadow-md group-hover:scale-105 transition-all duration-300 border border-emerald-200/50">
-                ðŸŒ¾
-              </div>
-              <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm">
-                <div className="w-2 h-2 bg-green-400 rounded-full mx-auto mt-0.5" />
-              </div>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-slate-800 truncate">Farmer John</p>
-              <p className="text-xs text-slate-500 truncate">Premium Account â€¢ Active</p>
-            </div>
-            <button className="w-8 h-8 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100/80 transition-all duration-200 flex items-center justify-center group">
-              <svg className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Enhanced mobile overlay */}
-      {isMobileOpen && (
-        <div 
-          className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-30 md:hidden transition-all duration-300"
-          onClick={() => setIsMobileOpen(false)}
-        />
-      )}
-    </>
-  );
-};
-
-// Layout Component
-const IntegratedLayout = ({ children }) => {
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
-
-  // Handle responsive behavior
-  useEffect(() => {
-    const checkIsMobile = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-      if (mobile) {
-        setSidebarExpanded(false);
-      } else {
-        setSidebarExpanded(true);
-      }
-    };
-
-    checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
-    return () => window.removeEventListener('resize', checkIsMobile);
-  }, []);
-
-  return (
-    <div className="flex min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/40">
-      {/* Sidebar Component */}
-      <SideNav />
-      
-      {/* Main Content Area */}
-      <div
-        className={`
-          flex-1 transition-all duration-400 ease-out
-          ${!isMobile ? (sidebarExpanded ? 'ml-72' : 'ml-20') : 'ml-0'}
-        `}
-      >
-        <div className="min-h-screen">
-          <div className="max-w-7xl mx-auto space-y-6 px-4 md:px-6 py-6 pt-20 md:pt-6">
-            {children}
-          </div>
         </div>
       </div>
     </div>
@@ -733,35 +270,6 @@ const Dashboard = () => {
         .bg-size-200 {
           background-size: 200% 100%;
         }
-        /* Enhanced scrollbar styling */
-        .scrollbar-thin::-webkit-scrollbar {
-          width: 6px;
-        }
-        .scrollbar-thumb-slate-300::-webkit-scrollbar-thumb {
-          background-color: rgba(148, 163, 184, 0.4);
-          border-radius: 3px;
-          transition: background-color 0.2s;
-        }
-        .scrollbar-thumb-slate-300::-webkit-scrollbar-thumb:hover {
-          background-color: rgba(148, 163, 184, 0.6);
-        }
-        .scrollbar-track-transparent::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f1f5f9;
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: linear-gradient(to bottom, #3b82f6, #1d4ed8);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(to bottom, #2563eb, #1e40af);
-        }
       `}</style>
       
       <div className="max-w-7xl mx-auto space-y-6 px-4 py-6">
@@ -779,7 +287,7 @@ const Dashboard = () => {
         {/* Quick Actions */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
           <QuickActionButton
-            icon={<IncomeIcon />}
+            icon={<IncomeIcon className="w-5 h-5" />}
             label="Add Income"
             onClick={() => handleAddTransactionClick(TransactionType.INCOME)}
             className="bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600"
@@ -787,7 +295,7 @@ const Dashboard = () => {
             onMouseLeave={clearHint}
           />
           <QuickActionButton
-            icon={<ExpensesIcon />}
+            icon={<ExpensesIcon className="w-5 h-5" />}
             label="Add Expense"
             onClick={() => handleAddTransactionClick(TransactionType.EXPENSE)}
             className="bg-gradient-to-br from-red-500 via-rose-500 to-red-600"
@@ -795,7 +303,7 @@ const Dashboard = () => {
             onMouseLeave={clearHint}
           />
           <QuickActionButton
-            icon={<CropsIcon />}
+            icon={<CropsIcon className="w-5 h-5" />}
             label="Add Crop"
             onClick={handleAddCropClick}
             className="bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600"
@@ -803,7 +311,7 @@ const Dashboard = () => {
             onMouseLeave={clearHint}
           />
           <QuickActionButton
-            icon={<HydroponicsIcon />}
+            icon={<HydroponicsIcon className="w-5 h-5" />}
             label="Hydroponics"
             onClick={handleAddHydroponicsClick}
             className="bg-gradient-to-br from-cyan-500 via-teal-500 to-cyan-600"
@@ -817,7 +325,7 @@ const Dashboard = () => {
           <StatCard
             title="This Month's Income"
             value={formatCurrency(financialSummary.monthlyIncome)}
-            icon={<IncomeIcon />}
+            icon={<IncomeIcon className="w-full h-full text-emerald-600" />}
             colorClass="bg-gradient-to-br from-emerald-100 to-green-100"
             changeIndicator={<ChangeIndicator current={financialSummary.monthlyIncome} previous={financialSummary.lastMonthIncome} isIncome />}
             onMouseEnter={() => triggerUIInteraction('Total income recorded in the current month with trend analysis.')}
@@ -826,7 +334,7 @@ const Dashboard = () => {
           <StatCard
             title="This Month's Expenses"
             value={formatCurrency(financialSummary.monthlyExpenses)}
-            icon={<ExpensesIcon />}
+            icon={<ExpensesIcon className="w-full h-full text-red-600" />}
             colorClass="bg-gradient-to-br from-red-100 to-rose-100"
             changeIndicator={<ChangeIndicator current={financialSummary.monthlyExpenses} previous={financialSummary.lastMonthExpenses} isIncome={false} />}
             onMouseEnter={() => triggerUIInteraction('Total expenses recorded with smart categorization and alerts.')}
@@ -835,7 +343,7 @@ const Dashboard = () => {
           <StatCard
             title="Monthly Net Profit"
             value={formatCurrency(financialSummary.monthlyNet)}
-            icon={<ReportsIcon />}
+            icon={<ReportsIcon className={`w-full h-full ${financialSummary.monthlyNet >= 0 ? 'text-blue-600' : 'text-amber-600'}`} />}
             colorClass={financialSummary.monthlyNet >= 0 ? 'bg-gradient-to-br from-blue-100 to-indigo-100' : 'bg-gradient-to-br from-amber-100 to-orange-100'}
             onMouseEnter={() => triggerUIInteraction("Advanced profit analysis with forecasting and optimization tips.")}
             onMouseLeave={clearHint}
@@ -916,13 +424,13 @@ const Dashboard = () => {
                       {event.type === 'harvest' ? (
                         <>
                           <div className="p-2 bg-gradient-to-br from-emerald-100 to-green-100 rounded-xl shadow-md">
-                            <CropsIcon />
+                            <CropsIcon className="w-5 h-5 text-emerald-600" />
                           </div>
                           <button className="flex-grow text-left min-w-0" onClick={() => handleCropClick(event.raw)}>
                             <p className="font-bold text-gray-900 group-hover:text-emerald-600 text-sm truncate transition-colors">{event.title}</p>
                             <p className="text-xs text-gray-600 mt-1">{event.description}: {formatDate(event.date)}</p>
                           </button>
-                          <Badge tone="success">ðŸŒ¾</Badge>
+                          <Badge tone="success">🌾</Badge>
                         </>
                       ) : (
                         <>
@@ -937,9 +445,9 @@ const Dashboard = () => {
                             <span className="text-gray-900 text-sm truncate font-medium">{event.title}</span>
                           </div>
                           <button onClick={() => deleteTodo(event.id)} aria-label={`Delete todo: ${event.title}`} className="text-red-500 opacity-0 group-hover:opacity-100 transition-all duration-200 p-1 hover:bg-red-50 rounded-lg flex-shrink-0">
-                            <TrashIcon />
+                            <TrashIcon className="w-4 h-4" />
                           </button>
-                          <Badge tone="warning">ðŸ“</Badge>
+                          <Badge tone="warning">📝</Badge>
                         </>
                       )}
                     </div>
@@ -947,7 +455,7 @@ const Dashboard = () => {
                 ) : (
                   <div className="text-center text-gray-500 py-8">
                     <div className="p-4 rounded-xl bg-gray-100 inline-block mb-4">
-                      <CalendarIcon />
+                      <CalendarIcon className="w-12 h-12 mx-auto text-gray-300" />
                     </div>
                     <p className="text-lg font-semibold mb-2">No upcoming events</p>
                     <p className="text-sm text-gray-400">Your schedule is clear for now!</p>
@@ -960,7 +468,7 @@ const Dashboard = () => {
                     type="text"
                     value={newTodo}
                     onChange={(e) => setNewTodo(e.target.value)}
-                    placeholder="Add a quick task... âœ¨"
+                    placeholder="Add a quick task... ✨"
                     className="flex-grow bg-transparent text-sm placeholder:text-gray-500 focus:outline-none font-medium"
                     onFocus={() => triggerUIInteraction('Type a new task and press the plus button to add it to your smart task list.')}
                     onBlur={clearHint}
@@ -971,7 +479,7 @@ const Dashboard = () => {
                     aria-label="Add new task" 
                     className="inline-flex items-center gap-1 rounded-xl px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 flex-shrink-0"
                   >
-                    <PlusCircleIcon />
+                    <PlusCircleIcon className="w-4 h-4" />
                     <span className="hidden sm:inline font-semibold text-xs">Add</span>
                   </button>
                 </div>
@@ -987,7 +495,7 @@ const Dashboard = () => {
                   maintenanceCandidates.map(item => (
                     <button key={item.id} onClick={() => handleEquipmentClick(item)} className="group flex w-full items-start gap-3 rounded-xl border border-blue-200/50 bg-gradient-to-r from-blue-50 to-indigo-50/50 p-3 text-left transition-all duration-300 hover:shadow-lg hover:border-blue-300 hover:scale-[1.01]">
                       <div className="p-2 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300">
-                        <HydroponicsIcon />
+                        <HydroponicsIcon className="w-5 h-5 text-blue-600" />
                       </div>
                       <div className="flex-grow min-w-0">
                         <p className="font-bold text-gray-900 group-hover:text-blue-700 text-sm truncate transition-colors">{item.name}</p>
@@ -997,13 +505,13 @@ const Dashboard = () => {
                           <span className="text-xs text-blue-600 font-medium">Predictive insights available</span>
                         </div>
                       </div>
-                      <Badge tone="info">ðŸ”§</Badge>
+                      <Badge tone="info">🔧</Badge>
                     </button>
                   ))
                 ) : (
                   <div className="text-center text-gray-500 py-8">
                     <div className="p-4 rounded-xl bg-gray-100 inline-block mb-4">
-                      <WrenchIcon />
+                      <WrenchIcon className="w-12 h-12 mx-auto text-gray-300" />
                     </div>
                     <p className="text-lg font-semibold mb-2">No maintenance alerts</p>
                     <p className="text-sm text-gray-400 mb-1">Your equipment is running smoothly!</p>
@@ -1038,9 +546,9 @@ const Dashboard = () => {
                               : 'bg-gradient-to-br from-red-100 to-rose-100'
                           }`}>
                             {tx.type === TransactionType.INCOME ? (
-                              <IncomeIcon />
+                              <IncomeIcon className="w-4 h-4 text-emerald-600" />
                             ) : (
-                              <ExpensesIcon />
+                              <ExpensesIcon className="w-4 h-4 text-red-600" />
                             )}
                           </div>
                           <div className="min-w-0">
@@ -1092,9 +600,9 @@ const Dashboard = () => {
                                   : 'bg-red-100'
                               }`}>
                                 {tx.type === TransactionType.INCOME ? (
-                                  <IncomeIcon />
+                                  <IncomeIcon className="w-3 h-3 text-emerald-600" />
                                 ) : (
-                                  <ExpensesIcon />
+                                  <ExpensesIcon className="w-3 h-3 text-red-600" />
                                 )}
                               </div>
                               {tx.description}
@@ -1117,7 +625,7 @@ const Dashboard = () => {
             ) : (
               <div className="flex min-h-[180px] flex-col items-center justify-center gap-4 text-gray-500">
                 <div className="p-6 rounded-xl bg-gray-100">
-                  <ExpensesIcon />
+                  <ExpensesIcon className="w-16 h-16 text-gray-300" />
                 </div>
                 <div className="text-center">
                   <p className="font-bold text-lg mb-2">No recent transactions</p>
@@ -1128,86 +636,26 @@ const Dashboard = () => {
           </Card>
         </div>
       </div>
+
+      {/* Custom Scrollbar Styles */}
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: linear-gradient(to bottom, #3b82f6, #1d4ed8);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(to bottom, #2563eb, #1e40af);
+        }
+      `}</style>
     </div>
   );
 };
 
-// Main App Component
-const App = () => {
-  const { viewState } = useFarm();
-
-  const renderView = () => {
-    switch (viewState.view) {
-      case 'dashboard':
-        return <Dashboard />;
-      case 'crops':
-        return (
-          <div className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">Crops Management</h2>
-            <p className="text-gray-600">Crops view would be implemented here</p>
-          </div>
-        );
-      case 'transactions':
-        return (
-          <div className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">
-              {viewState.type === TransactionType.INCOME ? 'Income' : 'Expense'} Transactions
-            </h2>
-            <p className="text-gray-600">Transaction management view would be implemented here</p>
-          </div>
-        );
-      case 'equipment':
-        return (
-          <div className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">Hydroponics Equipment</h2>
-            <p className="text-gray-600">Equipment management view would be implemented here</p>
-          </div>
-        );
-      case 'reports':
-        return (
-          <div className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">Reports & Analytics</h2>
-            <p className="text-gray-600">Reports view would be implemented here</p>
-          </div>
-        );
-      case 'summary':
-        return (
-          <div className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">Farm Summary</h2>
-            <p className="text-gray-600">Summary view would be implemented here</p>
-          </div>
-        );
-      case 'farm-ai':
-        return (
-          <div className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">Farm AI Assistant</h2>
-            <p className="text-gray-600">AI assistant view would be implemented here</p>
-          </div>
-        );
-      case 'settings':
-        return (
-          <div className="p-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">Settings</h2>
-            <p className="text-gray-600">Settings view would be implemented here</p>
-          </div>
-        );
-      default:
-        return <Dashboard />;
-    }
-  };
-
-  return (
-    <IntegratedLayout>
-      {renderView()}
-    </IntegratedLayout>
-  );
-};
-
-// Main component with provider
-export default function FarmDashboard() {
-  return (
-    <FarmProvider>
-      <App />
-    </FarmProvider>
-  );
-}
+export default Dashboard;
