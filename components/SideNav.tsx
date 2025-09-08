@@ -3,6 +3,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, TransactionType } from "../types";
 import { DashboardIcon, CropsIcon, IncomeIcon, ExpensesIcon, ReportsIcon, SettingsIcon, DocumentIcon, FarmAIIcon, HydroponicsIcon } from "./icons";
 import { useFarm } from "../context/FarmContext";
+import { useTeam } from '../context/TeamContext';
+
+
 
 interface NavItemProps {
   icon: React.ReactNode;
@@ -441,7 +444,53 @@ const SideNav: React.FC<SideNavProps> = ({ setIsExpanded }) => {
               </ul>
             </div>
           </div>
+          
+           // Add this import at the top
 
+// Replace the existing profile section (around line 450) with:
+const ProfileSection = () => {
+  const { currentUser, team } = useTeam();
+  
+  if (!currentUser || !team) return null;
+  
+  return (
+    <div className={`
+      border-t border-slate-200/60 p-4 bg-gradient-to-r from-slate-50/60 to-emerald-50/30 backdrop-blur-sm
+      transition-all duration-400 ease-out
+      ${isExpanded ? 'opacity-100' : 'opacity-0'}
+    `}>
+      <div className="flex items-center gap-4">
+        <div className="relative group">
+          <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-2xl flex items-center justify-center shadow-md group-hover:scale-105 transition-all duration-300 border border-emerald-200/50 overflow-hidden">
+            {currentUser.avatar ? (
+              <img src={currentUser.avatar} alt={currentUser.name} className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-lg font-bold text-emerald-700">
+                {currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+              </span>
+            )}
+          </div>
+          <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm">
+            <div className="w-2 h-2 bg-green-400 rounded-full mx-auto mt-0.5" />
+          </div>
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-bold text-slate-800 truncate">{currentUser.name}</p>
+          <p className="text-xs text-slate-500 truncate">{team.plan} Plan • {team.status}</p>
+        </div>
+        <button 
+          onClick={() => handleNav('team-profile')} // Add this view to your navigation
+          className="w-8 h-8 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100/80 transition-all duration-200 flex items-center justify-center group"
+        >
+          <svg className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+};
+          
           {/* Settings section */}
           <div className="border-t border-slate-200/60 pt-6 mt-auto">
             <ul>
