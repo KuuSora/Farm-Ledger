@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import React, { useFarm } from '../context/FarmContext';
+import { useFarm } from '../context/FarmContext';
 
 // Icons
 const GitHubIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
