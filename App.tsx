@@ -1,6 +1,6 @@
-// App.tsx - Updated to include Home component
 import React from 'react';
 import { FarmProvider } from './context/FarmContext';
+import { useFarm } from './context/FarmContext';
 import Home from './views/Home';
 import Dashboard from './views/Dashboard';
 import Crops from './views/Crops';
@@ -11,7 +11,6 @@ import Reports from './views/Reports';
 import Settings from './views/Settings';
 import Navigation from './components/Navigation';
 import UIHint from './components/UIHint';
-import { useFarm } from './context/FarmContext';
 
 const AppContent: React.FC = () => {
   const { viewState } = useFarm();
@@ -35,7 +34,7 @@ const AppContent: React.FC = () => {
       case 'settings':
         return <Settings />;
       default:
-        return <Home />; // Default to Home instead of Dashboard
+        return <Home />;
     }
   };
 
