@@ -14,7 +14,7 @@ export interface Transaction {
 }
 
 export interface Crop {
-  id:string;
+  id: string;
   name: string;
   plantingDate: string; // ISO string
   estimatedHarvestDate: string; // ISO string
@@ -58,11 +58,18 @@ export interface ToDo {
 export interface Notification {
   id: string;
   message: string;
-  link?: string; // Can be used to navigate to a specific item, e.g., an equipment ID
+  link?: string;
   read: boolean;
   seen: boolean;
   timestamp: string; // ISO string
 }
 
-// FIXED: Added 'home' to the View type
+// Unified view type
 export type View = 'home' | 'dashboard' | 'crops' | 'transactions' | 'reports' | 'settings' | 'summary' | 'farm-ai' | 'equipment';
+
+// View state interface
+export interface ViewState {
+  view: View;
+  type?: TransactionType;
+  payload?: any;
+}
