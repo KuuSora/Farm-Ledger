@@ -43,6 +43,11 @@ interface FarmContextType {
 
 const FarmContext = createContext<FarmContextType | undefined>(undefined);
 
+// Utility function to generate unique IDs
+const generateId = (): string => {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+};
+
 export const FarmProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [crops, setCrops] = useState<Crop[]>(MOCK_CROPS);
   const [transactions, setTransactions] = useState<Transaction[]>(MOCK_TRANSACTIONS);
@@ -77,31 +82,183 @@ export const FarmProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
   }, []);
 
-  // ... rest of your context methods remain the same
+  // Crop methods
+  const addCrop = useCallback((crop: Omit<Crop, 'id'>) => {
+    const newCrop: Crop = {
+      ...crop,
+      id: generateId()
+    };
+    setCrops(prev => [...prev, newCrop]);
+  }, []);
+
+  const updateCrop = useCallback((updatedCrop: Crop) => {
+    setCrops(prev => prev.map(crop => 
+      crop.id === updatedCrop.id ? updatedCrop : crop
+    ));
+  }, []);
+
+  const deleteCrop = useCallback((cropId: string) => {
+    setCrops(prev => prev.filter(crop => crop.id !== cropId));
+  }, []);
+
+  // Transaction methods
+  const addTransaction = useCallback((transaction: Omit<Transaction, 'id'>) => {
+    const newTransaction: Transaction = {
+      ...transaction,
+      id: generateId()
+    };
+    setTransactions(prev => [...prev, newTransaction]);
+  }, []);
+
+  const updateTransaction = useCallback((updatedTransaction: Transaction) => {
+    setTransactions(prev => prev.map(transaction => 
+      transaction.id === updatedTransaction.id ? updatedTransaction : transaction
+    ));
+  }, []);
+
+  const deleteTransaction = useCallback((transactionId: string) => {
+    setTransactions(prev => prev.filter(transaction => transaction.id !== transactionId));
+  }, []);
+
+  // Todo methods
+  const toggleTodo = useCallback((todoId: string) => {
+    setTodos(prev => prev.map(todo => 
+      todo.id === todoId ? { ...todo, completed: !todo.completed } : todo
+    ));
+  }, []);
+
+  const addTodo = useCallback((task: string) => {
+    const newTodo: ToDo = {
+      id: generateId(),
+      task,
+      completed: false,
+      createdAt: new Date()
+    };
+    setTodos(prev => [...prev, newTodo]);
+  }, []);
+
+  const deleteTodo = useCallback((todoId: string) => {
+    setTodos(prev => prev.filter(todo => todo.id !== todoId));
+  }, []);
+
+  // Equipment methods
+  const addEquipment = useCallback((item: Omit<Equipment, 'id' | 'maintenanceLogs'>) => {
+    const newEquipment: Equipment = {
+      ...item,
+      id: generateId(),
+      maintenanceLogs: []
+    };
+    setEquipment(prev => [...prev, newEquipment]);
+  }, []);
+
+  const updateEquipment = useCallback((updatedItem: Equipment) => {
+    setEquipment(prev => prev.map(item => 
+      item.id === updatedItem.id ? updatedItem : item
+    ));
+  }, []);
+
+  const deleteEquipment = useCallback((equipmentId: string) => {
+    setEquipment(prev => prev.filter(item => item.id !== equipmentId));
+  }, []);
+
+  // Maintenance log methods
+  const addMaintenanceLog = useCallback((equipmentId: string, log: Omit<MaintenanceLog, 'id'>) => {
+    const newLog: MaintenanceLog = {
+      ...log,
+      id: generateId()
+    };
+    setEquipment(prev => prev.map(item => 
+      item.id === equipmentId 
+        ? { ...item, maintenanceLogs: [...item.maintenanceLogs, newLog] }
+        : item
+    ));
+  }, []);
+
+  const deleteMaintenanceLog = useCallback((equipmentId: string, logId: string) => {
+    setEquipment(prev => prev.map(item => 
+      item.id === equipmentId 
+        ? { 
+            ...item, 
+            maintenanceLogs: item.maintenanceLogs.filter(log => log.id !== logId) 
+          }
+        : item
+    ));
+  }, []);
+
+  // Notification methods
+  const addNotification = useCallback((message: string, link?: string) => {
+    const newNotification: Notification = {
+      id: generateId(),
+      message,
+      link,
+      timestamp: new Date(),
+      read: false,
+      seen: false
+    };
+    setNotifications(prev => [newNotification, ...prev]);
+  }, []);
+
+  const markNotificationAsRead = useCallback((id: string) => {
+    setNotifications(prev => prev.map(notification => 
+      notification.id === id 
+        ? { ...notification, read: true, seen: true }
+        : notification
+    ));
+  }, []);
+
+  const markAllNotificationsAsSeen = useCallback(() => {
+    setNotifications(prev => prev.map(notification => 
+      ({ ...notification, seen: true })
+    ));
+  }, []);
+
+  const markAllAsRead = useCallback(() => {
+    setNotifications(prev => prev.map(notification => 
+      ({ ...notification, read: true, seen: true })
+    ));
+  }, []);
+
+  const contextValue: FarmContextType = {
+    crops,
+    setCrops,
+    transactions,
+    setTransactions,
+    settings,
+    setSettings,
+    todos,
+    setTodos,
+    equipment,
+    setEquipment,
+    addCrop,
+    updateCrop,
+    deleteCrop,
+    addTransaction,
+    updateTransaction,
+    deleteTransaction,
+    toggleTodo,
+    addTodo,
+    deleteTodo,
+    addEquipment,
+    updateEquipment,
+    deleteEquipment,
+    addMaintenanceLog,
+    deleteMaintenanceLog,
+    viewState,
+    setViewState,
+    formInputContext,
+    setFormInputContext,
+    isOnline,
+    uiInteractionEvent,
+    triggerUIInteraction,
+    notifications,
+    addNotification,
+    markNotificationAsRead,
+    markAllNotificationsAsSeen,
+    markAllAsRead
+  };
 
   return (
-    <FarmContext.Provider value={{
-      crops, setCrops,
-      transactions, setTransactions,
-      settings, setSettings,
-      todos, setTodos,
-      equipment, setEquipment,
-      addCrop, updateCrop, deleteCrop,
-      addTransaction, updateTransaction, deleteTransaction,
-      toggleTodo, addTodo, deleteTodo,
-      addEquipment, updateEquipment, deleteEquipment,
-      addMaintenanceLog, deleteMaintenanceLog,
-      viewState, setViewState,
-      formInputContext, setFormInputContext,
-      isOnline,
-      uiInteractionEvent,
-      triggerUIInteraction,
-      notifications,
-      addNotification,
-      markNotificationAsRead,
-      markAllNotificationsAsSeen,
-      markAllAsRead
-    }}>
+    <FarmContext.Provider value={contextValue}>
       {children}
     </FarmContext.Provider>
   );
