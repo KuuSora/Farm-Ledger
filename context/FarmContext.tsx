@@ -1,10 +1,13 @@
 import React, { createContext, useContext, ReactNode, useState, useEffect, useCallback } from 'react';
 import useLocalStorage from '../hooks/useLocalStorage';
-import { Crop, Transaction, Settings, ToDo, View, TransactionType, Equipment, MaintenanceLog, Notification } from '../types';
+import { Crop, Transaction, Settings, ToDo, TransactionType, Equipment, MaintenanceLog, Notification } from '../types';
 import { DEFAULT_SETTINGS, MOCK_CROPS, MOCK_TRANSACTIONS, MOCK_TODOS, MOCK_EQUIPMENT } from '../constants';
 
+// Define the view type here (or move to types.ts)
+export type ViewName = 'home' | 'dashboard' | 'crops' | 'transactions' | 'equipment' | 'farm-ai' | 'reports' | 'settings';
+
 interface ViewState {
-    view: View;
+    view: ViewName; // Changed from View to ViewName
     type?: TransactionType;
     payload?: any;
 }
@@ -57,7 +60,10 @@ export const FarmProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [todos, setTodos] = useLocalStorage<ToDo[]>('farm_todos', MOCK_TODOS);
   const [equipment, setEquipment] = useLocalStorage<Equipment[]>('farm_equipment', MOCK_EQUIPMENT);
   const [notifications, setNotifications] = useLocalStorage<Notification[]>('farm_notifications', []);
-  const [viewState, setViewState] = useState<ViewState>({ view: 'dashboard' });
+  
+  // FIXED: Changed initial view from 'dashboard' to 'home'
+  const [viewState, setViewState] = useState<ViewState>({ view: 'home' });
+  
   const [formInputContext, setFormInputContext] = useState<any>(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [uiInteractionEvent, setUiInteractionEvent] = useState<string | null>(null);
@@ -65,7 +71,6 @@ export const FarmProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const triggerUIInteraction = useCallback((message: string | null) => {
     setUiInteractionEvent(message);
   }, []);
-
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -104,7 +109,6 @@ export const FarmProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const markAllNotificationsAsSeen = () => {
     setNotifications(prev => prev.map(n => ({ ...n, seen: true })));
   };
-
 
   const addCrop = (crop: Omit<Crop, 'id'>) => {
     setCrops(prev => [...prev, { ...crop, id: crypto.randomUUID() }]);
@@ -183,7 +187,6 @@ export const FarmProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const deleteMaintenanceLog = (equipmentId: string, logId: string) => {
     setEquipment(prev => prev.map(eq => eq.id === equipmentId ? { ...eq, maintenanceLogs: eq.maintenanceLogs.filter(log => log.id !== logId) } : eq));
   };
-
 
   return (
     <FarmContext.Provider value={{
