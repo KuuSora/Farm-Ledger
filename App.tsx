@@ -1,4 +1,3 @@
-// App.tsx
 import React from 'react';
 import { FarmProvider, useFarm } from './context/FarmContext';
 import Home from './views/Home';
@@ -12,12 +11,19 @@ import Settings from './views/Settings';
 import Navigation from './components/Navigation';
 import UIHint from './components/UIHint';
 
+
+// ✅ Define props and state properly for ErrorBoundary
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
 // FIXED: Error Boundary Component to catch rendering errors
-class ErrorBoundary extends React.Component<
-  { children: React.ReactNode },
-  { hasError: boolean }
-> {
-  constructor(props: { children: React.ReactNode }) {
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
   }
@@ -59,55 +65,42 @@ class ErrorBoundary extends React.Component<
 const AppContent: React.FC = () => {
   const { viewState } = useFarm(); // must exist from FarmProvider
 
-  // FIXED: Added error handling for view rendering
+  // ✅ Safe view rendering
   const renderView = () => {
-    try {
-      // FIXED: Added null check for viewState to prevent runtime errors
-      if (!viewState) {
-        return <Home />;
-      }
+    if (!viewState) return <Home />; // fallback before context loads
 
-      switch (viewState.view) {
-        case 'home':
-          return <Home />;
-        case 'dashboard':
-          return <Dashboard />;
-        case 'crops':
-          // FIXED: Added proper null check for payload
-          return <Crops payload={viewState.payload || null} />;
-        case 'transactions':
-          return (
-            <Transactions
-              // FIXED: Added proper null checks to prevent undefined errors
-              type={viewState.payload?.type || undefined}
-              payload={viewState.payload || null}
-            />
-          );
-        case 'equipment':
-          // FIXED: Added proper null check for payload
-          return <Equipment payload={viewState.payload || null} />;
-        case 'farm-ai':
-          return <FarmAI />;
-        case 'reports':
-          return <Reports />;
-        case 'settings':
-          return <Settings />;
-        default:
-          return <Home />;
-      }
-    } catch (error) {
-      console.error('Error rendering view:', error);
-      return <Home />; // Fallback to Home on any rendering error
+    switch (viewState.view) {
+      case 'home':
+        return <Home />;
+      case 'dashboard':
+        return <Dashboard />;
+      case 'crops':
+        return <Crops payload={viewState.payload ?? null} />;
+      case 'transactions':
+        return (
+          <Transactions
+            type={viewState.payload?.type}
+            payload={viewState.payload ?? null}
+          />
+        );
+      case 'equipment':
+        return <Equipment payload={viewState.payload ?? null} />;
+      case 'farm-ai':
+        return <FarmAI />;
+      case 'reports':
+        return <Reports />;
+      case 'settings':
+        return <Settings />;
+      default:
+        return <Home />;
     }
   };
 
-  // FIXED: Added additional safety checks for viewState
   const isHomePage = !viewState?.view || viewState.view === 'home';
 
   return (
-    // FIXED: Replaced custom CSS classes with standard Tailwind classes
     <div className="min-h-screen bg-gray-50 text-gray-900">
-      {/* FIXED: Wrapped Navigation in error boundary */}
+      {/* ✅ Only need 1 error boundary here */}
       {!isHomePage && (
         <ErrorBoundary>
           <Navigation />
@@ -116,14 +109,12 @@ const AppContent: React.FC = () => {
 
       <main className={!isHomePage ? 'ml-0 lg:ml-64 transition-all duration-300' : ''}>
         <div className={!isHomePage ? 'p-6' : ''}>
-          {/* FIXED: Wrapped main content in error boundary */}
           <ErrorBoundary>
             {renderView()}
           </ErrorBoundary>
         </div>
       </main>
 
-      {/* FIXED: Wrapped UIHint in error boundary */}
       {!isHomePage && (
         <ErrorBoundary>
           <UIHint />
@@ -133,14 +124,11 @@ const AppContent: React.FC = () => {
   );
 };
 
-// FIXED: Main App component with comprehensive error handling
 const App: React.FC = () => {
   return (
     <ErrorBoundary>
       <FarmProvider>
-        <ErrorBoundary>
-          <AppContent />
-        </ErrorBoundary>
+        <AppContent />
       </FarmProvider>
     </ErrorBoundary>
   );
