@@ -1,6 +1,5 @@
 import React from 'react';
-import { FarmProvider } from './context/FarmContext';
-import { useFarm } from './context/FarmContext';
+import { FarmProvider, useFarm } from './context/FarmContext';
 import Home from './views/Home';
 import Dashboard from './views/Dashboard';
 import Crops from './views/Crops';
@@ -16,7 +15,7 @@ const AppContent: React.FC = () => {
   const { viewState } = useFarm();
 
   const renderView = () => {
-    switch (viewState.view) {
+    switch (viewState?.view) {
       case 'home':
         return <Home />;
       case 'dashboard':
@@ -24,7 +23,12 @@ const AppContent: React.FC = () => {
       case 'crops':
         return <Crops payload={viewState.payload} />;
       case 'transactions':
-        return <Transactions type={viewState.type} payload={viewState.payload} />;
+        return (
+          <Transactions
+            type={viewState.payload?.type ?? 'default'}
+            payload={viewState.payload}
+          />
+        );
       case 'equipment':
         return <Equipment payload={viewState.payload} />;
       case 'farm-ai':
@@ -38,31 +42,33 @@ const AppContent: React.FC = () => {
     }
   };
 
-  const isHomePage = viewState.view === 'home' || !viewState.view;
+  const isHomePage = !viewState?.view || viewState.view === 'home';
 
   return (
     <div className="min-h-screen bg-background text-text-primary">
-      {/* Only show navigation if not on home page */}
+      {/* Navigation only on non-home pages */}
       {!isHomePage && <Navigation />}
-      
-      <main className={!isHomePage ? "ml-0 lg:ml-64 transition-all duration-300" : ""}>
-        <div className={!isHomePage ? "p-6" : ""}>
-          {renderView()}
-        </div>
+
+      <main
+        className={
+          !isHomePage
+            ? 'ml-0 lg:ml-64 transition-all duration-300'
+            : ''
+        }
+      >
+        <div className={!isHomePage ? 'p-6' : ''}>{renderView()}</div>
       </main>
-      
-      {/* Only show UI hint if not on home page */}
+
+      {/* UI hint only on non-home pages */}
       {!isHomePage && <UIHint />}
     </div>
   );
 };
 
-const App: React.FC = () => {
-  return (
-    <FarmProvider>
-      <AppContent />
-    </FarmProvider>
-  );
-};
+const App: React.FC = () => (
+  <FarmProvider>
+    <AppContent />
+  </FarmProvider>
+);
 
 export default App;
