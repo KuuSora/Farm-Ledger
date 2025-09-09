@@ -1,5 +1,4 @@
 import React, { createContext, useContext, ReactNode, useState, useEffect, useCallback } from 'react';
-import useLocalStorage from '../hooks/useLocalStorage';
 import { Crop, Transaction, Settings, ToDo, TransactionType, Equipment, MaintenanceLog, Notification } from '../types';
 import { DEFAULT_SETTINGS, MOCK_CROPS, MOCK_TRANSACTIONS, MOCK_TODOS, MOCK_EQUIPMENT } from '../constants';
 
@@ -54,12 +53,13 @@ interface FarmContextType {
 const FarmContext = createContext<FarmContextType | undefined>(undefined);
 
 export const FarmProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [crops, setCrops] = useLocalStorage<Crop[]>('farm_crops', MOCK_CROPS);
-  const [transactions, setTransactions] = useLocalStorage<Transaction[]>('farm_transactions', MOCK_TRANSACTIONS);
-  const [settings, setSettings] = useLocalStorage<Settings>('farm_settings', DEFAULT_SETTINGS);
-  const [todos, setTodos] = useLocalStorage<ToDo[]>('farm_todos', MOCK_TODOS);
-  const [equipment, setEquipment] = useLocalStorage<Equipment[]>('farm_equipment', MOCK_EQUIPMENT);
-  const [notifications, setNotifications] = useLocalStorage<Notification[]>('farm_notifications', []);
+  // Replaced useLocalStorage with regular useState
+  const [crops, setCrops] = useState<Crop[]>(MOCK_CROPS);
+  const [transactions, setTransactions] = useState<Transaction[]>(MOCK_TRANSACTIONS);
+  const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
+  const [todos, setTodos] = useState<ToDo[]>(MOCK_TODOS);
+  const [equipment, setEquipment] = useState<Equipment[]>(MOCK_EQUIPMENT);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   
   // FIXED: Changed initial view from 'dashboard' to 'home'
   const [viewState, setViewState] = useState<ViewState>({ view: 'home' });
