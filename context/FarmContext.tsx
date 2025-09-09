@@ -1,4 +1,5 @@
 import React, { createContext, useContext, ReactNode, useState, useEffect, useCallback } from 'react';
+import useLocalStorage from '../hooks/useLocalStorage';
 import { Crop, Transaction, Settings, ToDo, TransactionType, Equipment, MaintenanceLog, Notification } from '../types';
 import { DEFAULT_SETTINGS, MOCK_CROPS, MOCK_TRANSACTIONS, MOCK_TODOS, MOCK_EQUIPMENT } from '../constants';
 
