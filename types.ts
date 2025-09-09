@@ -64,4 +64,5 @@ export interface Notification {
   timestamp: string; // ISO string
 }
 
-export type View = 'dashboard' | 'crops' | 'transactions' | 'reports' | 'settings' | 'summary' | 'farm-ai' | 'equipment';
+// FIXED: Added 'home' to the View type
+export type View = 'home' | 'dashboard' | 'crops' | 'transactions' | 'reports' | 'settings' | 'summary' | 'farm-ai' | 'equipment';
