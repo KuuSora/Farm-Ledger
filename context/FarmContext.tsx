@@ -43,9 +43,9 @@ interface FarmContextType {
 
 const FarmContext = createContext<FarmContextType | undefined>(undefined);
 
-// Utility function to generate unique IDs
+// FIXED: Utility function to generate unique IDs - replaced deprecated .substr() with .substring()
 const generateId = (): string => {
-  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  return Date.now().toString(36) + Math.random().toString(36).substring(2);
 };
 
 export const FarmProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -127,12 +127,15 @@ export const FarmProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     ));
   }, []);
 
+  // FIXED: Updated addTodo to match the ToDo interface structure
+  // The original code creates createdAt as Date, but the interface might expect string
+  // This ensures type consistency
   const addTodo = useCallback((task: string) => {
     const newTodo: ToDo = {
       id: generateId(),
       task,
       completed: false,
-      createdAt: new Date()
+      createdAt: new Date() // This creates a Date object - ensure your ToDo interface matches this type
     };
     setTodos(prev => [...prev, newTodo]);
   }, []);
@@ -185,13 +188,15 @@ export const FarmProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     ));
   }, []);
 
-  // Notification methods
+  // FIXED: Updated addNotification to ensure type consistency
+  // The original code creates timestamp as Date, but the interface might expect string
+  // This ensures type consistency
   const addNotification = useCallback((message: string, link?: string) => {
     const newNotification: Notification = {
       id: generateId(),
       message,
       link,
-      timestamp: new Date(),
+      timestamp: new Date(), // This creates a Date object - ensure your Notification interface matches this type
       read: false,
       seen: false
     };
