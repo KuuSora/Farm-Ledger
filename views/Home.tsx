@@ -49,13 +49,14 @@ interface TeamCardProps {
 const Home: React.FC = () => {
   const { setViewState, triggerUIInteraction } = useFarm();
   const [isVisible, setIsVisible] = useState<Record<string, boolean>>({});
+  const [currentHint, setCurrentHint] = useState<string | null>(null);
 
   // Team members data
   const teamMembers: TeamMember[] = [
     {
       id: 1,
       name: "Sarah Chen",
-      role: "Agricultural Technology Lead",
+      role: "Hacker",
       description: "10+ years in precision agriculture and IoT farming solutions. Expert in hydroponic systems and smart farm automation.",
       avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
       github: "https://github.com",
@@ -63,17 +64,17 @@ const Home: React.FC = () => {
     },
     {
       id: 2,
-      name: "Marcus Rodriguez",
+      name: "Lovelyn Ballon",
       role: "Full-Stack Developer",
-      description: "Senior developer specializing in React, TypeScript, and modern web technologies. Passionate about creating intuitive user experiences.",
+      description: "Hustler",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
       github: "https://github.com",
       linkedin: "https://linkedin.com",
     },
     {
       id: 3,
-      name: "Emma Thompson",
-      role: "Data Science & AI Engineer",
+      name: "Frenz Jerick Fuentes",
+      role: "Hipster",
       description: "PhD in Agricultural Data Science. Develops machine learning models for crop yield prediction and pest identification using computer vision.",
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
       github: "https://github.com",
@@ -93,8 +94,16 @@ const Home: React.FC = () => {
   };
 
   const clearHint = () => {
+    setCurrentHint(null);
     if (triggerUIInteraction) {
       triggerUIInteraction(null);
+    }
+  };
+
+  const showHint = (message: string) => {
+    setCurrentHint(message);
+    if (triggerUIInteraction) {
+      triggerUIInteraction(message);
     }
   };
 
@@ -137,16 +146,49 @@ const Home: React.FC = () => {
       
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-green-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '0s', animationDuration: '4s' }} />
-        <div className="absolute top-3/4 right-1/4 w-48 h-48 bg-blue-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s', animationDuration: '6s' }} />
-        <div className="absolute top-1/2 left-3/4 w-32 h-32 bg-yellow-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '4s', animationDuration: '5s' }} />
+        <div 
+          className="absolute top-1/4 left-1/4 w-64 h-64 bg-green-400/10 rounded-full blur-3xl animate-pulse" 
+          style={{ 
+            animationDelay: '0s', 
+            animationDuration: '4s',
+            animation: 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' 
+          }} 
+        />
+        <div 
+          className="absolute top-3/4 right-1/4 w-48 h-48 bg-blue-400/10 rounded-full blur-3xl animate-pulse" 
+          style={{ 
+            animationDelay: '2s', 
+            animationDuration: '6s',
+            animation: 'pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite 2s' 
+          }} 
+        />
+        <div 
+          className="absolute top-1/2 left-3/4 w-32 h-32 bg-yellow-400/10 rounded-full blur-3xl animate-pulse" 
+          style={{ 
+            animationDelay: '4s', 
+            animationDuration: '5s',
+            animation: 'pulse 5s cubic-bezier(0.4, 0, 0.6, 1) infinite 4s' 
+          }} 
+        />
       </div>
+
+      {/* UI Hint Display */}
+      {currentHint && (
+        <div className="fixed top-4 right-4 z-50 max-w-sm p-4 bg-black/80 backdrop-blur-sm text-white rounded-lg border border-white/20 shadow-xl">
+          <p className="text-sm">{currentHint}</p>
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="relative z-10">
         {/* Hero Section */}
         <div className="min-h-screen flex flex-col items-center justify-center px-4 text-center">
-          <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
+          <div 
+            className="max-w-4xl mx-auto space-y-8 opacity-0" 
+            style={{
+              animation: 'fadeInUp 1s ease-out 0.3s forwards'
+            }}
+          >
             {/* Logo/Title */}
             <div className="space-y-4">
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white tracking-tight">
@@ -170,7 +212,7 @@ const Home: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
               <button
                 onClick={handleGetStarted}
-                onMouseEnter={() => triggerUIInteraction && triggerUIInteraction('Start managing your farm with advanced AI-powered tools and insights.')}
+                onMouseEnter={() => showHint('Start managing your farm with advanced AI-powered tools and insights.')}
                 onMouseLeave={clearHint}
                 className="group relative overflow-hidden bg-gradient-to-r from-green-500 via-emerald-600 to-teal-600 text-white px-8 py-4 rounded-2xl font-semibold text-lg shadow-2xl transform transition-all duration-300 hover:scale-105 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-green-400/50"
               >
@@ -183,7 +225,7 @@ const Home: React.FC = () => {
               
               <button
                 onClick={scrollToTeam}
-                onMouseEnter={() => triggerUIInteraction && triggerUIInteraction('Meet the team of experts behind Farm\'s Ledger.')}
+                onMouseEnter={() => showHint('Meet the team of experts behind Farm\'s Ledger.')}
                 onMouseLeave={clearHint}
                 className="group border-2 border-white/30 text-white px-8 py-4 rounded-2xl font-semibold text-lg backdrop-blur-sm hover:bg-white/10 hover:border-white/50 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-white/30"
               >
@@ -217,14 +259,21 @@ const Home: React.FC = () => {
 
             {/* Team Cards - Desktop Horizontal Scroll, Mobile Vertical Stack */}
             <div className="hidden lg:block">
-              <div className="flex gap-8 overflow-x-auto scrollbar-hide pb-8" style={{ scrollSnapType: 'x mandatory' }}>
+              <div 
+                className="flex gap-8 overflow-x-auto pb-8" 
+                style={{ 
+                  scrollSnapType: 'x mandatory',
+                  msOverflowStyle: 'none',
+                  scrollbarWidth: 'none'
+                }}
+              >
                 {teamMembers.map((member, index) => (
                   <TeamCard 
                     key={member.id} 
                     member={member} 
                     index={index}
                     isVisible={isVisible[`team-card-${member.id}`]}
-                    onMouseEnter={() => triggerUIInteraction && triggerUIInteraction(`Learn more about ${member.name}, our ${member.role}.`)}
+                    onMouseEnter={() => showHint(`Learn more about ${member.name}, our ${member.role}.`)}
                     onMouseLeave={clearHint}
                   />
                 ))}
@@ -239,7 +288,7 @@ const Home: React.FC = () => {
                   member={member} 
                   index={index}
                   isVisible={isVisible[`team-card-${member.id}`]}
-                  onMouseEnter={() => triggerUIInteraction && triggerUIInteraction(`Learn more about ${member.name}, our ${member.role}.`)}
+                  onMouseEnter={() => showHint(`Learn more about ${member.name}, our ${member.role}.`)}
                   onMouseLeave={clearHint}
                 />
               ))}
@@ -248,47 +297,40 @@ const Home: React.FC = () => {
         </section>
       </div>
 
-      {/* Custom Styles */}
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
+      {/* Inline Styles for Animations */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
           }
-          to {
-            opacity: 1;
-            transform: translateY(0);
+          
+          @keyframes slideUp {
+            from {
+              opacity: 0;
+              transform: translateY(50px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
           }
-        }
-        
-        @keyframes slide-up {
-          from {
-            opacity: 0;
-            transform: translateY(50px);
+          
+          .animate-slide-up {
+            animation: slideUp 0.8s ease-out forwards;
           }
-          to {
-            opacity: 1;
-            transform: translateY(0);
+          
+          .overflow-x-auto::-webkit-scrollbar {
+            display: none;
           }
-        }
-        
-        .animate-fade-in {
-          animation: fade-in 1s ease-out;
-        }
-        
-        .animate-slide-up {
-          animation: slide-up 0.8s ease-out forwards;
-        }
-        
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
+        `
+      }} />
     </div>
   );
 };
